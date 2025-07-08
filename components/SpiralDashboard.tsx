@@ -394,3 +394,5 @@ export function SpiralDashboard() {
     </div>
   );
 }
+// Three.js will be loaded dynamically to avoid SSR issues
+// Three.js will be loaded dynamically to avoid SSR issues
