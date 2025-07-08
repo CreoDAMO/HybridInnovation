@@ -49,6 +49,47 @@ export enum SpiralTokenType {
   
   // Consciousness keywords
   CONSCIOUSNESS = 'CONSCIOUSNESS',
+  TRUTH = 'TRUTH',
+  LIGHT = 'LIGHT',
+  RESONATE = 'RESONATE',
+  HARMONIZE = 'HARMONIZE',
+  
+  // Quantum keywords
+  QUANTUM = 'QUANTUM',
+  ENTANGLE = 'ENTANGLE',
+  SUPERPOSE = 'SUPERPOSE',
+  COLLAPSE = 'COLLAPSE',
+  QUANTUM_STATE = 'QUANTUM_STATE',
+  
+  // Temporal keywords
+  TEMPORAL = 'TEMPORAL',
+  SYNCHRONIZE = 'SYNCHRONIZE',
+  
+  // Mathematical constants
+  PHI = 'PHI',
+  DELTA = 'DELTA',
+  OMEGA = 'OMEGA',
+  
+  // Quantum operators
+  TENSOR = 'TENSOR',
+  DIRECT_SUM = 'DIRECT_SUM',
+  IMPLICATION = 'IMPLICATION',
+  BICONDITIONAL = 'BICONDITIONAL',
+  AND = 'AND',
+  OR = 'OR',
+  NOT_EQUALS = 'NOT_EQUALS',
+  
+  // Canon system
+  CANON = 'CANON',
+  
+  // Delimiters
+  LBRACKET = 'LBRACKET',
+  RBRACKET = 'RBRACKET',
+  DOT = 'DOT',
+  
+  // End of file
+  EOF = 'EOF'
+  CONSCIOUSNESS = 'CONSCIOUSNESS',
   AWARENESS = 'AWARENESS',
   TRUTH = 'TRUTH',
   LIGHT = 'LIGHT',
@@ -92,6 +133,842 @@ export interface SpiralASTNode {
 }
 
 export class SpiralParser {
+  private isInitialized: boolean;
+  private keywords: Set<string>;
+  private operators: Map<string, number>;
+
+  constructor() {
+    this.isInitialized = false;
+    this.keywords = new Set();
+    this.operators = new Map();
+    this.initializeLanguage();
+  }
+
+  private initializeLanguage(): void {
+    // SpiralLang keywords
+    this.keywords.add('spiral');
+    this.keywords.add('quantum');
+    this.keywords.add('consciousness');
+    this.keywords.add('temporal');
+    this.keywords.add('entangle');
+    this.keywords.add('superpose');
+    this.keywords.add('collapse');
+    this.keywords.add('resonate');
+    this.keywords.add('synchronize');
+    this.keywords.add('harmonize');
+    this.keywords.add('canon');
+    this.keywords.add('truth');
+    this.keywords.add('light');
+    this.keywords.add('infinity');
+    
+    // Operators with precedence
+    this.operators.set('φ', 10);     // Golden ratio
+    this.operators.set('∞', 10);     // Infinity
+    this.operators.set('∆', 9);      // Delta/Trust
+    this.operators.set('Ω', 9);      // Omega
+    this.operators.set('⊗', 8);      // Tensor product
+    this.operators.set('⊕', 7);      // Direct sum
+    this.operators.set('→', 6);      // Implication
+    this.operators.set('↔', 6);      // Biconditional
+    this.operators.set('∧', 5);      // And
+    this.operators.set('∨', 5);      // Or
+    this.operators.set('=', 4);      // Assignment
+    this.operators.set('==', 3);     // Equality
+    this.operators.set('!=', 3);     // Inequality
+    this.operators.set('+', 2);      // Addition
+    this.operators.set('-', 2);      // Subtraction
+    this.operators.set('*', 1);      // Multiplication
+    this.operators.set('/', 1);      // Division
+  }
+
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return;
+    
+    console.log('Initializing SpiralLang Parser...');
+    this.isInitialized = true;
+    console.log('SpiralLang Parser initialized');
+  }
+
+  async parse(code: string): Promise<SpiralProgram> {
+    if (!this.isInitialized) {
+      throw new Error('SpiralParser not initialized');
+    }
+
+    try {
+      // Tokenize the SpiralLang code
+      const tokens = this.tokenize(code);
+      
+      // Parse tokens into AST
+      const ast = this.parseTokens(tokens);
+      
+      // Type check the AST
+      const typeChecker = new SpiralTypeChecker();
+      const typedAST = await typeChecker.check(ast);
+      
+      // Generate bytecode
+      const bytecode = this.generateBytecode(typedAST);
+      
+      return {
+        source: code,
+        tokens,
+        ast: typedAST,
+        bytecode,
+        metadata: {
+          parseTime: new Date(),
+          complexity: this.calculateComplexity(typedAST),
+          quantumOperations: this.countQuantumOperations(typedAST),
+          consciousnessLevel: this.calculateConsciousnessLevel(typedAST)
+        }
+      };
+      
+    } catch (error) {
+      throw new Error(`SpiralLang parsing failed: ${error.message}`);
+    }
+  }
+
+  private tokenize(code: string): SpiralToken[] {
+    const tokens: SpiralToken[] = [];
+    let line = 1;
+    let column = 1;
+    let i = 0;
+
+    while (i < code.length) {
+      const char = code[i];
+
+      // Skip whitespace
+      if (/\s/.test(char)) {
+        if (char === '\n') {
+          line++;
+          column = 1;
+        } else {
+          column++;
+        }
+        i++;
+        continue;
+      }
+
+      // Skip comments
+      if (char === '/' && code[i + 1] === '/') {
+        while (i < code.length && code[i] !== '\n') i++;
+        continue;
+      }
+
+      // Multi-character operators
+      if (i < code.length - 1) {
+        const twoChar = code.slice(i, i + 2);
+        if (this.operators.has(twoChar)) {
+          tokens.push({
+            type: this.getOperatorType(twoChar),
+            value: twoChar,
+            line,
+            column
+          });
+          i += 2;
+          column += 2;
+          continue;
+        }
+      }
+
+      // Single-character operators and symbols
+      if (this.operators.has(char)) {
+        tokens.push({
+          type: this.getOperatorType(char),
+          value: char,
+          line,
+          column
+        });
+        i++;
+        column++;
+        continue;
+      }
+
+      // Quantum state notation |⟩
+      if (char === '|') {
+        const stateMatch = code.slice(i).match(/\|([^⟩]*?)⟩/);
+        if (stateMatch) {
+          tokens.push({
+            type: SpiralTokenType.QUANTUM_STATE,
+            value: stateMatch[0],
+            line,
+            column,
+            quantumState: stateMatch[1]
+          });
+          i += stateMatch[0].length;
+          column += stateMatch[0].length;
+          continue;
+        }
+      }
+
+      // Consciousness notation @⚡
+      if (char === '@' && code[i + 1] === '⚡') {
+        tokens.push({
+          type: SpiralTokenType.CONSCIOUSNESS,
+          value: '@⚡',
+          line,
+          column,
+          consciousness: 1.0
+        });
+        i += 2;
+        column += 2;
+        continue;
+      }
+
+      // Numbers (including quantum coefficients)
+      if (/\d/.test(char) || char === '.') {
+        const numberMatch = code.slice(i).match(/\d*\.?\d+([eE][+-]?\d+)?/);
+        if (numberMatch) {
+          tokens.push({
+            type: SpiralTokenType.NUMBER,
+            value: numberMatch[0],
+            line,
+            column
+          });
+          i += numberMatch[0].length;
+          column += numberMatch[0].length;
+          continue;
+        }
+      }
+
+      // Strings
+      if (char === '"' || char === "'") {
+        const quote = char;
+        let str = quote;
+        i++;
+        column++;
+        
+        while (i < code.length && code[i] !== quote) {
+          if (code[i] === '\\') {
+            str += code[i] + code[i + 1];
+            i += 2;
+            column += 2;
+          } else {
+            str += code[i];
+            i++;
+            column++;
+          }
+        }
+        
+        if (i < code.length) {
+          str += quote;
+          i++;
+          column++;
+        }
+        
+        tokens.push({
+          type: SpiralTokenType.STRING,
+          value: str,
+          line,
+          column
+        });
+        continue;
+      }
+
+      // Identifiers and keywords
+      if (/[a-zA-Z_]/.test(char)) {
+        const identMatch = code.slice(i).match(/[a-zA-Z_][a-zA-Z0-9_]*/);
+        if (identMatch) {
+          const value = identMatch[0];
+          const type = this.keywords.has(value) ? 
+            this.getKeywordType(value) : 
+            SpiralTokenType.IDENTIFIER;
+          
+          tokens.push({
+            type,
+            value,
+            line,
+            column
+          });
+          
+          i += value.length;
+          column += value.length;
+          continue;
+        }
+      }
+
+      // Delimiters
+      const delimiterMap: { [key: string]: SpiralTokenType } = {
+        '(': SpiralTokenType.LPAREN,
+        ')': SpiralTokenType.RPAREN,
+        '{': SpiralTokenType.LBRACE,
+        '}': SpiralTokenType.RBRACE,
+        '[': SpiralTokenType.LBRACKET,
+        ']': SpiralTokenType.RBRACKET,
+        ';': SpiralTokenType.SEMICOLON,
+        ',': SpiralTokenType.COMMA,
+        '.': SpiralTokenType.DOT
+      };
+
+      if (delimiterMap[char]) {
+        tokens.push({
+          type: delimiterMap[char],
+          value: char,
+          line,
+          column
+        });
+        i++;
+        column++;
+        continue;
+      }
+
+      // Unknown character
+      throw new Error(`Unexpected character '${char}' at line ${line}, column ${column}`);
+    }
+
+    return tokens;
+  }
+
+  private getOperatorType(op: string): SpiralTokenType {
+    const operatorMap: { [key: string]: SpiralTokenType } = {
+      'φ': SpiralTokenType.PHI,
+      '∞': SpiralTokenType.INFINITY,
+      '∆': SpiralTokenType.DELTA,
+      'Ω': SpiralTokenType.OMEGA,
+      '⊗': SpiralTokenType.TENSOR,
+      '⊕': SpiralTokenType.DIRECT_SUM,
+      '→': SpiralTokenType.IMPLICATION,
+      '↔': SpiralTokenType.BICONDITIONAL,
+      '∧': SpiralTokenType.AND,
+      '∨': SpiralTokenType.OR,
+      '=': SpiralTokenType.ASSIGN,
+      '==': SpiralTokenType.EQUALS,
+      '!=': SpiralTokenType.NOT_EQUALS,
+      '+': SpiralTokenType.PLUS,
+      '-': SpiralTokenType.MINUS,
+      '*': SpiralTokenType.MULTIPLY,
+      '/': SpiralTokenType.DIVIDE
+    };
+    
+    return operatorMap[op] || SpiralTokenType.IDENTIFIER;
+  }
+
+  private getKeywordType(keyword: string): SpiralTokenType {
+    const keywordMap: { [key: string]: SpiralTokenType } = {
+      'spiral': SpiralTokenType.SPIRAL,
+      'quantum': SpiralTokenType.QUANTUM,
+      'consciousness': SpiralTokenType.CONSCIOUSNESS,
+      'temporal': SpiralTokenType.TEMPORAL,
+      'entangle': SpiralTokenType.ENTANGLE,
+      'superpose': SpiralTokenType.SUPERPOSE,
+      'collapse': SpiralTokenType.COLLAPSE,
+      'resonate': SpiralTokenType.RESONATE,
+      'synchronize': SpiralTokenType.SYNCHRONIZE,
+      'harmonize': SpiralTokenType.HARMONIZE,
+      'canon': SpiralTokenType.CANON,
+      'truth': SpiralTokenType.TRUTH,
+      'light': SpiralTokenType.LIGHT,
+      'infinity': SpiralTokenType.INFINITY,
+      'function': SpiralTokenType.FUNCTION,
+      'if': SpiralTokenType.IF,
+      'else': SpiralTokenType.ELSE,
+      'while': SpiralTokenType.WHILE,
+      'return': SpiralTokenType.RETURN,
+      'let': SpiralTokenType.LET,
+      'const': SpiralTokenType.CONST
+    };
+    
+    return keywordMap[keyword] || SpiralTokenType.IDENTIFIER;
+  }
+
+  private parseTokens(tokens: SpiralToken[]): SpiralASTNode {
+    let current = 0;
+
+    const peek = (): SpiralToken | null => {
+      return current < tokens.length ? tokens[current] : null;
+    };
+
+    const consume = (): SpiralToken | null => {
+      return current < tokens.length ? tokens[current++] : null;
+    };
+
+    const parseExpression = (): SpiralASTNode => {
+      return parseAssignment();
+    };
+
+    const parseAssignment = (): SpiralASTNode => {
+      let left = parseLogical();
+
+      if (peek()?.type === SpiralTokenType.ASSIGN) {
+        consume(); // consume '='
+        const right = parseAssignment();
+        return {
+          type: 'Assignment',
+          left,
+          right,
+          metadata: { line: left.metadata?.line || 0 }
+        };
+      }
+
+      return left;
+    };
+
+    const parseLogical = (): SpiralASTNode => {
+      let left = parseComparison();
+
+      while (peek()?.type === SpiralTokenType.AND || peek()?.type === SpiralTokenType.OR) {
+        const operator = consume()!;
+        const right = parseComparison();
+        left = {
+          type: 'BinaryOperation',
+          operator: operator.value,
+          left,
+          right,
+          metadata: { line: operator.line }
+        };
+      }
+
+      return left;
+    };
+
+    const parseComparison = (): SpiralASTNode => {
+      let left = parseArithmetic();
+
+      while (peek()?.type === SpiralTokenType.EQUALS || 
+             peek()?.type === SpiralTokenType.NOT_EQUALS) {
+        const operator = consume()!;
+        const right = parseArithmetic();
+        left = {
+          type: 'BinaryOperation',
+          operator: operator.value,
+          left,
+          right,
+          metadata: { line: operator.line }
+        };
+      }
+
+      return left;
+    };
+
+    const parseArithmetic = (): SpiralASTNode => {
+      let left = parseTerm();
+
+      while (peek()?.type === SpiralTokenType.PLUS || 
+             peek()?.type === SpiralTokenType.MINUS) {
+        const operator = consume()!;
+        const right = parseTerm();
+        left = {
+          type: 'BinaryOperation',
+          operator: operator.value,
+          left,
+          right,
+          metadata: { line: operator.line }
+        };
+      }
+
+      return left;
+    };
+
+    const parseTerm = (): SpiralASTNode => {
+      let left = parseFactor();
+
+      while (peek()?.type === SpiralTokenType.MULTIPLY || 
+             peek()?.type === SpiralTokenType.DIVIDE ||
+             peek()?.type === SpiralTokenType.TENSOR ||
+             peek()?.type === SpiralTokenType.DIRECT_SUM) {
+        const operator = consume()!;
+        const right = parseFactor();
+        left = {
+          type: 'BinaryOperation',
+          operator: operator.value,
+          left,
+          right,
+          metadata: { line: operator.line, quantum: operator.type === SpiralTokenType.TENSOR }
+        };
+      }
+
+      return left;
+    };
+
+    const parseFactor = (): SpiralASTNode => {
+      const token = peek();
+      
+      if (!token) {
+        throw new Error('Unexpected end of input');
+      }
+
+      // Quantum state
+      if (token.type === SpiralTokenType.QUANTUM_STATE) {
+        consume();
+        return {
+          type: 'QuantumState',
+          state: token.quantumState || '',
+          metadata: { line: token.line, quantum: true }
+        };
+      }
+
+      // Consciousness
+      if (token.type === SpiralTokenType.CONSCIOUSNESS) {
+        consume();
+        return {
+          type: 'Consciousness',
+          level: token.consciousness || 1.0,
+          metadata: { line: token.line, consciousness: true }
+        };
+      }
+
+      // Numbers
+      if (token.type === SpiralTokenType.NUMBER) {
+        consume();
+        return {
+          type: 'Literal',
+          value: parseFloat(token.value),
+          dataType: 'number',
+          metadata: { line: token.line }
+        };
+      }
+
+      // Strings
+      if (token.type === SpiralTokenType.STRING) {
+        consume();
+        return {
+          type: 'Literal',
+          value: token.value.slice(1, -1), // Remove quotes
+          dataType: 'string',
+          metadata: { line: token.line }
+        };
+      }
+
+      // Special constants
+      if (token.type === SpiralTokenType.PHI) {
+        consume();
+        return {
+          type: 'Literal',
+          value: 1.618033988749,
+          dataType: 'number',
+          metadata: { line: token.line, special: 'phi' }
+        };
+      }
+
+      if (token.type === SpiralTokenType.INFINITY) {
+        consume();
+        return {
+          type: 'Literal',
+          value: Infinity,
+          dataType: 'number',
+          metadata: { line: token.line, special: 'infinity' }
+        };
+      }
+
+      // Identifiers
+      if (token.type === SpiralTokenType.IDENTIFIER) {
+        consume();
+        return {
+          type: 'Identifier',
+          name: token.value,
+          metadata: { line: token.line }
+        };
+      }
+
+      // Parenthesized expressions
+      if (token.type === SpiralTokenType.LPAREN) {
+        consume(); // consume '('
+        const expr = parseExpression();
+        if (peek()?.type !== SpiralTokenType.RPAREN) {
+          throw new Error('Expected closing parenthesis');
+        }
+        consume(); // consume ')'
+        return expr;
+      }
+
+      // Function calls and quantum operations
+      if (token.type === SpiralTokenType.QUANTUM ||
+          token.type === SpiralTokenType.ENTANGLE ||
+          token.type === SpiralTokenType.SUPERPOSE ||
+          token.type === SpiralTokenType.COLLAPSE) {
+        const functionName = consume()!;
+        
+        if (peek()?.type !== SpiralTokenType.LPAREN) {
+          throw new Error('Expected opening parenthesis after function name');
+        }
+        consume(); // consume '('
+        
+        const args: SpiralASTNode[] = [];
+        while (peek()?.type !== SpiralTokenType.RPAREN) {
+          args.push(parseExpression());
+          if (peek()?.type === SpiralTokenType.COMMA) {
+            consume();
+          }
+        }
+        consume(); // consume ')'
+        
+        return {
+          type: 'FunctionCall',
+          name: functionName.value,
+          arguments: args,
+          metadata: { 
+            line: functionName.line, 
+            quantum: true,
+            consciousness: functionName.value === 'resonate' || functionName.value === 'harmonize'
+          }
+        };
+      }
+
+      throw new Error(`Unexpected token: ${token.value} at line ${token.line}`);
+    };
+
+    const parseStatement = (): SpiralASTNode => {
+      const token = peek();
+      
+      if (!token) {
+        throw new Error('Unexpected end of input');
+      }
+
+      // Variable declarations
+      if (token.type === SpiralTokenType.LET || token.type === SpiralTokenType.CONST) {
+        const declarationType = consume()!;
+        
+        if (peek()?.type !== SpiralTokenType.IDENTIFIER) {
+          throw new Error('Expected identifier after variable declaration');
+        }
+        
+        const identifier = consume()!;
+        
+        if (peek()?.type !== SpiralTokenType.ASSIGN) {
+          throw new Error('Expected assignment in variable declaration');
+        }
+        consume(); // consume '='
+        
+        const initializer = parseExpression();
+        
+        return {
+          type: 'VariableDeclaration',
+          declarationType: declarationType.value as 'let' | 'const',
+          identifier: identifier.value,
+          initializer,
+          metadata: { line: declarationType.line }
+        };
+      }
+
+      // Expression statements
+      return parseExpression();
+    };
+
+    const parseProgram = (): SpiralASTNode => {
+      const statements: SpiralASTNode[] = [];
+      
+      while (current < tokens.length) {
+        statements.push(parseStatement());
+        
+        // Optional semicolon
+        if (peek()?.type === SpiralTokenType.SEMICOLON) {
+          consume();
+        }
+      }
+      
+      return {
+        type: 'Program',
+        statements,
+        metadata: { line: 1 }
+      };
+    };
+
+    return parseProgram();
+  }
+
+  private generateBytecode(ast: SpiralASTNode): SpiralBytecode {
+    const instructions: SpiralInstruction[] = [];
+    
+    const generateInstructions = (node: SpiralASTNode): void => {
+      switch (node.type) {
+        case 'Program':
+          node.statements?.forEach(generateInstructions);
+          break;
+          
+        case 'Literal':
+          instructions.push({
+            opcode: 'LOAD_CONST',
+            operand: node.value,
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'Identifier':
+          instructions.push({
+            opcode: 'LOAD_VAR',
+            operand: node.name,
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'BinaryOperation':
+          generateInstructions(node.left!);
+          generateInstructions(node.right!);
+          
+          const opcodeMap: { [key: string]: string } = {
+            '+': 'ADD',
+            '-': 'SUB',
+            '*': 'MUL',
+            '/': 'DIV',
+            '⊗': 'TENSOR_PRODUCT',
+            '⊕': 'DIRECT_SUM',
+            '==': 'EQUALS',
+            '!=': 'NOT_EQUALS',
+            '∧': 'LOGICAL_AND',
+            '∨': 'LOGICAL_OR'
+          };
+          
+          const opcode = opcodeMap[node.operator!] || 'UNKNOWN_OP';
+          instructions.push({
+            opcode,
+            operand: null,
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'QuantumState':
+          instructions.push({
+            opcode: 'CREATE_QUANTUM_STATE',
+            operand: node.state,
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'Consciousness':
+          instructions.push({
+            opcode: 'BIND_CONSCIOUSNESS',
+            operand: node.level,
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'FunctionCall':
+          // Generate arguments first
+          node.arguments?.forEach(generateInstructions);
+          
+          instructions.push({
+            opcode: 'CALL_FUNCTION',
+            operand: {
+              name: node.name,
+              argCount: node.arguments?.length || 0
+            },
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'VariableDeclaration':
+          generateInstructions(node.initializer!);
+          instructions.push({
+            opcode: 'STORE_VAR',
+            operand: {
+              name: node.identifier,
+              type: node.declarationType
+            },
+            metadata: node.metadata
+          });
+          break;
+          
+        case 'Assignment':
+          generateInstructions(node.right!);
+          if (node.left?.type === 'Identifier') {
+            instructions.push({
+              opcode: 'STORE_VAR',
+              operand: node.left.name,
+              metadata: node.metadata
+            });
+          }
+          break;
+      }
+    };
+    
+    generateInstructions(ast);
+    
+    return {
+      version: '1.0.0',
+      instructions,
+      metadata: {
+        compilationTime: new Date(),
+        sourceAST: ast
+      }
+    };
+  }
+
+  private calculateComplexity(ast: SpiralASTNode): number {
+    let complexity = 0;
+    
+    const traverse = (node: SpiralASTNode) => {
+      complexity++;
+      if (node.metadata?.quantum) complexity += 2;
+      if (node.metadata?.consciousness) complexity += 3;
+      
+      // Traverse children
+      if (node.statements) node.statements.forEach(traverse);
+      if (node.left) traverse(node.left);
+      if (node.right) traverse(node.right);
+      if (node.arguments) node.arguments.forEach(traverse);
+      if (node.initializer) traverse(node.initializer);
+    };
+    
+    traverse(ast);
+    return complexity;
+  }
+
+  private countQuantumOperations(ast: SpiralASTNode): number {
+    let count = 0;
+    
+    const traverse = (node: SpiralASTNode) => {
+      if (node.metadata?.quantum) count++;
+      
+      // Traverse children
+      if (node.statements) node.statements.forEach(traverse);
+      if (node.left) traverse(node.left);
+      if (node.right) traverse(node.right);
+      if (node.arguments) node.arguments.forEach(traverse);
+      if (node.initializer) traverse(node.initializer);
+    };
+    
+    traverse(ast);
+    return count;
+  }
+
+  private calculateConsciousnessLevel(ast: SpiralASTNode): number {
+    let totalConsciousness = 0;
+    let count = 0;
+    
+    const traverse = (node: SpiralASTNode) => {
+      if (node.metadata?.consciousness) {
+        totalConsciousness += 1.0;
+        count++;
+      }
+      
+      // Traverse children
+      if (node.statements) node.statements.forEach(traverse);
+      if (node.left) traverse(node.left);
+      if (node.right) traverse(node.right);
+      if (node.arguments) node.arguments.forEach(traverse);
+      if (node.initializer) traverse(node.initializer);
+    };
+    
+    traverse(ast);
+    return count > 0 ? totalConsciousness / count : 0;
+  }
+
+  // Additional helper interfaces
+  interface SpiralProgram {
+    source: string;
+    tokens: SpiralToken[];
+    ast: SpiralASTNode;
+    bytecode: SpiralBytecode;
+    metadata: {
+      parseTime: Date;
+      complexity: number;
+      quantumOperations: number;
+      consciousnessLevel: number;
+    };
+  }
+
+  interface SpiralBytecode {
+    version: string;
+    instructions: SpiralInstruction[];
+    metadata: {
+      compilationTime: Date;
+      sourceAST: SpiralASTNode;
+    };
+  }
+
+  interface SpiralInstruction {
+    opcode: string;
+    operand: any;
+    metadata?: any;
+  }
   private tokens: SpiralToken[];
   private current: number;
   private typeChecker: SpiralTypeChecker;

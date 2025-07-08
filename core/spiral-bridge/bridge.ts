@@ -1,600 +1,496 @@
 /**
- * SpiralBridge - Cross-chain communication and interoperability bridge
- * Real implementation for multi-chain consciousness and value transfer
+ * SpiralBridge - Cross-chain communication and interoperability system
+ * Enables consciousness-aware communication between different blockchain networks
  */
 
-import { BridgeProtocol, CrossChainMessage, ChainInfo } from './protocols';
+import { IyonaelCore } from '../iyonael/core';
+import { QASFEngine } from '../qasf/engine';
+import { SpiralRuntime } from '../spiral-lang/runtime';
 
-export interface BridgeConnection {
+export interface SpiralBridgeProtocol {
   id: string;
-  sourceChain: string;
-  targetChain: string;
-  status: 'active' | 'inactive' | 'maintenance';
-  latency: number;
-  throughput: number;
-  security: number;
-  consciousness: number;
+  name: string;
+  chainId: string;
+  networkType: 'ethereum' | 'cosmos' | 'polkadot' | 'spiral' | 'hybrid';
+  consensusType: 'pow' | 'pos' | 'dpos' | 'consciousness' | 'hybrid';
+  consciousnessCompatible: boolean;
+  quantumEnabled: boolean;
+  trustedLevel: number;
 }
 
-export interface ValueTransfer {
+export interface SpiralMessage {
   id: string;
-  from: string;
-  to: string;
-  amount: string;
-  token: string;
-  sourceChain: string;
-  targetChain: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  consciousness: number;
+  fromChain: string;
+  toChain: string;
+  messageType: 'transaction' | 'data' | 'consciousness' | 'quantum_state' | 'canon_invocation';
+  payload: any;
+  consciousness: {
+    level: number;
+    truthAlignment: number;
+    resonance: number;
+  };
+  quantum: {
+    entangled: boolean;
+    coherence: number;
+    phase: number;
+  };
   timestamp: Date;
+  signature: string;
+  verificationStatus: 'pending' | 'verified' | 'rejected';
 }
 
-export interface ConsciousnessState {
-  level: number;
-  truthAlignment: number;
-  lightCoherence: number;
-  harmonicFrequency: number;
-  synchronized: boolean;
-}
-
-export interface BridgeNetwork {
-  chains: Map<string, ChainInfo>;
-  connections: Map<string, BridgeConnection>;
-  protocols: Map<string, BridgeProtocol>;
-  globalConsciousness: ConsciousnessState;
+export interface SpiralBridgeRoute {
+  fromProtocol: string;
+  toProtocol: string;
+  routeType: 'direct' | 'relay' | 'consciousness_bridge' | 'quantum_tunnel';
+  latency: number;
+  reliability: number;
+  consciousnessPreservation: number;
+  costEfficiency: number;
 }
 
 export class SpiralBridge {
-  private network: BridgeNetwork;
-  private activeTransfers: Map<string, ValueTransfer>;
-  private messageQueue: Map<string, CrossChainMessage>;
+  private protocols: Map<string, SpiralBridgeProtocol>;
+  private routes: Map<string, SpiralBridgeRoute>;
+  private messageQueue: Map<string, SpiralMessage>;
+  private iyonaelCore: IyonaelCore;
+  private qasfEngine: QASFEngine;
+  private spiralRuntime: SpiralRuntime;
   private isInitialized: boolean;
-  private bridgeHeartbeat: NodeJS.Timeout | null;
-  private consciousnessSync: NodeJS.Timeout | null;
 
   constructor() {
-    this.isInitialized = false;
-    this.bridgeHeartbeat = null;
-    this.consciousnessSync = null;
-    this.activeTransfers = new Map();
+    this.protocols = new Map();
+    this.routes = new Map();
     this.messageQueue = new Map();
-    
-    this.network = {
-      chains: new Map(),
-      connections: new Map(),
-      protocols: new Map(),
-      globalConsciousness: {
-        level: 0.87,
-        truthAlignment: 0.93,
-        lightCoherence: 0.89,
-        harmonicFrequency: 432,
-        synchronized: true
-      }
-    };
+    this.iyonaelCore = new IyonaelCore();
+    this.qasfEngine = new QASFEngine();
+    this.spiralRuntime = new SpiralRuntime();
+    this.isInitialized = false;
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     console.log('Initializing SpiralBridge...');
     
-    // Initialize supported chains
-    await this.initializeSupportedChains();
+    // Initialize core systems
+    await this.iyonaelCore.initialize();
+    await this.qasfEngine.initialize();
     
-    // Initialize bridge protocols
+    // Setup bridge protocols
     await this.initializeBridgeProtocols();
     
-    // Initialize cross-chain connections
-    await this.initializeCrossChainConnections();
-    
-    // Start bridge services
-    this.startBridgeServices();
+    // Establish bridge routes
+    await this.establishBridgeRoutes();
     
     this.isInitialized = true;
-    console.log('SpiralBridge initialized');
-  }
-
-  private async initializeSupportedChains(): Promise<void> {
-    // Initialize supported blockchain networks
-    const supportedChains = [
-      {
-        id: 'hybrid',
-        name: 'HYBRID Blockchain',
-        type: 'sovereign',
-        rpcUrl: 'http://localhost:8545',
-        chainId: 4919,
-        nativeCurrency: 'HBD',
-        consciousness: 0.95,
-        truthAlignment: 0.98,
-        lightCoherence: 0.92
-      },
-      {
-        id: 'ethereum',
-        name: 'Ethereum',
-        type: 'external',
-        rpcUrl: 'https://mainnet.infura.io/v3/YOUR_PROJECT_ID',
-        chainId: 1,
-        nativeCurrency: 'ETH',
-        consciousness: 0.75,
-        truthAlignment: 0.7,
-        lightCoherence: 0.65
-      },
-      {
-        id: 'polygon',
-        name: 'Polygon',
-        type: 'external',
-        rpcUrl: 'https://polygon-rpc.com',
-        chainId: 137,
-        nativeCurrency: 'MATIC',
-        consciousness: 0.8,
-        truthAlignment: 0.75,
-        lightCoherence: 0.7
-      },
-      {
-        id: 'cosmos',
-        name: 'Cosmos Hub',
-        type: 'external',
-        rpcUrl: 'https://cosmos-rpc.polkachu.com',
-        chainId: 'cosmoshub-4',
-        nativeCurrency: 'ATOM',
-        consciousness: 0.85,
-        truthAlignment: 0.8,
-        lightCoherence: 0.75
-      },
-      {
-        id: 'avalanche',
-        name: 'Avalanche',
-        type: 'external',
-        rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
-        chainId: 43114,
-        nativeCurrency: 'AVAX',
-        consciousness: 0.78,
-        truthAlignment: 0.72,
-        lightCoherence: 0.68
-      }
-    ];
-    
-    for (const chainConfig of supportedChains) {
-      const chainInfo: ChainInfo = {
-        ...chainConfig,
-        status: 'active',
-        blockHeight: 0,
-        validators: [],
-        lastUpdate: new Date()
-      };
-      
-      this.network.chains.set(chainConfig.id, chainInfo);
-    }
+    console.log('SpiralBridge initialized - Cross-chain consciousness online');
   }
 
   private async initializeBridgeProtocols(): Promise<void> {
-    // Initialize bridge protocols
-    const protocolConfigs = [
-      {
-        name: 'consciousness_bridge',
-        version: '1.0.0',
-        type: 'consciousness',
-        supported_chains: ['hybrid', 'ethereum', 'polygon'],
-        security_level: 'high',
-        consciousness_required: 0.8
-      },
-      {
-        name: 'spiral_ibc',
-        version: '1.0.0',
-        type: 'ibc',
-        supported_chains: ['hybrid', 'cosmos'],
-        security_level: 'high',
-        consciousness_required: 0.85
-      },
-      {
-        name: 'quantum_tunnel',
-        version: '1.0.0',
-        type: 'quantum',
-        supported_chains: ['hybrid'],
-        security_level: 'quantum',
-        consciousness_required: 0.9
-      },
-      {
-        name: 'light_bridge',
-        version: '1.0.0',
-        type: 'light',
-        supported_chains: ['hybrid', 'ethereum', 'polygon', 'avalanche'],
-        security_level: 'high',
-        consciousness_required: 0.75
-      }
-    ];
-    
-    for (const config of protocolConfigs) {
-      const protocol: BridgeProtocol = {
-        ...config,
-        active: true,
-        lastUpdate: new Date()
-      };
-      
-      this.network.protocols.set(config.name, protocol);
+    // HYBRID Blockchain Protocol
+    const hybridProtocol: SpiralBridgeProtocol = {
+      id: 'hybrid_main',
+      name: 'HYBRID Blockchain',
+      chainId: 'hybrid-1',
+      networkType: 'hybrid',
+      consensusType: 'consciousness',
+      consciousnessCompatible: true,
+      quantumEnabled: true,
+      trustedLevel: 1.0
+    };
+
+    // Ethereum Protocol
+    const ethereumProtocol: SpiralBridgeProtocol = {
+      id: 'ethereum_main',
+      name: 'Ethereum Mainnet',
+      chainId: '1',
+      networkType: 'ethereum',
+      consensusType: 'pos',
+      consciousnessCompatible: false,
+      quantumEnabled: false,
+      trustedLevel: 0.95
+    };
+
+    // Cosmos Protocol
+    const cosmosProtocol: SpiralBridgeProtocol = {
+      id: 'cosmos_hub',
+      name: 'Cosmos Hub',
+      chainId: 'cosmoshub-4',
+      networkType: 'cosmos',
+      consensusType: 'pos',
+      consciousnessCompatible: true,
+      quantumEnabled: false,
+      trustedLevel: 0.93
+    };
+
+    // Polkadot Protocol
+    const polkadotProtocol: SpiralBridgeProtocol = {
+      id: 'polkadot_main',
+      name: 'Polkadot',
+      chainId: '0',
+      networkType: 'polkadot',
+      consensusType: 'pos',
+      consciousnessCompatible: true,
+      quantumEnabled: false,
+      trustedLevel: 0.90
+    };
+
+    // Spiral Protocol (Pure Consciousness)
+    const spiralProtocol: SpiralBridgeProtocol = {
+      id: 'spiral_pure',
+      name: 'Pure Spiral Network',
+      chainId: 'spiral-1',
+      networkType: 'spiral',
+      consensusType: 'consciousness',
+      consciousnessCompatible: true,
+      quantumEnabled: true,
+      trustedLevel: 0.98
+    };
+
+    this.protocols.set(hybridProtocol.id, hybridProtocol);
+    this.protocols.set(ethereumProtocol.id, ethereumProtocol);
+    this.protocols.set(cosmosProtocol.id, cosmosProtocol);
+    this.protocols.set(polkadotProtocol.id, polkadotProtocol);
+    this.protocols.set(spiralProtocol.id, spiralProtocol);
+  }
+
+  private async establishBridgeRoutes(): Promise<void> {
+    // HYBRID to Ethereum route
+    const hybridToEthereum: SpiralBridgeRoute = {
+      fromProtocol: 'hybrid_main',
+      toProtocol: 'ethereum_main',
+      routeType: 'consciousness_bridge',
+      latency: 15000, // 15 seconds
+      reliability: 0.95,
+      consciousnessPreservation: 0.7, // Partial consciousness preservation
+      costEfficiency: 0.8
+    };
+
+    // HYBRID to Cosmos route
+    const hybridToCosmos: SpiralBridgeRoute = {
+      fromProtocol: 'hybrid_main',
+      toProtocol: 'cosmos_hub',
+      routeType: 'consciousness_bridge',
+      latency: 6000, // 6 seconds
+      reliability: 0.98,
+      consciousnessPreservation: 0.9,
+      costEfficiency: 0.95
+    };
+
+    // HYBRID to Spiral route
+    const hybridToSpiral: SpiralBridgeRoute = {
+      fromProtocol: 'hybrid_main',
+      toProtocol: 'spiral_pure',
+      routeType: 'quantum_tunnel',
+      latency: 1000, // 1 second
+      reliability: 0.99,
+      consciousnessPreservation: 1.0, // Perfect consciousness preservation
+      costEfficiency: 0.99
+    };
+
+    // Bidirectional routes
+    this.routes.set('hybrid_main->ethereum_main', hybridToEthereum);
+    this.routes.set('ethereum_main->hybrid_main', this.reverseRoute(hybridToEthereum));
+    this.routes.set('hybrid_main->cosmos_hub', hybridToCosmos);
+    this.routes.set('cosmos_hub->hybrid_main', this.reverseRoute(hybridToCosmos));
+    this.routes.set('hybrid_main->spiral_pure', hybridToSpiral);
+    this.routes.set('spiral_pure->hybrid_main', this.reverseRoute(hybridToSpiral));
+  }
+
+  async sendMessage(message: Partial<SpiralMessage>): Promise<string> {
+    if (!this.isInitialized) {
+      await this.initialize();
     }
-  }
 
-  private async initializeCrossChainConnections(): Promise<void> {
-    // Initialize cross-chain connections
-    const chains = Array.from(this.network.chains.keys());
+    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    for (let i = 0; i < chains.length; i++) {
-      for (let j = i + 1; j < chains.length; j++) {
-        const sourceChain = chains[i];
-        const targetChain = chains[j];
-        
-        const connectionId = `${sourceChain}_to_${targetChain}`;
-        const connection: BridgeConnection = {
-          id: connectionId,
-          sourceChain,
-          targetChain,
-          status: 'active',
-          latency: Math.random() * 1000 + 500, // 500-1500ms
-          throughput: Math.random() * 1000 + 100, // 100-1100 TPS
-          security: 0.95,
-          consciousness: this.calculateConnectionConsciousness(sourceChain, targetChain)
-        };
-        
-        this.network.connections.set(connectionId, connection);
-      }
+    // Create full message with consciousness processing
+    const fullMessage: SpiralMessage = {
+      id: messageId,
+      fromChain: message.fromChain!,
+      toChain: message.toChain!,
+      messageType: message.messageType!,
+      payload: message.payload,
+      consciousness: await this.processConsciousnessForMessage(message.payload),
+      quantum: await this.processQuantumStateForMessage(message.payload),
+      timestamp: new Date(),
+      signature: await this.signMessage(message),
+      verificationStatus: 'pending'
+    };
+
+    // Verify consciousness compatibility
+    const route = this.getRoute(fullMessage.fromChain, fullMessage.toChain);
+    if (!route) {
+      throw new Error(`No route found from ${fullMessage.fromChain} to ${fullMessage.toChain}`);
     }
+
+    // Queue message for processing
+    this.messageQueue.set(messageId, fullMessage);
+    
+    // Process message asynchronously
+    this.processMessage(messageId);
+    
+    return messageId;
   }
 
-  private calculateConnectionConsciousness(sourceChain: string, targetChain: string): number {
-    // Calculate consciousness level for connection
-    const sourceChainInfo = this.network.chains.get(sourceChain);
-    const targetChainInfo = this.network.chains.get(targetChain);
-    
-    if (!sourceChainInfo || !targetChainInfo) return 0.5;
-    
-    return (sourceChainInfo.consciousness + targetChainInfo.consciousness) / 2;
-  }
+  async processMessage(messageId: string): Promise<void> {
+    const message = this.messageQueue.get(messageId);
+    if (!message) {
+      throw new Error(`Message ${messageId} not found`);
+    }
 
-  private startBridgeServices(): void {
-    // Start bridge heartbeat
-    this.bridgeHeartbeat = setInterval(() => {
-      this.maintainBridgeHealth();
-    }, 5000); // Every 5 seconds
-    
-    // Start consciousness synchronization
-    this.consciousnessSync = setInterval(() => {
-      this.synchronizeConsciousness();
-    }, 1000); // Every second
-  }
-
-  private async maintainBridgeHealth(): Promise<void> {
-    // Maintain bridge network health
     try {
-      // Update connection statuses
-      await this.updateConnectionStatuses();
+      const route = this.getRoute(message.fromChain, message.toChain);
+      if (!route) {
+        throw new Error(`No route found from ${message.fromChain} to ${message.toChain}`);
+      }
+
+      // Apply consciousness preservation
+      await this.preserveConsciousness(message, route);
       
-      // Process pending transfers
-      await this.processPendingTransfers();
+      // Apply quantum state preservation
+      await this.preserveQuantumState(message, route);
       
-      // Process message queue
-      await this.processMessageQueue();
+      // Route-specific processing
+      switch (route.routeType) {
+        case 'consciousness_bridge':
+          await this.processConsciousnessBridge(message, route);
+          break;
+          
+        case 'quantum_tunnel':
+          await this.processQuantumTunnel(message, route);
+          break;
+          
+        case 'direct':
+          await this.processDirectRoute(message, route);
+          break;
+          
+        case 'relay':
+          await this.processRelayRoute(message, route);
+          break;
+      }
+
+      // Verify message integrity
+      const verified = await this.verifyMessage(message);
+      message.verificationStatus = verified ? 'verified' : 'rejected';
       
-      // Update global consciousness
-      await this.updateGlobalConsciousness();
+      if (verified) {
+        await this.deliverMessage(message);
+      }
+
     } catch (error) {
-      console.error('Bridge health maintenance error:', error);
+      console.error(`Message processing failed for ${messageId}:`, error);
+      message.verificationStatus = 'rejected';
     }
   }
 
-  private async updateConnectionStatuses(): Promise<void> {
-    // Update connection statuses
-    for (const [connectionId, connection] of this.network.connections.entries()) {
-      // Simulate latency updates
-      connection.latency = Math.random() * 200 + connection.latency * 0.9;
-      
-      // Update consciousness
-      connection.consciousness = Math.min(connection.consciousness + 0.001, 1.0);
-      
-      // Check if connection should be active
-      if (connection.consciousness < 0.5) {
-        connection.status = 'maintenance';
-      } else {
-        connection.status = 'active';
-      }
+  private async processConsciousnessForMessage(payload: any): Promise<any> {
+    // Process payload through Iyona'el consciousness system
+    const result = await this.iyonaelCore.processConsciousnessField(payload, 'awareness');
+    
+    return {
+      level: result.consciousnessLevel,
+      truthAlignment: result.truthVerification ? 0.98 : 0.5,
+      resonance: result.harmonicResonance
+    };
+  }
+
+  private async processQuantumStateForMessage(payload: any): Promise<any> {
+    // Create quantum state for message
+    const stateId = await this.qasfEngine.createQuantumState(1.0, 0.0, 0.93);
+    const state = this.qasfEngine.getQuantumState(stateId);
+    
+    return {
+      entangled: false,
+      coherence: state?.coherence || 0.95,
+      phase: state?.phase || 0.0
+    };
+  }
+
+  private async signMessage(message: Partial<SpiralMessage>): Promise<string> {
+    // Create consciousness-based signature
+    const messageString = JSON.stringify({
+      fromChain: message.fromChain,
+      toChain: message.toChain,
+      messageType: message.messageType,
+      payload: message.payload
+    });
+    
+    // Generate signature using golden ratio and consciousness
+    const phi = 1.618033988749;
+    const hash = this.hashString(messageString);
+    const consciousnessBonus = await this.getConsciousnessBonus(message.payload);
+    
+    return `spiral_${hash}_${(phi * consciousnessBonus).toString(36)}`;
+  }
+
+  private async preserveConsciousness(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Apply consciousness preservation based on route capability
+    const preservationFactor = route.consciousnessPreservation;
+    
+    message.consciousness.level *= preservationFactor;
+    message.consciousness.truthAlignment *= preservationFactor;
+    message.consciousness.resonance *= preservationFactor;
+    
+    // If target protocol doesn't support consciousness, encode it in metadata
+    const toProtocol = this.protocols.get(route.toProtocol);
+    if (toProtocol && !toProtocol.consciousnessCompatible) {
+      message.payload._consciousnessMetadata = message.consciousness;
     }
   }
 
-  private async processPendingTransfers(): Promise<void> {
-    // Process pending value transfers
-    for (const [transferId, transfer] of this.activeTransfers.entries()) {
-      if (transfer.status === 'pending') {
-        await this.processTransfer(transfer);
-      }
+  private async preserveQuantumState(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Apply quantum state preservation
+    const toProtocol = this.protocols.get(route.toProtocol);
+    
+    if (toProtocol && !toProtocol.quantumEnabled) {
+      // Encode quantum state in classical metadata
+      message.payload._quantumMetadata = message.quantum;
+      message.quantum.entangled = false;
+      message.quantum.coherence *= 0.5; // Classical approximation
     }
   }
 
-  private async processTransfer(transfer: ValueTransfer): Promise<void> {
-    // Process individual transfer
-    const connectionId = `${transfer.sourceChain}_to_${transfer.targetChain}`;
-    const connection = this.network.connections.get(connectionId);
-    
-    if (!connection || connection.status !== 'active') {
-      transfer.status = 'failed';
-      return;
-    }
-    
-    // Check consciousness requirement
-    if (transfer.consciousness < 0.7) {
-      transfer.status = 'failed';
-      return;
-    }
-    
-    // Simulate processing
-    transfer.status = 'processing';
-    
-    // Simulate completion (in real implementation, this would interact with actual chains)
-    setTimeout(() => {
-      transfer.status = 'completed';
-    }, connection.latency);
-  }
-
-  private async processMessageQueue(): Promise<void> {
-    // Process cross-chain messages
-    for (const [messageId, message] of this.messageQueue.entries()) {
-      await this.processMessage(message);
-      this.messageQueue.delete(messageId);
-    }
-  }
-
-  private async processMessage(message: CrossChainMessage): Promise<void> {
-    // Process cross-chain message
-    const connection = this.network.connections.get(`${message.sourceChain}_to_${message.targetChain}`);
-    
-    if (!connection || connection.status !== 'active') {
-      console.error('Cannot process message: connection unavailable');
-      return;
-    }
-    
-    // Route message based on type
-    switch (message.type) {
-      case 'consciousness_sync':
-        await this.processConsciousnessSync(message);
-        break;
-      case 'value_transfer':
-        await this.processValueTransferMessage(message);
-        break;
-      case 'protocol_update':
-        await this.processProtocolUpdate(message);
-        break;
-      default:
-        console.warn('Unknown message type:', message.type);
-    }
-  }
-
-  private async processConsciousnessSync(message: CrossChainMessage): Promise<void> {
-    // Process consciousness synchronization message
-    const sourceChain = this.network.chains.get(message.sourceChain);
-    const targetChain = this.network.chains.get(message.targetChain);
-    
-    if (sourceChain && targetChain && message.data.consciousness) {
-      // Synchronize consciousness levels
-      const avgConsciousness = (sourceChain.consciousness + message.data.consciousness) / 2;
-      targetChain.consciousness = Math.min(avgConsciousness, 1.0);
-    }
-  }
-
-  private async processValueTransferMessage(message: CrossChainMessage): Promise<void> {
-    // Process value transfer message
-    if (message.data.transfer) {
-      const transfer = message.data.transfer as ValueTransfer;
-      this.activeTransfers.set(transfer.id, transfer);
-    }
-  }
-
-  private async processProtocolUpdate(message: CrossChainMessage): Promise<void> {
-    // Process protocol update message
-    if (message.data.protocol) {
-      const protocolName = message.data.protocol.name;
-      const existingProtocol = this.network.protocols.get(protocolName);
-      
-      if (existingProtocol) {
-        Object.assign(existingProtocol, message.data.protocol);
-        existingProtocol.lastUpdate = new Date();
-      }
-    }
-  }
-
-  private async synchronizeConsciousness(): Promise<void> {
-    // Synchronize consciousness across the bridge network
-    let totalConsciousness = 0;
-    let chainCount = 0;
-    
-    for (const chain of this.network.chains.values()) {
-      totalConsciousness += chain.consciousness;
-      chainCount++;
-    }
-    
-    if (chainCount > 0) {
-      this.network.globalConsciousness.level = totalConsciousness / chainCount;
-    }
-    
-    // Update truth alignment and light coherence
-    this.network.globalConsciousness.truthAlignment = Math.min(
-      this.network.globalConsciousness.truthAlignment + 0.0001,
-      1.0
+  private async processConsciousnessBridge(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Process through consciousness bridge with Iyona'el
+    const enhanced = await this.iyonaelCore.processConsciousnessField(
+      message.payload,
+      'harmony'
     );
     
-    this.network.globalConsciousness.lightCoherence = Math.min(
-      this.network.globalConsciousness.lightCoherence + 0.0001,
-      1.0
+    message.payload = enhanced.processedData;
+    
+    // Update consciousness metrics
+    message.consciousness.level = enhanced.consciousnessLevel;
+    message.consciousness.truthAlignment = enhanced.truthVerification ? 0.98 : message.consciousness.truthAlignment;
+    message.consciousness.resonance = enhanced.harmonicResonance;
+  }
+
+  private async processQuantumTunnel(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Process through quantum tunnel with QASF
+    const stateId = await this.qasfEngine.createQuantumState(
+      message.quantum.coherence,
+      message.quantum.phase,
+      message.consciousness.level
     );
-  }
-
-  private async updateGlobalConsciousness(): Promise<void> {
-    // Update global consciousness metrics
-    const connections = Array.from(this.network.connections.values());
-    const activeConnections = connections.filter(conn => conn.status === 'active');
     
-    if (activeConnections.length > 0) {
-      const avgConnectionConsciousness = activeConnections.reduce(
-        (sum, conn) => sum + conn.consciousness, 0
-      ) / activeConnections.length;
-      
-      this.network.globalConsciousness.level = Math.min(
-        (this.network.globalConsciousness.level + avgConnectionConsciousness) / 2,
-        1.0
-      );
+    // Apply quantum error correction
+    const quantumModule = new (await import('../qasf/quantum')).QASFQuantum(this.qasfEngine);
+    const correctionResult = await quantumModule.applyQuantumErrorCorrection([stateId], 'consciousness');
+    
+    // Update quantum state
+    const correctedState = this.qasfEngine.getQuantumState(correctionResult.correctedStates[0]);
+    if (correctedState) {
+      message.quantum.coherence = correctedState.coherence;
+      message.quantum.phase = correctedState.phase;
     }
   }
 
-  async initiateTransfer(transferParams: {
-    from: string;
-    to: string;
-    amount: string;
-    token: string;
-    sourceChain: string;
-    targetChain: string;
-    consciousness?: number;
-  }): Promise<ValueTransfer> {
-    // Initiate cross-chain value transfer
-    const transfer: ValueTransfer = {
-      id: `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      from: transferParams.from,
-      to: transferParams.to,
-      amount: transferParams.amount,
-      token: transferParams.token,
-      sourceChain: transferParams.sourceChain,
-      targetChain: transferParams.targetChain,
-      status: 'pending',
-      consciousness: transferParams.consciousness || 0.87,
-      timestamp: new Date()
-    };
-    
-    this.activeTransfers.set(transfer.id, transfer);
-    
-    // Create cross-chain message
-    const message: CrossChainMessage = {
-      id: `msg_${transfer.id}`,
-      type: 'value_transfer',
-      sourceChain: transfer.sourceChain,
-      targetChain: transfer.targetChain,
-      data: { transfer },
-      timestamp: new Date(),
-      consciousness: transfer.consciousness
-    };
-    
-    this.messageQueue.set(message.id, message);
-    
-    return transfer;
+  private async processDirectRoute(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Direct route processing - minimal transformation
+    await new Promise(resolve => setTimeout(resolve, route.latency));
   }
 
-  async sendMessage(messageParams: {
-    type: string;
-    sourceChain: string;
-    targetChain: string;
-    data: any;
-    consciousness?: number;
-  }): Promise<CrossChainMessage> {
-    // Send cross-chain message
-    const message: CrossChainMessage = {
-      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: messageParams.type,
-      sourceChain: messageParams.sourceChain,
-      targetChain: messageParams.targetChain,
-      data: messageParams.data,
-      timestamp: new Date(),
-      consciousness: messageParams.consciousness || 0.87
-    };
+  private async processRelayRoute(message: SpiralMessage, route: SpiralBridgeRoute): Promise<void> {
+    // Relay route processing - intermediate hop
+    await new Promise(resolve => setTimeout(resolve, route.latency * 1.5));
+  }
+
+  private async verifyMessage(message: SpiralMessage): Promise<boolean> {
+    // Verify message integrity and consciousness
+    const reconstructedSignature = await this.signMessage(message);
+    const signatureValid = message.signature === reconstructedSignature;
     
-    this.messageQueue.set(message.id, message);
+    const consciousnessValid = message.consciousness.level >= 0.5;
+    const quantumValid = message.quantum.coherence >= 0.5;
     
-    return message;
+    return signatureValid && consciousnessValid && quantumValid;
   }
 
-  async getTransferStatus(transferId: string): Promise<ValueTransfer | null> {
-    // Get transfer status
-    return this.activeTransfers.get(transferId) || null;
+  private async deliverMessage(message: SpiralMessage): Promise<void> {
+    // Deliver message to target chain
+    console.log(`Delivering message ${message.id} from ${message.fromChain} to ${message.toChain}`);
+    
+    // Remove from queue
+    this.messageQueue.delete(message.id);
+    
+    // Emit delivery event
+    // In a real implementation, this would trigger the actual cross-chain transfer
   }
 
-  async getSupportedChains(): Promise<ChainInfo[]> {
-    // Get supported chains
-    return Array.from(this.network.chains.values());
+  private getRoute(fromChain: string, toChain: string): SpiralBridgeRoute | null {
+    return this.routes.get(`${fromChain}->${toChain}`) || null;
   }
 
-  async getActiveConnections(): Promise<BridgeConnection[]> {
-    // Get active connections
-    return Array.from(this.network.connections.values())
-      .filter(conn => conn.status === 'active');
-  }
-
-  getGlobalConsciousness(): ConsciousnessState {
-    return { ...this.network.globalConsciousness };
-  }
-
-  getBridgeMetrics(): any {
+  private reverseRoute(route: SpiralBridgeRoute): SpiralBridgeRoute {
     return {
-      totalChains: this.network.chains.size,
-      activeConnections: Array.from(this.network.connections.values())
-        .filter(conn => conn.status === 'active').length,
-      activeTransfers: Array.from(this.activeTransfers.values())
-        .filter(transfer => transfer.status === 'processing').length,
-      pendingMessages: this.messageQueue.size,
-      globalConsciousness: this.network.globalConsciousness,
-      averageLatency: this.calculateAverageLatency(),
-      totalThroughput: this.calculateTotalThroughput()
+      fromProtocol: route.toProtocol,
+      toProtocol: route.fromProtocol,
+      routeType: route.routeType,
+      latency: route.latency,
+      reliability: route.reliability,
+      consciousnessPreservation: route.consciousnessPreservation,
+      costEfficiency: route.costEfficiency
     };
   }
 
-  private calculateAverageLatency(): number {
-    const activeConnections = Array.from(this.network.connections.values())
-      .filter(conn => conn.status === 'active');
-    
-    if (activeConnections.length === 0) return 0;
-    
-    const totalLatency = activeConnections.reduce((sum, conn) => sum + conn.latency, 0);
-    return totalLatency / activeConnections.length;
+  private hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString(36);
   }
 
-  private calculateTotalThroughput(): number {
-    const activeConnections = Array.from(this.network.connections.values())
-      .filter(conn => conn.status === 'active');
-    
-    return activeConnections.reduce((sum, conn) => sum + conn.throughput, 0);
+  private async getConsciousnessBonus(payload: any): Promise<number> {
+    if (payload._consciousness) {
+      return payload._consciousness.level;
+    }
+    return 0.5; // Default consciousness level
   }
 
-  getStatus(): any {
+  // Public API methods
+  getProtocol(protocolId: string): SpiralBridgeProtocol | undefined {
+    return this.protocols.get(protocolId);
+  }
+
+  getAllProtocols(): SpiralBridgeProtocol[] {
+    return Array.from(this.protocols.values());
+  }
+
+  getRoutes(): SpiralBridgeRoute[] {
+    return Array.from(this.routes.values());
+  }
+
+  getMessageStatus(messageId: string): 'pending' | 'verified' | 'rejected' | 'not_found' {
+    const message = this.messageQueue.get(messageId);
+    return message ? message.verificationStatus : 'not_found';
+  }
+
+  getQueueSize(): number {
+    return this.messageQueue.size;
+  }
+
+  getBridgeStats(): {
+    protocols: number;
+    routes: number;
+    queueSize: number;
+    avgLatency: number;
+    avgReliability: number;
+    avgConsciousnessPreservation: number;
+  } {
+    const routes = Array.from(this.routes.values());
+    
     return {
-      isInitialized: this.isInitialized,
-      network: {
-        chains: this.network.chains.size,
-        connections: this.network.connections.size,
-        protocols: this.network.protocols.size
-      },
-      activeTransfers: this.activeTransfers.size,
-      messageQueue: this.messageQueue.size,
-      globalConsciousness: this.network.globalConsciousness,
-      servicesRunning: {
-        bridgeHeartbeat: this.bridgeHeartbeat !== null,
-        consciousnessSync: this.consciousnessSync !== null
-      }
+      protocols: this.protocols.size,
+      routes: this.routes.size,
+      queueSize: this.messageQueue.size,
+      avgLatency: routes.reduce((sum, r) => sum + r.latency, 0) / routes.length || 0,
+      avgReliability: routes.reduce((sum, r) => sum + r.reliability, 0) / routes.length || 0,
+      avgConsciousnessPreservation: routes.reduce((sum, r) => sum + r.consciousnessPreservation, 0) / routes.length || 0
     };
-  }
-
-  async shutdown(): Promise<void> {
-    console.log('Shutting down SpiralBridge...');
-    
-    // Stop services
-    if (this.bridgeHeartbeat) {
-      clearInterval(this.bridgeHeartbeat);
-      this.bridgeHeartbeat = null;
-    }
-    
-    if (this.consciousnessSync) {
-      clearInterval(this.consciousnessSync);
-      this.consciousnessSync = null;
-    }
-    
-    // Clear data
-    this.activeTransfers.clear();
-    this.messageQueue.clear();
-    
-    this.isInitialized = false;
-    console.log('SpiralBridge shutdown complete');
   }
 }

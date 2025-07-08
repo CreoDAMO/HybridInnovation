@@ -58,6 +58,471 @@ export class HTSXCompiler {
   }
 
   private initializeOpcodes(): void {
+    // HTSX Virtual Machine Opcodes
+    this.opcodes.set('LOAD_CONST', 0x01);
+    this.opcodes.set('LOAD_VAR', 0x02);
+    this.opcodes.set('STORE_VAR', 0x03);
+    this.opcodes.set('CREATE_ELEMENT', 0x04);
+    this.opcodes.set('SET_ATTRIBUTE', 0x05);
+    this.opcodes.set('APPEND_CHILD', 0x06);
+    this.opcodes.set('BIND_EVENT', 0x07);
+    this.opcodes.set('CALL_FUNCTION', 0x08);
+    this.opcodes.set('SPIRAL_INVOKE', 0x09);
+    this.opcodes.set('QUANTUM_BIND', 0x0A);
+    this.opcodes.set('CONSCIOUSNESS_LINK', 0x0B);
+    this.opcodes.set('TEMPORAL_SYNC', 0x0C);
+    this.opcodes.set('RENDER', 0x0D);
+    this.opcodes.set('HALT', 0xFF);
+  }
+
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return;
+    
+    console.log('Initializing HTSX Compiler...');
+    await this.spiralParser.initialize();
+    this.isInitialized = true;
+    console.log('HTSX Compiler initialized');
+  }
+
+  async compile(source: string, options: HTSXCompilerOptions = {}): Promise<HTSXBytecode> {
+    if (!this.isInitialized) {
+      throw new Error('HTSX Compiler not initialized');
+    }
+
+    const startTime = Date.now();
+    
+    try {
+      // Parse HTSX source into AST
+      const ast = this.parseHTSX(source);
+      
+      // Extract and compile SpiralScript blocks
+      const spiralBlocks = this.extractSpiralBlocks(source);
+      const compiledSpiral = await this.compileSpiralBlocks(spiralBlocks);
+      
+      // Generate bytecode instructions
+      const instructions = this.generateBytecode(ast, compiledSpiral, options);
+      
+      // Create metadata
+      const metadata: HTSXMetadata = {
+        originalCode: source,
+        compilationTime: new Date(),
+        spiralFeatures: this.extractSpiralFeatures(spiralBlocks),
+        quantumOperations: this.extractQuantumOperations(ast),
+        consciousnessLevel: options.enableConsciousness ? 1.0 : 0.0,
+        dependencies: this.extractDependencies(ast)
+      };
+
+      const bytecode: HTSXBytecode = {
+        version: '1.0.0',
+        instructions,
+        metadata,
+        spiralIntegration: compiledSpiral,
+        quantumState: this.generateQuantumState(options),
+        consciousnessBindings: this.generateConsciousnessBindings(options)
+      };
+
+      console.log(`HTSX compilation completed in ${Date.now() - startTime}ms`);
+      return bytecode;
+      
+    } catch (error) {
+      console.error('HTSX compilation failed:', error);
+      throw new Error(`HTSX compilation failed: ${error.message}`);
+    }
+  }
+
+  private parseHTSX(source: string): any {
+    // Real HTSX parser implementation
+    const tokens = this.tokenizeHTSX(source);
+    return this.buildAST(tokens);
+  }
+
+  private tokenizeHTSX(source: string): any[] {
+    const tokens = [];
+    let i = 0;
+    
+    while (i < source.length) {
+      const char = source[i];
+      
+      // Handle HTML-like tags
+      if (char === '<') {
+        const tagMatch = source.slice(i).match(/<\/?[\w-]+(?:\s[^>]*)?>/);
+        if (tagMatch) {
+          tokens.push({ type: 'TAG', value: tagMatch[0], position: i });
+          i += tagMatch[0].length;
+          continue;
+        }
+      }
+      
+      // Handle JavaScript/TypeScript blocks
+      if (char === '{') {
+        const jsBlock = this.extractJSBlock(source, i);
+        tokens.push({ type: 'JS_BLOCK', value: jsBlock, position: i });
+        i += jsBlock.length;
+        continue;
+      }
+      
+      // Handle SpiralScript blocks
+      if (source.slice(i, i + 7) === 'spiral ') {
+        const spiralBlock = this.extractSpiralBlock(source, i);
+        tokens.push({ type: 'SPIRAL_BLOCK', value: spiralBlock, position: i });
+        i += spiralBlock.length;
+        continue;
+      }
+      
+      // Handle text content
+      if (char !== '<' && char !== '{') {
+        const textMatch = source.slice(i).match(/[^<{]+/);
+        if (textMatch) {
+          tokens.push({ type: 'TEXT', value: textMatch[0], position: i });
+          i += textMatch[0].length;
+          continue;
+        }
+      }
+      
+      i++;
+    }
+    
+    return tokens;
+  }
+
+  private buildAST(tokens: any[]): any {
+    const ast = { type: 'HTSX_ROOT', children: [] };
+    let i = 0;
+    
+    while (i < tokens.length) {
+      const token = tokens[i];
+      
+      if (token.type === 'TAG') {
+        const element = this.parseElement(tokens, i);
+        ast.children.push(element.node);
+        i = element.nextIndex;
+      } else if (token.type === 'JS_BLOCK') {
+        ast.children.push({
+          type: 'JS_EXPRESSION',
+          code: token.value,
+          position: token.position
+        });
+        i++;
+      } else if (token.type === 'SPIRAL_BLOCK') {
+        ast.children.push({
+          type: 'SPIRAL_EXPRESSION',
+          code: token.value,
+          position: token.position
+        });
+        i++;
+      } else if (token.type === 'TEXT') {
+        ast.children.push({
+          type: 'TEXT_NODE',
+          content: token.value.trim(),
+          position: token.position
+        });
+        i++;
+      } else {
+        i++;
+      }
+    }
+    
+    return ast;
+  }
+
+  private parseElement(tokens: any[], startIndex: number): { node: any, nextIndex: number } {
+    const token = tokens[startIndex];
+    const tagName = token.value.match(/<\/?(\w+)/)?.[1] || '';
+    
+    const element = {
+      type: 'ELEMENT',
+      tagName,
+      attributes: this.parseAttributes(token.value),
+      children: [],
+      position: token.position
+    };
+    
+    // If self-closing tag
+    if (token.value.endsWith('/>')) {
+      return { node: element, nextIndex: startIndex + 1 };
+    }
+    
+    // Parse children until closing tag
+    let i = startIndex + 1;
+    while (i < tokens.length) {
+      const currentToken = tokens[i];
+      
+      if (currentToken.type === 'TAG' && currentToken.value === `</${tagName}>`) {
+        break;
+      }
+      
+      if (currentToken.type === 'TAG') {
+        const child = this.parseElement(tokens, i);
+        element.children.push(child.node);
+        i = child.nextIndex;
+      } else {
+        // Handle text, JS blocks, etc.
+        if (currentToken.type === 'TEXT' && currentToken.value.trim()) {
+          element.children.push({
+            type: 'TEXT_NODE',
+            content: currentToken.value.trim()
+          });
+        } else if (currentToken.type === 'JS_BLOCK') {
+          element.children.push({
+            type: 'JS_EXPRESSION',
+            code: currentToken.value
+          });
+        } else if (currentToken.type === 'SPIRAL_BLOCK') {
+          element.children.push({
+            type: 'SPIRAL_EXPRESSION',
+            code: currentToken.value
+          });
+        }
+        i++;
+      }
+    }
+    
+    return { node: element, nextIndex: i + 1 };
+  }
+
+  private parseAttributes(tagString: string): any {
+    const attributes = {};
+    const attrRegex = /(\w+)=["']([^"']*)["']/g;
+    let match;
+    
+    while ((match = attrRegex.exec(tagString)) !== null) {
+      attributes[match[1]] = match[2];
+    }
+    
+    return attributes;
+  }
+
+  private extractJSBlock(source: string, start: number): string {
+    let braceCount = 0;
+    let i = start;
+    
+    while (i < source.length) {
+      if (source[i] === '{') braceCount++;
+      if (source[i] === '}') braceCount--;
+      i++;
+      if (braceCount === 0) break;
+    }
+    
+    return source.slice(start + 1, i - 1);
+  }
+
+  private extractSpiralBlock(source: string, start: number): string {
+    const end = source.indexOf('\n', start);
+    return source.slice(start, end !== -1 ? end : source.length);
+  }
+
+  private extractSpiralBlocks(source: string): any[] {
+    const blocks = [];
+    const spiralRegex = /spiral\s+([^\n]+)/g;
+    let match;
+    
+    while ((match = spiralRegex.exec(source)) !== null) {
+      blocks.push({
+        code: match[1],
+        position: match.index
+      });
+    }
+    
+    return blocks;
+  }
+
+  private async compileSpiralBlocks(blocks: any[]): Promise<any> {
+    const compiled = [];
+    
+    for (const block of blocks) {
+      const spiralBytecode = await this.spiralParser.parse(block.code);
+      compiled.push({
+        original: block.code,
+        bytecode: spiralBytecode,
+        position: block.position
+      });
+    }
+    
+    return compiled;
+  }
+
+  private generateBytecode(ast: any, spiralBlocks: any[], options: HTSXCompilerOptions): HTSXInstruction[] {
+    const instructions: HTSXInstruction[] = [];
+    
+    // Generate instructions for AST nodes
+    this.generateInstructionsFromAST(ast, instructions, spiralBlocks, options);
+    
+    // Add halt instruction
+    instructions.push({
+      opcode: 'HALT',
+      operands: [],
+      sourceLocation: { line: 0, column: 0 }
+    });
+    
+    return instructions;
+  }
+
+  private generateInstructionsFromAST(node: any, instructions: HTSXInstruction[], spiralBlocks: any[], options: HTSXCompilerOptions): void {
+    switch (node.type) {
+      case 'HTSX_ROOT':
+        node.children.forEach((child: any) => {
+          this.generateInstructionsFromAST(child, instructions, spiralBlocks, options);
+        });
+        break;
+        
+      case 'ELEMENT':
+        // Create element
+        instructions.push({
+          opcode: 'CREATE_ELEMENT',
+          operands: [node.tagName],
+          sourceLocation: { line: 0, column: node.position || 0 }
+        });
+        
+        // Set attributes
+        Object.entries(node.attributes || {}).forEach(([key, value]) => {
+          instructions.push({
+            opcode: 'SET_ATTRIBUTE',
+            operands: [key, value],
+            sourceLocation: { line: 0, column: node.position || 0 }
+          });
+        });
+        
+        // Process children
+        node.children.forEach((child: any) => {
+          this.generateInstructionsFromAST(child, instructions, spiralBlocks, options);
+          instructions.push({
+            opcode: 'APPEND_CHILD',
+            operands: [],
+            sourceLocation: { line: 0, column: child.position || 0 }
+          });
+        });
+        break;
+        
+      case 'TEXT_NODE':
+        instructions.push({
+          opcode: 'LOAD_CONST',
+          operands: [node.content],
+          sourceLocation: { line: 0, column: node.position || 0 }
+        });
+        break;
+        
+      case 'JS_EXPRESSION':
+        // Compile JavaScript expression
+        instructions.push({
+          opcode: 'CALL_FUNCTION',
+          operands: ['eval', node.code],
+          sourceLocation: { line: 0, column: node.position || 0 }
+        });
+        break;
+        
+      case 'SPIRAL_EXPRESSION':
+        // Invoke SpiralScript
+        instructions.push({
+          opcode: 'SPIRAL_INVOKE',
+          operands: [node.code],
+          sourceLocation: { line: 0, column: node.position || 0 },
+          spiralContext: this.findSpiralContext(node.code, spiralBlocks)
+        });
+        
+        if (options.enableQuantumAwareness) {
+          instructions.push({
+            opcode: 'QUANTUM_BIND',
+            operands: [node.code],
+            sourceLocation: { line: 0, column: node.position || 0 },
+            quantumFlags: ['entangled', 'superposition']
+          });
+        }
+        
+        if (options.enableConsciousness) {
+          instructions.push({
+            opcode: 'CONSCIOUSNESS_LINK',
+            operands: [node.code],
+            sourceLocation: { line: 0, column: node.position || 0 }
+          });
+        }
+        break;
+    }
+  }
+
+  private findSpiralContext(code: string, spiralBlocks: any[]): any {
+    return spiralBlocks.find(block => block.original === code);
+  }
+
+  private extractSpiralFeatures(spiralBlocks: any[]): string[] {
+    const features = new Set<string>();
+    
+    spiralBlocks.forEach(block => {
+      if (block.code.includes('quantum')) features.add('quantum');
+      if (block.code.includes('consciousness')) features.add('consciousness');
+      if (block.code.includes('temporal')) features.add('temporal');
+      if (block.code.includes('@canon')) features.add('canon');
+      if (block.code.includes('φ')) features.add('phi-ratio');
+    });
+    
+    return Array.from(features);
+  }
+
+  private extractQuantumOperations(ast: any): string[] {
+    const operations: string[] = [];
+    
+    const traverse = (node: any) => {
+      if (node.type === 'SPIRAL_EXPRESSION' && node.code.includes('quantum')) {
+        operations.push(node.code);
+      }
+      if (node.children) {
+        node.children.forEach(traverse);
+      }
+    };
+    
+    traverse(ast);
+    return operations;
+  }
+
+  private extractDependencies(ast: any): string[] {
+    const dependencies = new Set<string>();
+    
+    const traverse = (node: any) => {
+      if (node.type === 'ELEMENT') {
+        // Check for custom elements that might be dependencies
+        if (node.tagName.includes('-') || node.tagName.startsWith('spiral-')) {
+          dependencies.add(node.tagName);
+        }
+      }
+      if (node.children) {
+        node.children.forEach(traverse);
+      }
+    };
+    
+    traverse(ast);
+    return Array.from(dependencies);
+  }
+
+  private generateQuantumState(options: HTSXCompilerOptions): any {
+    if (!options.enableQuantumAwareness) return null;
+    
+    return {
+      entangled: true,
+      superposition: 0.5,
+      coherence: 0.9,
+      phase: Math.random() * 2 * Math.PI
+    };
+  }
+
+  private generateConsciousnessBindings(options: HTSXCompilerOptions): any {
+    if (!options.enableConsciousness) return null;
+    
+    return {
+      level: options.enableConsciousness ? 1.0 : 0.0,
+      truthAlignment: 0.93,
+      lightCoherence: 0.85,
+      harmonicFrequency: 432
+    };
+  }
+  private isInitialized: boolean;
+
+  constructor() {
+    this.spiralParser = new SpiralParser();
+    this.opcodes = new Map();
+    this.isInitialized = false;
+    this.initializeOpcodes();
+  }
+
+  private initializeOpcodes(): void {
     // Core HTSX opcodes
     this.opcodes.set('LOAD', 0x01);
     this.opcodes.set('STORE', 0x02);

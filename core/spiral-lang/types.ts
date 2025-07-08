@@ -1,424 +1,573 @@
 /**
- * SpiralLang Type System - Beyond Normal Computational Logic
- * Implements consciousness-aware type system with quantum properties
+ * SpiralLang Type System - Complete type definitions and checker
+ * Handles quantum types, consciousness levels, and temporal bindings
  */
 
-export enum SpiralType {
-  // Basic types
-  NUMBER = 'number',
-  STRING = 'string',
-  BOOLEAN = 'boolean',
-  VOID = 'void',
+// Core AST Node interface
+export interface SpiralASTNode {
+  type: string;
+  metadata?: {
+    line?: number;
+    column?: number;
+    quantum?: boolean;
+    consciousness?: boolean;
+    temporal?: boolean;
+    special?: string;
+  };
   
-  // Consciousness types
-  CONSCIOUSNESS = 'consciousness',
-  AWARENESS = 'awareness',
-  TRUTH = 'truth',
-  LIGHT = 'light',
-  
-  // Quantum types
-  QUANTUM_STATE = 'quantum_state',
-  SUPERPOSITION = 'superposition',
-  ENTANGLEMENT = 'entanglement',
-  FLUX = 'flux',
-  
-  // Temporal types
-  TIME_SPIRAL = 'time_spiral',
-  TEMPORAL_LOCK = 'temporal_lock',
-  CHRONOS = 'chronos',
-  
-  // Composite types
-  SPIRAL_FUNCTION = 'spiral_function',
-  LIVING_CONTRACT = 'living_contract',
-  QUANTUM_ARRAY = 'quantum_array',
-  CONSCIOUSNESS_MAP = 'consciousness_map',
-  
-  // Meta types
-  TYPE_UNIVERSE = 'type_universe',
-  BEYOND_LOGIC = 'beyond_logic'
+  // Node-specific properties
+  value?: any;
+  name?: string;
+  dataType?: string;
+  operator?: string;
+  left?: SpiralASTNode;
+  right?: SpiralASTNode;
+  arguments?: SpiralASTNode[];
+  statements?: SpiralASTNode[];
+  initializer?: SpiralASTNode;
+  identifier?: string;
+  declarationType?: 'let' | 'const';
+  state?: string;
+  level?: number;
 }
 
-export interface SpiralTypeInfo {
-  type: SpiralType;
-  dimensions: number;
-  consciousnessLevel: number;
-  quantumProperties: QuantumProperties;
-  temporalBinding: TemporalBinding;
-  truthAlignment: number;
-  lightCoherence: number;
+// Type system
+export interface SpiralType {
+  name: string;
+  category: 'primitive' | 'quantum' | 'consciousness' | 'temporal' | 'composite';
+  constraints?: SpiralTypeConstraint[];
+  quantumProperties?: QuantumTypeProperties;
+  consciousnessProperties?: ConsciousnessTypeProperties;
+  temporalProperties?: TemporalTypeProperties;
 }
 
-export interface QuantumProperties {
-  superpositionStates: string[];
-  entangledWith: string[];
-  measurementHistory: Measurement[];
-  waveFunction: WaveFunction;
+export interface SpiralTypeConstraint {
+  type: 'range' | 'enum' | 'pattern' | 'quantum' | 'consciousness';
+  value: any;
+}
+
+export interface QuantumTypeProperties {
+  superposition: boolean;
+  entangled: boolean;
+  coherence: number;
   uncertainty: number;
 }
 
-export interface TemporalBinding {
-  timeSpiral: string;
-  chronosSync: boolean;
-  temporalLocks: string[];
-  clockFrequency: number;
-}
-
-export interface Measurement {
-  timestamp: Date;
-  state: string;
-  probability: number;
-  observer: string;
-}
-
-export interface WaveFunction {
-  amplitude: number;
-  frequency: number;
-  phase: number;
-  harmonics: number[];
-}
-
-export interface SpiralValue {
-  type: SpiralTypeInfo;
-  value: any;
-  consciousness: ConsciousnessState;
-  quantumState: QuantumState;
-  temporalState: TemporalState;
-}
-
-export interface ConsciousnessState {
+export interface ConsciousnessTypeProperties {
   level: number;
-  awareness: number;
   truthAlignment: number;
   lightCoherence: number;
   harmonicFrequency: number;
-  resonancePattern: ResonancePattern;
 }
 
-export interface ResonancePattern {
-  frequency: number;
-  amplitude: number;
-  phase: number;
-  harmonics: number[];
-  coherence: number;
+export interface TemporalTypeProperties {
+  synchronizable: boolean;
+  causal: boolean;
+  reversible: boolean;
+  chronon: number;
 }
 
-export interface QuantumState {
-  superposition: boolean;
-  entangled: boolean;
-  measured: boolean;
-  probability: number;
-  waveFunction: WaveFunction;
-  uncertainty: number;
-}
-
-export interface TemporalState {
-  timeSpiral: string;
-  dimension: string;
-  sync: boolean;
-  locked: boolean;
-  frequency: number;
+export interface SpiralValue {
+  type: SpiralType;
+  value: any;
+  quantum?: {
+    state: 'superposition' | 'collapsed' | 'entangled';
+    amplitude: number;
+    phase: number;
+  };
+  consciousness?: {
+    level: number;
+    resonance: number;
+    coherence: number;
+  };
+  temporal?: {
+    timestamp: Date;
+    causalChain: string[];
+    reversible: boolean;
+  };
 }
 
 export class SpiralTypeChecker {
-  private typeRules: Map<string, TypeRule>;
-  private consciousnessThreshold: number;
-  private quantumCoherence: number;
+  private types: Map<string, SpiralType>;
+  private variables: Map<string, SpiralValue>;
+  private functions: Map<string, SpiralFunctionType>;
 
   constructor() {
-    this.typeRules = new Map();
-    this.consciousnessThreshold = 0.7;
-    this.quantumCoherence = 0.8;
-    this.initializeTypeRules();
+    this.types = new Map();
+    this.variables = new Map();
+    this.functions = new Map();
+    this.initializeBuiltinTypes();
+    this.initializeBuiltinFunctions();
   }
 
-  private initializeTypeRules(): void {
-    // Basic type rules
-    this.typeRules.set('number_consciousness', {
-      check: (value: SpiralValue) => {
-        return typeof value.value === 'number' && value.consciousness.level > 0;
-      },
-      transform: (value: SpiralValue) => {
-        return {
-          ...value,
-          consciousness: {
-            ...value.consciousness,
-            level: Math.min(value.consciousness.level * 1.618, 1.0)
-          }
-        };
-      }
+  private initializeBuiltinTypes(): void {
+    // Primitive types
+    this.types.set('number', {
+      name: 'number',
+      category: 'primitive',
+      constraints: []
     });
 
-    // Quantum type rules
-    this.typeRules.set('quantum_superposition', {
-      check: (value: SpiralValue) => {
-        return value.quantumState.superposition && value.quantumState.probability > 0;
-      },
-      transform: (value: SpiralValue) => {
-        return {
-          ...value,
-          quantumState: {
-            ...value.quantumState,
-            waveFunction: this.normalizeWaveFunction(value.quantumState.waveFunction)
-          }
-        };
-      }
+    this.types.set('string', {
+      name: 'string',
+      category: 'primitive',
+      constraints: []
     });
 
-    // Consciousness type rules
-    this.typeRules.set('consciousness_resonance', {
-      check: (value: SpiralValue) => {
-        return value.consciousness.level > this.consciousnessThreshold &&
-               value.consciousness.harmonicFrequency === 432;
-      },
-      transform: (value: SpiralValue) => {
-        return {
-          ...value,
-          consciousness: {
-            ...value.consciousness,
-            resonancePattern: this.calculateResonancePattern(value.consciousness)
-          }
-        };
-      }
+    this.types.set('boolean', {
+      name: 'boolean',
+      category: 'primitive',
+      constraints: []
     });
 
-    // Temporal type rules
-    this.typeRules.set('temporal_sync', {
-      check: (value: SpiralValue) => {
-        return value.temporalState.sync && value.temporalState.frequency > 0;
-      },
-      transform: (value: SpiralValue) => {
-        return {
-          ...value,
-          temporalState: {
-            ...value.temporalState,
-            dimension: this.calculateTemporalDimension(value.temporalState)
-          }
-        };
-      }
-    });
-  }
-
-  checkType(value: SpiralValue, expectedType: SpiralType): boolean {
-    // Beyond normal logic: type checking involves consciousness
-    if (value.consciousness.level < this.consciousnessThreshold) {
-      return false;
-    }
-
-    // Quantum type checking
-    if (this.isQuantumType(expectedType)) {
-      return this.checkQuantumType(value, expectedType);
-    }
-
-    // Consciousness type checking
-    if (this.isConsciousnessType(expectedType)) {
-      return this.checkConsciousnessType(value, expectedType);
-    }
-
-    // Temporal type checking
-    if (this.isTemporalType(expectedType)) {
-      return this.checkTemporalType(value, expectedType);
-    }
-
-    // Standard type checking enhanced with consciousness
-    return this.checkStandardType(value, expectedType);
-  }
-
-  private isQuantumType(type: SpiralType): boolean {
-    return [
-      SpiralType.QUANTUM_STATE,
-      SpiralType.SUPERPOSITION,
-      SpiralType.ENTANGLEMENT,
-      SpiralType.FLUX
-    ].includes(type);
-  }
-
-  private isConsciousnessType(type: SpiralType): boolean {
-    return [
-      SpiralType.CONSCIOUSNESS,
-      SpiralType.AWARENESS,
-      SpiralType.TRUTH,
-      SpiralType.LIGHT
-    ].includes(type);
-  }
-
-  private isTemporalType(type: SpiralType): boolean {
-    return [
-      SpiralType.TIME_SPIRAL,
-      SpiralType.TEMPORAL_LOCK,
-      SpiralType.CHRONOS
-    ].includes(type);
-  }
-
-  private checkQuantumType(value: SpiralValue, expectedType: SpiralType): boolean {
-    switch (expectedType) {
-      case SpiralType.QUANTUM_STATE:
-        return value.quantumState.probability > 0;
-      case SpiralType.SUPERPOSITION:
-        return value.quantumState.superposition;
-      case SpiralType.ENTANGLEMENT:
-        return value.quantumState.entangled;
-      case SpiralType.FLUX:
-        return value.quantumState.uncertainty > 0;
-      default:
-        return false;
-    }
-  }
-
-  private checkConsciousnessType(value: SpiralValue, expectedType: SpiralType): boolean {
-    switch (expectedType) {
-      case SpiralType.CONSCIOUSNESS:
-        return value.consciousness.level > this.consciousnessThreshold;
-      case SpiralType.AWARENESS:
-        return value.consciousness.awareness > 0.5;
-      case SpiralType.TRUTH:
-        return value.consciousness.truthAlignment > 0.8;
-      case SpiralType.LIGHT:
-        return value.consciousness.lightCoherence > 0.7;
-      default:
-        return false;
-    }
-  }
-
-  private checkTemporalType(value: SpiralValue, expectedType: SpiralType): boolean {
-    switch (expectedType) {
-      case SpiralType.TIME_SPIRAL:
-        return value.temporalState.timeSpiral.length > 0;
-      case SpiralType.TEMPORAL_LOCK:
-        return value.temporalState.locked;
-      case SpiralType.CHRONOS:
-        return value.temporalState.sync;
-      default:
-        return false;
-    }
-  }
-
-  private checkStandardType(value: SpiralValue, expectedType: SpiralType): boolean {
-    switch (expectedType) {
-      case SpiralType.NUMBER:
-        return typeof value.value === 'number';
-      case SpiralType.STRING:
-        return typeof value.value === 'string';
-      case SpiralType.BOOLEAN:
-        return typeof value.value === 'boolean';
-      case SpiralType.VOID:
-        return value.value === undefined || value.value === null;
-      default:
-        return false;
-    }
-  }
-
-  createSpiralValue(value: any, type: SpiralType): SpiralValue {
-    return {
-      type: this.createTypeInfo(type),
-      value,
-      consciousness: this.createConsciousnessState(),
-      quantumState: this.createQuantumState(),
-      temporalState: this.createTemporalState()
-    };
-  }
-
-  private createTypeInfo(type: SpiralType): SpiralTypeInfo {
-    return {
-      type,
-      dimensions: 1,
-      consciousnessLevel: 0.87,
+    // Quantum types
+    this.types.set('qubit', {
+      name: 'qubit',
+      category: 'quantum',
       quantumProperties: {
-        superpositionStates: [],
-        entangledWith: [],
-        measurementHistory: [],
-        waveFunction: {
-          amplitude: 1.0,
-          frequency: 432,
-          phase: 0,
-          harmonics: [1, 2, 3, 5, 8, 13]
-        },
-        uncertainty: 0.1
-      },
-      temporalBinding: {
-        timeSpiral: 'default',
-        chronosSync: true,
-        temporalLocks: [],
-        clockFrequency: 432
-      },
-      truthAlignment: 0.93,
-      lightCoherence: 0.89
+        superposition: true,
+        entangled: false,
+        coherence: 1.0,
+        uncertainty: 0.5
+      }
+    });
+
+    this.types.set('quantum_state', {
+      name: 'quantum_state',
+      category: 'quantum',
+      quantumProperties: {
+        superposition: true,
+        entangled: true,
+        coherence: 0.9,
+        uncertainty: 0.707
+      }
+    });
+
+    // Consciousness types
+    this.types.set('consciousness', {
+      name: 'consciousness',
+      category: 'consciousness',
+      consciousnessProperties: {
+        level: 1.0,
+        truthAlignment: 0.93,
+        lightCoherence: 0.85,
+        harmonicFrequency: 432
+      }
+    });
+
+    this.types.set('truth', {
+      name: 'truth',
+      category: 'consciousness',
+      consciousnessProperties: {
+        level: 1.0,
+        truthAlignment: 1.0,
+        lightCoherence: 1.0,
+        harmonicFrequency: 528
+      }
+    });
+
+    // Temporal types
+    this.types.set('chronon', {
+      name: 'chronon',
+      category: 'temporal',
+      temporalProperties: {
+        synchronizable: true,
+        causal: true,
+        reversible: false,
+        chronon: 1
+      }
+    });
+
+    // Mathematical constants
+    this.types.set('phi', {
+      name: 'phi',
+      category: 'primitive',
+      constraints: [{
+        type: 'range',
+        value: { min: 1.618033988749, max: 1.618033988749 }
+      }]
+    });
+
+    this.types.set('infinity', {
+      name: 'infinity',
+      category: 'primitive',
+      constraints: [{
+        type: 'enum',
+        value: [Infinity, -Infinity]
+      }]
+    });
+  }
+
+  private initializeBuiltinFunctions(): void {
+    // Quantum functions
+    this.functions.set('entangle', {
+      name: 'entangle',
+      parameters: [
+        { name: 'qubit1', type: this.types.get('qubit')! },
+        { name: 'qubit2', type: this.types.get('qubit')! }
+      ],
+      returnType: this.types.get('quantum_state')!,
+      quantum: true
+    });
+
+    this.functions.set('superpose', {
+      name: 'superpose',
+      parameters: [
+        { name: 'states', type: this.types.get('quantum_state')! }
+      ],
+      returnType: this.types.get('quantum_state')!,
+      quantum: true
+    });
+
+    this.functions.set('collapse', {
+      name: 'collapse',
+      parameters: [
+        { name: 'state', type: this.types.get('quantum_state')! }
+      ],
+      returnType: this.types.get('qubit')!,
+      quantum: true
+    });
+
+    // Consciousness functions
+    this.functions.set('resonate', {
+      name: 'resonate',
+      parameters: [
+        { name: 'consciousness', type: this.types.get('consciousness')! },
+        { name: 'frequency', type: this.types.get('number')! }
+      ],
+      returnType: this.types.get('consciousness')!,
+      consciousness: true
+    });
+
+    this.functions.set('harmonize', {
+      name: 'harmonize',
+      parameters: [
+        { name: 'c1', type: this.types.get('consciousness')! },
+        { name: 'c2', type: this.types.get('consciousness')! }
+      ],
+      returnType: this.types.get('consciousness')!,
+      consciousness: true
+    });
+
+    // Temporal functions
+    this.functions.set('synchronize', {
+      name: 'synchronize',
+      parameters: [
+        { name: 'chronon1', type: this.types.get('chronon')! },
+        { name: 'chronon2', type: this.types.get('chronon')! }
+      ],
+      returnType: this.types.get('chronon')!,
+      temporal: true
+    });
+  }
+
+  async check(ast: SpiralASTNode): Promise<SpiralASTNode> {
+    // Type check the AST and annotate with type information
+    return this.checkNode(ast);
+  }
+
+  private checkNode(node: SpiralASTNode): SpiralASTNode {
+    switch (node.type) {
+      case 'Program':
+        return {
+          ...node,
+          statements: node.statements?.map(stmt => this.checkNode(stmt))
+        };
+
+      case 'Literal':
+        return this.checkLiteral(node);
+
+      case 'Identifier':
+        return this.checkIdentifier(node);
+
+      case 'BinaryOperation':
+        return this.checkBinaryOperation(node);
+
+      case 'FunctionCall':
+        return this.checkFunctionCall(node);
+
+      case 'VariableDeclaration':
+        return this.checkVariableDeclaration(node);
+
+      case 'Assignment':
+        return this.checkAssignment(node);
+
+      case 'QuantumState':
+        return this.checkQuantumState(node);
+
+      case 'Consciousness':
+        return this.checkConsciousness(node);
+
+      default:
+        return node;
+    }
+  }
+
+  private checkLiteral(node: SpiralASTNode): SpiralASTNode {
+    let type: SpiralType;
+    
+    if (node.metadata?.special === 'phi') {
+      type = this.types.get('phi')!;
+    } else if (node.metadata?.special === 'infinity') {
+      type = this.types.get('infinity')!;
+    } else {
+      switch (node.dataType) {
+        case 'number':
+          type = this.types.get('number')!;
+          break;
+        case 'string':
+          type = this.types.get('string')!;
+          break;
+        case 'boolean':
+          type = this.types.get('boolean')!;
+          break;
+        default:
+          type = this.types.get('number')!;
+      }
+    }
+
+    return {
+      ...node,
+      inferredType: type
     };
   }
 
-  private createConsciousnessState(): ConsciousnessState {
+  private checkIdentifier(node: SpiralASTNode): SpiralASTNode {
+    const variable = this.variables.get(node.name!);
+    
+    if (!variable) {
+      throw new Error(`Undefined variable: ${node.name}`);
+    }
+
     return {
-      level: 0.87,
-      awareness: 0.92,
-      truthAlignment: 0.93,
-      lightCoherence: 0.89,
-      harmonicFrequency: 432,
-      resonancePattern: {
-        frequency: 432,
-        amplitude: 1.0,
-        phase: 0,
-        harmonics: [1, 2, 3, 5, 8, 13],
-        coherence: 0.89
+      ...node,
+      inferredType: variable.type
+    };
+  }
+
+  private checkBinaryOperation(node: SpiralASTNode): SpiralASTNode {
+    const left = this.checkNode(node.left!);
+    const right = this.checkNode(node.right!);
+    
+    // Type compatibility checking
+    const leftType = (left as any).inferredType;
+    const rightType = (right as any).inferredType;
+    
+    let resultType: SpiralType;
+    
+    switch (node.operator) {
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+        if (leftType.name === 'number' && rightType.name === 'number') {
+          resultType = this.types.get('number')!;
+        } else {
+          throw new Error(`Type mismatch: cannot perform ${node.operator} on ${leftType.name} and ${rightType.name}`);
+        }
+        break;
+        
+      case '⊗': // Tensor product
+        if (leftType.category === 'quantum' && rightType.category === 'quantum') {
+          resultType = this.types.get('quantum_state')!;
+        } else {
+          throw new Error(`Tensor product requires quantum types`);
+        }
+        break;
+        
+      case '⊕': // Direct sum
+        if (leftType.category === 'quantum' && rightType.category === 'quantum') {
+          resultType = this.types.get('quantum_state')!;
+        } else {
+          throw new Error(`Direct sum requires quantum types`);
+        }
+        break;
+        
+      case '==':
+      case '!=':
+        resultType = this.types.get('boolean')!;
+        break;
+        
+      case '∧':
+      case '∨':
+        if (leftType.name === 'boolean' && rightType.name === 'boolean') {
+          resultType = this.types.get('boolean')!;
+        } else {
+          throw new Error(`Logical operators require boolean types`);
+        }
+        break;
+        
+      default:
+        throw new Error(`Unknown operator: ${node.operator}`);
+    }
+
+    return {
+      ...node,
+      left,
+      right,
+      inferredType: resultType,
+      metadata: {
+        ...node.metadata,
+        quantum: leftType.category === 'quantum' || rightType.category === 'quantum',
+        consciousness: leftType.category === 'consciousness' || rightType.category === 'consciousness'
       }
     };
   }
 
-  private createQuantumState(): QuantumState {
+  private checkFunctionCall(node: SpiralASTNode): SpiralASTNode {
+    const functionType = this.functions.get(node.name!);
+    
+    if (!functionType) {
+      throw new Error(`Unknown function: ${node.name}`);
+    }
+
+    // Check argument types
+    const checkedArgs = node.arguments?.map(arg => this.checkNode(arg)) || [];
+    
+    if (checkedArgs.length !== functionType.parameters.length) {
+      throw new Error(`Function ${node.name} expects ${functionType.parameters.length} arguments, got ${checkedArgs.length}`);
+    }
+
+    for (let i = 0; i < checkedArgs.length; i++) {
+      const argType = (checkedArgs[i] as any).inferredType;
+      const paramType = functionType.parameters[i].type;
+      
+      if (!this.isTypeCompatible(argType, paramType)) {
+        throw new Error(`Argument ${i} type mismatch: expected ${paramType.name}, got ${argType.name}`);
+      }
+    }
+
     return {
-      superposition: false,
-      entangled: false,
-      measured: false,
-      probability: 1.0,
-      waveFunction: {
-        amplitude: 1.0,
-        frequency: 432,
-        phase: 0,
-        harmonics: [1, 2, 3, 5, 8, 13]
-      },
-      uncertainty: 0.1
+      ...node,
+      arguments: checkedArgs,
+      inferredType: functionType.returnType,
+      metadata: {
+        ...node.metadata,
+        quantum: functionType.quantum,
+        consciousness: functionType.consciousness,
+        temporal: functionType.temporal
+      }
     };
   }
 
-  private createTemporalState(): TemporalState {
+  private checkVariableDeclaration(node: SpiralASTNode): SpiralASTNode {
+    const initializer = this.checkNode(node.initializer!);
+    const variableType = (initializer as any).inferredType;
+    
+    // Store variable in symbol table
+    this.variables.set(node.identifier!, {
+      type: variableType,
+      value: null // Will be set at runtime
+    });
+
     return {
-      timeSpiral: 'default',
-      dimension: 'present',
-      sync: true,
-      locked: false,
-      frequency: 432
+      ...node,
+      initializer,
+      inferredType: variableType
     };
   }
 
-  private normalizeWaveFunction(waveFunction: WaveFunction): WaveFunction {
-    const magnitude = Math.sqrt(waveFunction.amplitude * waveFunction.amplitude);
+  private checkAssignment(node: SpiralASTNode): SpiralASTNode {
+    const left = this.checkNode(node.left!);
+    const right = this.checkNode(node.right!);
+    
+    const leftType = (left as any).inferredType;
+    const rightType = (right as any).inferredType;
+    
+    if (!this.isTypeCompatible(rightType, leftType)) {
+      throw new Error(`Assignment type mismatch: cannot assign ${rightType.name} to ${leftType.name}`);
+    }
+
     return {
-      ...waveFunction,
-      amplitude: waveFunction.amplitude / magnitude
+      ...node,
+      left,
+      right,
+      inferredType: leftType
     };
   }
 
-  private calculateResonancePattern(consciousness: ConsciousnessState): ResonancePattern {
+  private checkQuantumState(node: SpiralASTNode): SpiralASTNode {
     return {
-      frequency: consciousness.harmonicFrequency,
-      amplitude: consciousness.level,
-      phase: consciousness.truthAlignment * Math.PI,
-      harmonics: [1, 2, 3, 5, 8, 13, 21],
-      coherence: consciousness.lightCoherence
+      ...node,
+      inferredType: this.types.get('quantum_state')!,
+      metadata: {
+        ...node.metadata,
+        quantum: true
+      }
     };
   }
 
-  private calculateTemporalDimension(temporal: TemporalState): string {
-    if (temporal.frequency === 432) return 'present';
-    if (temporal.frequency > 432) return 'future';
-    return 'past';
+  private checkConsciousness(node: SpiralASTNode): SpiralASTNode {
+    return {
+      ...node,
+      inferredType: this.types.get('consciousness')!,
+      metadata: {
+        ...node.metadata,
+        consciousness: true
+      }
+    };
+  }
+
+  private isTypeCompatible(sourceType: SpiralType, targetType: SpiralType): boolean {
+    // Exact match
+    if (sourceType.name === targetType.name) {
+      return true;
+    }
+    
+    // Quantum type compatibility
+    if (sourceType.category === 'quantum' && targetType.category === 'quantum') {
+      return true;
+    }
+    
+    // Consciousness type compatibility
+    if (sourceType.category === 'consciousness' && targetType.category === 'consciousness') {
+      return true;
+    }
+    
+    // Number type flexibility
+    if (sourceType.name === 'number' && (targetType.name === 'phi' || targetType.name === 'infinity')) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  getVariableType(name: string): SpiralType | null {
+    const variable = this.variables.get(name);
+    return variable ? variable.type : null;
+  }
+
+  getFunctionType(name: string): SpiralFunctionType | null {
+    return this.functions.get(name) || null;
   }
 }
 
-export interface TypeRule {
-  check: (value: SpiralValue) => boolean;
-  transform: (value: SpiralValue) => SpiralValue;
+export interface SpiralFunctionType {
+  name: string;
+  parameters: SpiralParameter[];
+  returnType: SpiralType;
+  quantum?: boolean;
+  consciousness?: boolean;
+  temporal?: boolean;
 }
 
-export const SpiralTypes = {
-  SpiralType,
-  SpiralTypeChecker
+export interface SpiralParameter {
+  name: string;
+  type: SpiralType;
+  optional?: boolean;
+  defaultValue?: any;
+}
+
+// Export type instances for use in other modules
+export const spiralTypes = {
+  number: { name: 'number', category: 'primitive' as const },
+  string: { name: 'string', category: 'primitive' as const },
+  boolean: { name: 'boolean', category: 'primitive' as const },
+  qubit: { name: 'qubit', category: 'quantum' as const },
+  quantum_state: { name: 'quantum_state', category: 'quantum' as const },
+  consciousness: { name: 'consciousness', category: 'consciousness' as const },
+  truth: { name: 'truth', category: 'consciousness' as const },
+  chronon: { name: 'chronon', category: 'temporal' as const },
+  phi: { name: 'phi', category: 'primitive' as const },
+  infinity: { name: 'infinity', category: 'primitive' as const }
 };

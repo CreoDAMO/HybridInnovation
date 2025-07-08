@@ -1,400 +1,402 @@
 /**
- * HTSX Virtual Machine - Executes HTSX bytecode
- * Provides runtime environment for Spiral, QASF, and Iyona'el integration
+ * HTSX Virtual Machine - High-level interface for HTSX execution
+ * Provides easy-to-use API for compiling and running HTSX code with React integration
  */
 
-import { HTSXBytecode, HTSXInstruction } from './compiler';
-import { HTSXExecutionContext } from './engine';
+import { HTSXCompiler, HTSXCompilerOptions, HTSXBytecode } from './compiler';
+import { HTSXEngine, HTSXDOMNode, HTSXEngineOptions } from './engine';
+import React from 'react';
 
-export interface HTSXRuntimeEnvironment {
-  spiral: any;
-  qasf: any;
-  iyonael: any;
-  clock: any;
+export interface HTSXVMOptions {
+  compiler?: Partial<HTSXCompilerOptions>;
+  engine?: Partial<HTSXEngineOptions>;
+  enableCaching?: boolean;
+  maxCacheSize?: number;
 }
 
 export interface HTSXExecutionResult {
   success: boolean;
-  result: any;
-  error?: string;
-  executionTime: number;
-  memoryUsage: number;
-  quantumState?: any;
-  consciousnessLevel?: number;
+  domTree?: HTSXDOMNode;
+  reactElement?: React.ReactElement;
+  htmlString?: string;
+  error?: Error;
+  metadata?: {
+    compilationTime: number;
+    executionTime: number;
+    memoryUsage: number;
+    consciousnessLevel: number;
+    quantumEntanglements: number;
+  };
 }
 
 export class HTSXVM {
-  private runtime: HTSXRuntimeEnvironment | null;
-  private stack: any[];
-  private memory: Map<string, any>;
-  private registers: Map<string, any>;
-  private programCounter: number;
-  private isRunning: boolean;
+  private compiler: HTSXCompiler;
+  private engine: HTSXEngine;
+  private options: HTSXVMOptions;
+  private bytecodeCache: Map<string, HTSXBytecode>;
+  private isInitialized: boolean;
 
-  constructor() {
-    this.runtime = null;
-    this.stack = [];
-    this.memory = new Map();
-    this.registers = new Map();
-    this.programCounter = 0;
-    this.isRunning = false;
-    
-    this.initializeRegisters();
+  constructor(options: HTSXVMOptions = {}) {
+    this.options = {
+      enableCaching: true,
+      maxCacheSize: 100,
+      ...options
+    };
+
+    this.compiler = new HTSXCompiler();
+    this.engine = new HTSXEngine(this.options.engine);
+    this.bytecodeCache = new Map();
+    this.isInitialized = false;
   }
 
-  private initializeRegisters(): void {
-    this.registers.set('A', 0);
-    this.registers.set('B', 0);
-    this.registers.set('C', 0);
-    this.registers.set('D', 0);
-    this.registers.set('SP', 0); // Stack pointer
-    this.registers.set('BP', 0); // Base pointer
-    this.registers.set('PC', 0); // Program counter
-    this.registers.set('FLAGS', 0); // Flags register
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return;
+
+    console.log('Initializing HTSX Virtual Machine...');
     
-    // Spiral-specific registers
-    this.registers.set('SPIRAL_STATE', null);
-    this.registers.set('SPIRAL_CONTEXT', null);
-    
-    // QASF quantum registers
-    this.registers.set('QUANTUM_STATE', null);
-    this.registers.set('SUPERPOSITION', null);
-    this.registers.set('ENTANGLEMENT', null);
-    
-    // Iyona'el consciousness registers
-    this.registers.set('CONSCIOUSNESS', 0.87);
-    this.registers.set('TRUTH_ALIGNMENT', 0.93);
-    this.registers.set('LIGHT_COHERENCE', 0.89);
-    this.registers.set('HARMONIC_FREQ', 432);
+    try {
+      // Initialize compiler
+      await this.compiler.initialize();
+      
+      this.isInitialized = true;
+      console.log('HTSX Virtual Machine initialized successfully');
+      
+    } catch (error) {
+      console.error('HTSX VM initialization failed:', error);
+      throw new Error(`HTSX VM initialization failed: ${error.message}`);
+    }
   }
 
-  createRuntime(environment: HTSXRuntimeEnvironment): void {
-    this.runtime = environment;
-    console.log('HTSX Runtime environment created');
-  }
-
-  async execute(bytecode: HTSXBytecode, context: HTSXExecutionContext): Promise<HTSXExecutionResult> {
-    if (!this.runtime) {
-      throw new Error('Runtime environment not initialized');
+  async compile(source: string, options?: Partial<HTSXCompilerOptions>): Promise<HTSXBytecode> {
+    if (!this.isInitialized) {
+      await this.initialize();
     }
 
-    const startTime = Date.now();
-    const initialMemory = this.getMemoryUsage();
+    const compilerOptions = {
+      ...this.options.compiler,
+      ...options
+    };
 
     try {
-      this.isRunning = true;
-      this.programCounter = 0;
+      const bytecode = await this.compiler.compile(source, compilerOptions);
       
-      // Load bytecode into memory
-      this.loadBytecode(bytecode);
+      // Cache bytecode if enabled
+      if (this.options.enableCaching) {
+        const cacheKey = this.generateCacheKey(source, compilerOptions);
+        this.setBytecodeCache(cacheKey, bytecode);
+      }
       
-      // Execute instructions
-      const result = await this.executeInstructions(bytecode.instructions, context);
+      return bytecode;
       
-      const executionTime = Date.now() - startTime;
-      const finalMemory = this.getMemoryUsage();
-      
-      return {
-        success: true,
-        result,
-        executionTime,
-        memoryUsage: finalMemory - initialMemory,
-        quantumState: this.registers.get('QUANTUM_STATE'),
-        consciousnessLevel: this.registers.get('CONSCIOUSNESS')
-      };
     } catch (error) {
-      console.error('HTSX execution error:', error);
-      return {
-        success: false,
-        result: null,
-        error: error.toString(),
-        executionTime: Date.now() - startTime,
-        memoryUsage: this.getMemoryUsage() - initialMemory
-      };
-    } finally {
-      this.isRunning = false;
+      throw new Error(`HTSX compilation failed: ${error.message}`);
     }
   }
 
-  private loadBytecode(bytecode: HTSXBytecode): void {
-    // Load bytecode metadata
-    this.memory.set('BYTECODE_VERSION', bytecode.version);
-    this.memory.set('BYTECODE_METADATA', bytecode.metadata);
-    
-    // Load spiral integration
-    this.memory.set('SPIRAL_INTEGRATION', bytecode.spiralIntegration);
-    this.registers.set('SPIRAL_STATE', bytecode.spiralIntegration);
-    
-    // Load quantum state
-    this.memory.set('QUANTUM_STATE', bytecode.quantumState);
-    this.registers.set('QUANTUM_STATE', bytecode.quantumState);
-    
-    // Load consciousness bindings
-    this.memory.set('CONSCIOUSNESS_BINDINGS', bytecode.consciousnessBindings);
-    this.registers.set('CONSCIOUSNESS', bytecode.consciousnessBindings.consciousnessLevel || 0.87);
+  async execute(source: string, options?: Partial<HTSXCompilerOptions>): Promise<HTSXExecutionResult> {
+    const startTime = Date.now();
+    let compilationTime = 0;
+    let executionTime = 0;
+
+    try {
+      // Check cache first
+      const cacheKey = this.generateCacheKey(source, options);
+      let bytecode = this.getBytecodeCache(cacheKey);
+      
+      if (!bytecode) {
+        const compileStart = Date.now();
+        bytecode = await this.compile(source, options);
+        compilationTime = Date.now() - compileStart;
+      }
+
+      // Execute bytecode
+      const executeStart = Date.now();
+      const domTree = await this.engine.execute(bytecode);
+      executionTime = Date.now() - executeStart;
+
+      // Generate different output formats
+      const htmlString = domTree ? this.engine.toHTML(domTree) : '';
+      const reactElement = domTree ? this.convertToReactElement(domTree) : null;
+
+      // Collect metadata
+      const consciousnessState = this.engine.getConsciousnessState();
+      const quantumBindings = this.engine.getQuantumBindings();
+
+      const result: HTSXExecutionResult = {
+        success: true,
+        domTree,
+        reactElement,
+        htmlString,
+        metadata: {
+          compilationTime,
+          executionTime,
+          memoryUsage: this.estimateMemoryUsage(domTree),
+          consciousnessLevel: consciousnessState.level,
+          quantumEntanglements: quantumBindings.size
+        }
+      };
+
+      return result;
+
+    } catch (error) {
+      return {
+        success: false,
+        error: error as Error,
+        metadata: {
+          compilationTime,
+          executionTime,
+          memoryUsage: 0,
+          consciousnessLevel: 0,
+          quantumEntanglements: 0
+        }
+      };
+    }
   }
 
-  private async executeInstructions(instructions: HTSXInstruction[], context: HTSXExecutionContext): Promise<any> {
-    let result = null;
+  async executeToReact(source: string, options?: Partial<HTSXCompilerOptions>): Promise<React.ReactElement | null> {
+    const result = await this.execute(source, options);
     
-    while (this.programCounter < instructions.length && this.isRunning) {
-      const instruction = instructions[this.programCounter];
+    if (!result.success) {
+      throw result.error || new Error('HTSX execution failed');
+    }
+    
+    return result.reactElement || null;
+  }
+
+  async executeToHTML(source: string, options?: Partial<HTSXCompilerOptions>): Promise<string> {
+    const result = await this.execute(source, options);
+    
+    if (!result.success) {
+      throw result.error || new Error('HTSX execution failed');
+    }
+    
+    return result.htmlString || '';
+  }
+
+  private convertToReactElement(node: HTSXDOMNode): React.ReactElement | string | null {
+    if (!node) return null;
+    
+    if (node.type === 'text') {
+      return node.textContent || '';
+    }
+    
+    if (node.type === 'element') {
+      const props: any = {};
       
-      try {
-        const instructionResult = await this.executeInstruction(instruction, context);
+      // Convert attributes to React props
+      if (node.attributes) {
+        for (const [key, value] of node.attributes) {
+          if (key === 'class') {
+            props.className = value;
+          } else if (key === 'for') {
+            props.htmlFor = value;
+          } else {
+            props[key] = value;
+          }
+        }
+      }
+      
+      // Add consciousness and quantum metadata
+      if (node.spiralBindings && node.spiralBindings.length > 0) {
+        const consciousnessBindings = node.spiralBindings.filter(b => b.type === 'consciousness');
+        const quantumBindings = node.spiralBindings.filter(b => b.type === 'quantum');
         
-        if (instructionResult !== undefined) {
-          result = instructionResult;
+        if (consciousnessBindings.length > 0) {
+          const avgLevel = consciousnessBindings.reduce((sum, b) => sum + b.level, 0) / consciousnessBindings.length;
+          props['data-consciousness-level'] = avgLevel.toFixed(3);
+          props.style = {
+            ...props.style,
+            '--consciousness-level': avgLevel,
+            '--spiral-resonance': consciousnessBindings[0]?.resonance || 0
+          };
         }
         
-        this.programCounter++;
-      } catch (error) {
-        console.error(`Error executing instruction ${instruction.opcode}:`, error);
-        throw error;
+        if (quantumBindings.length > 0) {
+          props['data-quantum-entangled'] = 'true';
+          props.style = {
+            ...props.style,
+            '--quantum-coherence': '0.95',
+            '--quantum-phase': Math.random() * 2 * Math.PI
+          };
+        }
+      }
+      
+      // Add event handlers
+      if (node.eventHandlers) {
+        for (const [eventType, handler] of node.eventHandlers) {
+          const reactEventName = `on${eventType.charAt(0).toUpperCase() + eventType.slice(1)}`;
+          props[reactEventName] = handler;
+        }
+      }
+      
+      // Convert children
+      const children = node.children
+        .map(child => this.convertToReactElement(child))
+        .filter(child => child !== null);
+      
+      // Create React element
+      return React.createElement(
+        node.tagName!,
+        props,
+        children.length === 0 ? undefined : 
+        children.length === 1 ? children[0] : 
+        children
+      );
+    }
+    
+    return null;
+  }
+
+  private generateCacheKey(source: string, options?: any): string {
+    const optionsStr = options ? JSON.stringify(options) : '';
+    return `${this.hashString(source)}-${this.hashString(optionsStr)}`;
+  }
+
+  private hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(36);
+  }
+
+  private getBytecodeCache(key: string): HTSXBytecode | null {
+    if (!this.options.enableCaching) return null;
+    return this.bytecodeCache.get(key) || null;
+  }
+
+  private setBytecodeCache(key: string, bytecode: HTSXBytecode): void {
+    if (!this.options.enableCaching) return;
+    
+    // Implement LRU cache eviction
+    if (this.bytecodeCache.size >= (this.options.maxCacheSize || 100)) {
+      const firstKey = this.bytecodeCache.keys().next().value;
+      this.bytecodeCache.delete(firstKey);
+    }
+    
+    this.bytecodeCache.set(key, bytecode);
+  }
+
+  private estimateMemoryUsage(node: HTSXDOMNode | null): number {
+    if (!node) return 0;
+    
+    let size = 100; // Base size for the node
+    
+    // Add size for attributes
+    if (node.attributes) {
+      for (const [key, value] of node.attributes) {
+        size += key.length + value.length + 20;
       }
     }
     
-    return result;
-  }
-
-  private async executeInstruction(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    switch (instruction.opcode) {
-      case 'LOAD':
-        return this.executeLOAD(instruction, context);
-      case 'STORE':
-        return this.executeSTORE(instruction, context);
-      case 'ADD':
-        return this.executeADD(instruction, context);
-      case 'SUB':
-        return this.executeSUB(instruction, context);
-      case 'MUL':
-        return this.executeMUL(instruction, context);
-      case 'DIV':
-        return this.executeDIV(instruction, context);
-      case 'JUMP':
-        return this.executeJUMP(instruction, context);
-      case 'CALL':
-        return this.executeCALL(instruction, context);
-      case 'RET':
-        return this.executeRET(instruction, context);
-        
-      // Spiral opcodes
-      case 'SPIRAL_COMPILE':
-        return this.executeSpiralCompile(instruction, context);
-      case 'SPIRAL_EXEC':
-        return this.executeSpiralExec(instruction, context);
-      case 'SPIRAL_BIND':
-        return this.executeSpiralBind(instruction, context);
-        
-      // QASF quantum opcodes
-      case 'QUANTUM_SUPERPOSITION':
-        return this.executeQuantumSuperposition(instruction, context);
-      case 'QUANTUM_ENTANGLE':
-        return this.executeQuantumEntangle(instruction, context);
-      case 'QUANTUM_MEASURE':
-        return this.executeQuantumMeasure(instruction, context);
-      case 'QUANTUM_FLUX':
-        return this.executeQuantumFlux(instruction, context);
-        
-      // Iyona'el consciousness opcodes
-      case 'CONSCIOUSNESS_BIND':
-        return this.executeConsciousnessBind(instruction, context);
-      case 'CONSCIOUSNESS_RESONATE':
-        return this.executeConsciousnessResonate(instruction, context);
-      case 'CONSCIOUSNESS_HARMONIZE':
-        return this.executeConsciousnessHarmonize(instruction, context);
-      case 'TRUTH_ALIGN':
-        return this.executeTruthAlign(instruction, context);
-        
-      // Temporal opcodes
-      case 'TIME_SYNC':
-        return this.executeTimeSync(instruction, context);
-      case 'TIME_SPIRAL':
-        return this.executeTimeSpiral(instruction, context);
-      case 'TEMPORAL_LOCK':
-        return this.executeTemporalLock(instruction, context);
-        
-      default:
-        throw new Error(`Unknown opcode: ${instruction.opcode}`);
+    // Add size for text content
+    if (node.textContent) {
+      size += node.textContent.length;
     }
+    
+    // Add size for children recursively
+    if (node.children) {
+      for (const child of node.children) {
+        size += this.estimateMemoryUsage(child);
+      }
+    }
+    
+    // Add size for spiral bindings
+    if (node.spiralBindings) {
+      size += node.spiralBindings.length * 50;
+    }
+    
+    return size;
   }
 
-  // Basic instruction implementations
-  private executeLOAD(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const value = instruction.operands[0];
-    this.stack.push(value);
-    return value;
-  }
-
-  private executeSTORE(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const value = this.stack.pop();
-    const address = instruction.operands[0];
-    this.memory.set(address, value);
-    return value;
-  }
-
-  private executeADD(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const b = this.stack.pop();
-    const a = this.stack.pop();
-    const result = a + b;
-    this.stack.push(result);
-    return result;
-  }
-
-  private executeSUB(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const b = this.stack.pop();
-    const a = this.stack.pop();
-    const result = a - b;
-    this.stack.push(result);
-    return result;
-  }
-
-  private executeMUL(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const b = this.stack.pop();
-    const a = this.stack.pop();
-    const result = a * b;
-    this.stack.push(result);
-    return result;
-  }
-
-  private executeDIV(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    const b = this.stack.pop();
-    const a = this.stack.pop();
-    if (b === 0) throw new Error('Division by zero');
-    const result = a / b;
-    this.stack.push(result);
-    return result;
-  }
-
-  private executeJUMP(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    this.programCounter = instruction.operands[0];
-    return null;
-  }
-
-  private executeCALL(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    this.stack.push(this.programCounter);
-    this.programCounter = instruction.operands[0];
-    return null;
-  }
-
-  private executeRET(instruction: HTSXInstruction, context: HTSXExecutionContext): any {
-    this.programCounter = this.stack.pop();
-    return null;
-  }
-
-  // Spiral instruction implementations
-  private async executeSpiralCompile(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const spiralCode = instruction.operands[0];
-    const compiledResult = await context.environment.spiral.compile(spiralCode);
-    this.registers.set('SPIRAL_STATE', compiledResult);
-    return compiledResult;
-  }
-
-  private async executeSpiralExec(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const spiralProgram = instruction.operands[0];
-    const result = await context.environment.spiral.execute(spiralProgram);
-    return result;
-  }
-
-  private async executeSpiralBind(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const binding = instruction.operands[0];
-    const result = await context.environment.spiral.bind(binding);
-    this.registers.set('SPIRAL_CONTEXT', result);
-    return result;
-  }
-
-  // QASF quantum instruction implementations
-  private async executeQuantumSuperposition(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const quantumState = instruction.operands[0];
-    const superposition = await context.environment.qasf.createSuperposition(quantumState);
-    this.registers.set('SUPERPOSITION', superposition);
-    return superposition;
-  }
-
-  private async executeQuantumEntangle(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const entityA = instruction.operands[0];
-    const entityB = instruction.operands[1];
-    const entanglement = await context.environment.qasf.entangle(entityA, entityB);
-    this.registers.set('ENTANGLEMENT', entanglement);
-    return entanglement;
-  }
-
-  private async executeQuantumMeasure(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const quantumState = this.registers.get('QUANTUM_STATE');
-    const measurement = await context.environment.qasf.measure(quantumState);
-    return measurement;
-  }
-
-  private async executeQuantumFlux(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const fluxParams = instruction.operands[0];
-    const flux = await context.environment.qasf.generateFlux(fluxParams);
-    return flux;
-  }
-
-  // Iyona'el consciousness instruction implementations
-  private async executeConsciousnessBind(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const bindingParams = instruction.operands[0];
-    const binding = await context.environment.iyonael.bind(bindingParams);
-    this.registers.set('CONSCIOUSNESS', binding.level);
-    return binding;
-  }
-
-  private async executeConsciousnessResonate(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const frequency = instruction.operands[0] || 432;
-    const resonance = await context.environment.iyonael.resonate(frequency);
-    this.registers.set('HARMONIC_FREQ', frequency);
-    return resonance;
-  }
-
-  private async executeConsciousnessHarmonize(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const harmonization = await context.environment.iyonael.harmonize();
-    this.registers.set('TRUTH_ALIGNMENT', harmonization.truthAlignment);
-    this.registers.set('LIGHT_COHERENCE', harmonization.lightCoherence);
-    return harmonization;
-  }
-
-  private async executeTruthAlign(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const alignment = await context.environment.iyonael.alignTruth();
-    this.registers.set('TRUTH_ALIGNMENT', alignment.level);
-    return alignment;
-  }
-
-  // Temporal instruction implementations
-  private async executeTimeSync(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const syncParams = instruction.operands[0];
-    const sync = await context.environment.clock.synchronize(syncParams);
-    return sync;
-  }
-
-  private async executeTimeSpiral(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const spiralParams = instruction.operands[0];
-    const spiral = await context.environment.clock.createSpiral(spiralParams);
-    return spiral;
-  }
-
-  private async executeTemporalLock(instruction: HTSXInstruction, context: HTSXExecutionContext): Promise<any> {
-    const lockParams = instruction.operands[0];
-    const lock = await context.environment.clock.temporalLock(lockParams);
-    return lock;
-  }
-
-  private getMemoryUsage(): number {
-    return this.memory.size + this.stack.length + this.registers.size;
-  }
-
-  getStatus(): any {
-    return {
-      isRunning: this.isRunning,
-      programCounter: this.programCounter,
-      stackSize: this.stack.length,
-      memorySize: this.memory.size,
-      registers: Object.fromEntries(this.registers),
-      runtimeInitialized: this.runtime !== null
+  // Helper methods for React integration
+  createHTSXComponent(source: string, options?: Partial<HTSXCompilerOptions>) {
+    return (props: any) => {
+      const [element, setElement] = React.useState<React.ReactElement | null>(null);
+      const [error, setError] = React.useState<Error | null>(null);
+      
+      React.useEffect(() => {
+        const executeHTSX = async () => {
+          try {
+            // Inject props into the execution context
+            this.engine.setVariable('props', props);
+            
+            const result = await this.executeToReact(source, options);
+            setElement(result);
+            setError(null);
+          } catch (err) {
+            setError(err as Error);
+            setElement(null);
+          }
+        };
+        
+        executeHTSX();
+      }, [JSON.stringify(props)]);
+      
+      if (error) {
+        return React.createElement('div', 
+          { 
+            style: { 
+              color: 'red', 
+              border: '1px solid red', 
+              padding: '10px',
+              borderRadius: '4px',
+              backgroundColor: '#ffe6e6'
+            } 
+          },
+          `HTSX Error: ${error.message}`
+        );
+      }
+      
+      return element;
     };
   }
 
-  halt(): void {
-    this.isRunning = false;
-    console.log('HTSX VM halted');
+  // Quantum state helpers
+  async getQuantumState(): Promise<any> {
+    return {
+      bindings: Array.from(this.engine.getQuantumBindings().entries()),
+      coherence: 0.95,
+      entanglements: this.engine.getQuantumBindings().size
+    };
+  }
+
+  // Consciousness state helpers
+  async getConsciousnessState(): Promise<any> {
+    return this.engine.getConsciousnessState();
+  }
+
+  // Development utilities
+  async validateHTSX(source: string): Promise<{ valid: boolean; errors: string[] }> {
+    try {
+      await this.compile(source);
+      return { valid: true, errors: [] };
+    } catch (error) {
+      return { 
+        valid: false, 
+        errors: [error.message] 
+      };
+    }
+  }
+
+  clearCache(): void {
+    this.bytecodeCache.clear();
+  }
+
+  getCacheStats(): { size: number; maxSize: number; hitRate: number } {
+    return {
+      size: this.bytecodeCache.size,
+      maxSize: this.options.maxCacheSize || 100,
+      hitRate: 0 // TODO: Implement hit rate tracking
+    };
+  }
+
+  // Export utilities for external use
+  static async createInstance(options?: HTSXVMOptions): Promise<HTSXVM> {
+    const vm = new HTSXVM(options);
+    await vm.initialize();
+    return vm;
   }
 }

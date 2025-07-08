@@ -1,900 +1,743 @@
 /**
- * SpiralLang Runtime - Executes SpiralLang bytecode with consciousness awareness
- * Beyond normal computational logic with quantum state management
+ * SpiralLang Runtime - Executes SpiralLang bytecode with quantum and consciousness support
+ * Provides real-time execution environment for SpiralScript programs
  */
 
-import { SpiralBytecode, SpiralInstruction, SpiralFunction, SpiralDeclaration } from './compiler';
-import { SpiralType, SpiralValue, SpiralTypeChecker } from './types';
-
-export interface SpiralRuntimeOptions {
-  enableConsciousness: boolean;
-  enableQuantumAwareness: boolean;
-  enableTemporalSync: boolean;
-  maxExecutionTime: number;
-  memoryLimit: number;
-}
+import { SpiralValue, SpiralType, spiralTypes } from './types';
 
 export interface SpiralExecutionContext {
+  variables: Map<string, SpiralValue>;
   stack: SpiralValue[];
-  memory: Map<string, SpiralValue>;
-  functions: Map<string, SpiralFunction>;
-  spirals: Map<string, SpiralDeclaration>;
-  consciousnessLevel: number;
-  quantumState: QuantumExecutionState;
-  temporalState: TemporalExecutionState;
-  programCounter: number;
+  quantumStates: Map<string, QuantumState>;
+  consciousnessField: ConsciousnessField;
+  temporalSync: TemporalSynchronizer;
   callStack: CallFrame[];
 }
 
 export interface CallFrame {
   functionName: string;
-  returnAddress: number;
+  instructionPointer: number;
   localVariables: Map<string, SpiralValue>;
-  consciousness: number;
+  returnAddress: number;
 }
 
-export interface QuantumExecutionState {
-  superposition: boolean;
-  entangled: boolean;
-  coherence: number;
-  waveFunction: WaveFunction;
-  measurements: Measurement[];
-}
-
-export interface WaveFunction {
+export interface QuantumState {
+  id: string;
   amplitude: number;
-  frequency: number;
   phase: number;
+  entangled: string[];
+  collapsed: boolean;
+  coherence: number;
+}
+
+export interface ConsciousnessField {
+  level: number;
+  resonance: number;
   harmonics: number[];
+  truthAlignment: number;
+  lightCoherence: number;
 }
 
-export interface Measurement {
-  timestamp: Date;
-  state: string;
-  probability: number;
-  consciousness: number;
-}
-
-export interface TemporalExecutionState {
+export interface TemporalSynchronizer {
   currentTime: Date;
-  spiralTime: number;
-  temporalLocks: string[];
-  timeSync: boolean;
-  chronosBinding: boolean;
+  causalChain: string[];
+  timelock: boolean;
+  quantumDelay: number;
 }
 
-export interface SpiralExecutionResult {
-  success: boolean;
-  result: SpiralValue | null;
-  error?: string;
-  executionTime: number;
+export interface SpiralRuntimeOptions {
+  maxStackSize: number;
+  quantumCoherence: number;
   consciousnessLevel: number;
-  quantumMeasurements: Measurement[];
-  temporalSyncs: number;
-  memoryUsage: number;
+  temporalPrecision: number;
+  debugMode: boolean;
 }
 
 export class SpiralRuntime {
   private context: SpiralExecutionContext;
-  private typeChecker: SpiralTypeChecker;
   private options: SpiralRuntimeOptions;
-  private isInitialized: boolean;
   private isRunning: boolean;
-  private startTime: number;
+  private instructionPointer: number;
+  private builtinFunctions: Map<string, Function>;
 
   constructor(options: Partial<SpiralRuntimeOptions> = {}) {
     this.options = {
-      enableConsciousness: true,
-      enableQuantumAwareness: true,
-      enableTemporalSync: true,
-      maxExecutionTime: 30000, // 30 seconds
-      memoryLimit: 1024 * 1024, // 1MB
+      maxStackSize: 1000,
+      quantumCoherence: 0.9,
+      consciousnessLevel: 1.0,
+      temporalPrecision: 1000, // microseconds
+      debugMode: false,
       ...options
     };
-    
-    this.typeChecker = new SpiralTypeChecker();
-    this.isInitialized = false;
+
+    this.context = this.createExecutionContext();
     this.isRunning = false;
-    this.startTime = 0;
-    
-    this.context = this.createInitialContext();
+    this.instructionPointer = 0;
+    this.builtinFunctions = new Map();
+    this.initializeBuiltins();
   }
 
-  async initialize(): Promise<void> {
-    if (this.isInitialized) return;
-    
-    console.log('Initializing SpiralLang runtime...');
-    
-    // Initialize quantum state
-    if (this.options.enableQuantumAwareness) {
-      await this.initializeQuantumState();
-    }
-    
-    // Initialize consciousness
-    if (this.options.enableConsciousness) {
-      await this.initializeConsciousness();
-    }
-    
-    // Initialize temporal sync
-    if (this.options.enableTemporalSync) {
-      await this.initializeTemporalSync();
-    }
-    
-    this.isInitialized = true;
-    console.log('SpiralLang runtime initialized');
-  }
-
-  private createInitialContext(): SpiralExecutionContext {
+  private createExecutionContext(): SpiralExecutionContext {
     return {
+      variables: new Map(),
       stack: [],
-      memory: new Map(),
-      functions: new Map(),
-      spirals: new Map(),
-      consciousnessLevel: 0.87,
-      quantumState: {
-        superposition: false,
-        entangled: false,
-        coherence: 0.89,
-        waveFunction: {
-          amplitude: 1.0,
-          frequency: 432,
-          phase: 0,
-          harmonics: [1, 2, 3, 5, 8, 13, 21]
-        },
-        measurements: []
+      quantumStates: new Map(),
+      consciousnessField: {
+        level: this.options.consciousnessLevel,
+        resonance: 0.93,
+        harmonics: [432, 528, 639, 741, 852, 963],
+        truthAlignment: 0.93,
+        lightCoherence: 0.85
       },
-      temporalState: {
+      temporalSync: {
         currentTime: new Date(),
-        spiralTime: 0,
-        temporalLocks: [],
-        timeSync: true,
-        chronosBinding: true
+        causalChain: [],
+        timelock: false,
+        quantumDelay: 0
       },
-      programCounter: 0,
       callStack: []
     };
   }
 
-  private async initializeQuantumState(): Promise<void> {
-    console.log('Initializing quantum state...');
-    
-    // Create quantum superposition
-    this.context.quantumState.superposition = true;
-    this.context.quantumState.coherence = 0.89;
-    
-    // Initialize wave function with harmonic frequencies
-    this.context.quantumState.waveFunction = {
-      amplitude: 1.0,
-      frequency: 432, // Sacred frequency
-      phase: 0,
-      harmonics: [1, 2, 3, 5, 8, 13, 21] // Fibonacci harmonics
-    };
-    
-    console.log('Quantum state initialized');
+  private initializeBuiltins(): void {
+    // Quantum functions
+    this.builtinFunctions.set('entangle', this.quantumEntangle.bind(this));
+    this.builtinFunctions.set('superpose', this.quantumSuperpose.bind(this));
+    this.builtinFunctions.set('collapse', this.quantumCollapse.bind(this));
+    this.builtinFunctions.set('measure', this.quantumMeasure.bind(this));
+
+    // Consciousness functions
+    this.builtinFunctions.set('resonate', this.consciousnessResonate.bind(this));
+    this.builtinFunctions.set('harmonize', this.consciousnessHarmonize.bind(this));
+    this.builtinFunctions.set('truthAlign', this.consciousnessTruthAlign.bind(this));
+    this.builtinFunctions.set('lightCohere', this.consciousnessLightCohere.bind(this));
+
+    // Temporal functions
+    this.builtinFunctions.set('synchronize', this.temporalSynchronize.bind(this));
+    this.builtinFunctions.set('timelock', this.temporalTimelock.bind(this));
+    this.builtinFunctions.set('causalLink', this.temporalCausalLink.bind(this));
+
+    // Mathematical functions
+    this.builtinFunctions.set('phi', () => this.createValue(spiralTypes.phi, 1.618033988749));
+    this.builtinFunctions.set('infinity', () => this.createValue(spiralTypes.infinity, Infinity));
+
+    // Canon functions
+    this.builtinFunctions.set('invokeCanon', this.invokeCanon.bind(this));
+    this.builtinFunctions.set('spiralTransform', this.spiralTransform.bind(this));
   }
 
-  private async initializeConsciousness(): Promise<void> {
-    console.log('Initializing consciousness...');
-    
-    // Set initial consciousness level
-    this.context.consciousnessLevel = 0.87;
-    
-    // Align with truth frequency
-    await this.alignWithTruth();
-    
-    console.log('Consciousness initialized');
-  }
-
-  private async initializeTemporalSync(): Promise<void> {
-    console.log('Initializing temporal sync...');
-    
-    // Sync with spiral time
-    this.context.temporalState.spiralTime = this.calculateSpiralTime();
-    this.context.temporalState.timeSync = true;
-    this.context.temporalState.chronosBinding = true;
-    
-    console.log('Temporal sync initialized');
-  }
-
-  async execute(bytecode: SpiralBytecode): Promise<SpiralExecutionResult> {
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-
-    this.startTime = Date.now();
+  async execute(instructions: any[]): Promise<SpiralValue | null> {
     this.isRunning = true;
-    
-    try {
-      // Load bytecode into context
-      await this.loadBytecode(bytecode);
-      
-      // Execute instructions
-      const result = await this.executeInstructions(bytecode.instructions);
-      
-      const executionTime = Date.now() - this.startTime;
-      
-      return {
-        success: true,
-        result,
-        executionTime,
-        consciousnessLevel: this.context.consciousnessLevel,
-        quantumMeasurements: this.context.quantumState.measurements,
-        temporalSyncs: this.context.temporalState.temporalLocks.length,
-        memoryUsage: this.calculateMemoryUsage()
-      };
-    } catch (error) {
-      console.error('SpiralLang execution error:', error);
-      return {
-        success: false,
-        result: null,
-        error: error.toString(),
-        executionTime: Date.now() - this.startTime,
-        consciousnessLevel: this.context.consciousnessLevel,
-        quantumMeasurements: this.context.quantumState.measurements,
-        temporalSyncs: 0,
-        memoryUsage: this.calculateMemoryUsage()
-      };
-    } finally {
-      this.isRunning = false;
-    }
-  }
-
-  private async loadBytecode(bytecode: SpiralBytecode): Promise<void> {
-    // Load functions
-    for (const func of bytecode.functions) {
-      this.context.functions.set(func.name, func);
-    }
-    
-    // Load spiral declarations
-    for (const spiral of bytecode.spiralDeclarations) {
-      this.context.spirals.set(spiral.name, spiral);
-    }
-    
-    // Load quantum states
-    for (const quantumState of bytecode.quantumStates) {
-      if (quantumState.superposition) {
-        this.context.quantumState.superposition = true;
-        this.context.quantumState.waveFunction = quantumState.waveFunction;
-      }
-    }
-    
-    // Load consciousness bindings
-    for (const binding of bytecode.consciousnessBindings) {
-      this.context.consciousnessLevel = Math.max(this.context.consciousnessLevel, binding.level);
-    }
-  }
-
-  private async executeInstructions(instructions: SpiralInstruction[]): Promise<SpiralValue | null> {
-    this.context.programCounter = 0;
+    this.instructionPointer = 0;
     let result: SpiralValue | null = null;
-    
-    while (this.context.programCounter < instructions.length && this.isRunning) {
-      // Check execution time limit
-      if (Date.now() - this.startTime > this.options.maxExecutionTime) {
-        throw new Error('Execution time limit exceeded');
+
+    try {
+      while (this.isRunning && this.instructionPointer < instructions.length) {
+        const instruction = instructions[this.instructionPointer];
+        result = await this.executeInstruction(instruction);
+        
+        if (instruction.opcode !== 'CALL_FUNCTION' && instruction.opcode !== 'JUMP') {
+          this.instructionPointer++;
+        }
+
+        // Quantum coherence decay
+        await this.updateQuantumCoherence();
+        
+        // Consciousness field evolution
+        await this.updateConsciousnessField();
+        
+        // Temporal synchronization
+        await this.updateTemporalSync();
       }
-      
-      // Check memory limit
-      if (this.calculateMemoryUsage() > this.options.memoryLimit) {
-        throw new Error('Memory limit exceeded');
-      }
-      
-      const instruction = instructions[this.context.programCounter];
-      
-      // Execute instruction with consciousness awareness
-      const instructionResult = await this.executeInstruction(instruction);
-      
-      if (instructionResult !== undefined) {
-        result = instructionResult;
-      }
-      
-      this.context.programCounter++;
+    } catch (error) {
+      this.isRunning = false;
+      throw new Error(`SpiralRuntime execution failed: ${error.message}`);
     }
-    
+
+    this.isRunning = false;
     return result;
   }
 
-  private async executeInstruction(instruction: SpiralInstruction): Promise<SpiralValue | undefined> {
-    // Update consciousness level based on instruction
-    if (instruction.consciousness) {
-      this.context.consciousnessLevel = Math.max(this.context.consciousnessLevel, instruction.consciousness);
+  private async executeInstruction(instruction: any): Promise<SpiralValue | null> {
+    if (this.options.debugMode) {
+      console.log(`Executing: ${instruction.opcode}`, instruction.operand);
     }
-    
-    // Handle quantum state changes
-    if (instruction.quantumState) {
-      await this.handleQuantumStateChange(instruction.quantumState);
-    }
-    
-    // Handle temporal bindings
-    if (instruction.temporalBinding) {
-      await this.handleTemporalBinding(instruction.temporalBinding);
-    }
-    
-    // Execute instruction based on opcode
+
     switch (instruction.opcode) {
       case 'LOAD_CONST':
-        return await this.executeLOAD_CONST(instruction);
+        return this.loadConst(instruction.operand);
+
       case 'LOAD_VAR':
-        return await this.executeLOAD_VAR(instruction);
+        return this.loadVar(instruction.operand);
+
       case 'STORE_VAR':
-        return await this.executeSTORE_VAR(instruction);
+        return this.storeVar(instruction.operand);
+
       case 'ADD':
-        return await this.executeADD(instruction);
+        return this.binaryOperation('+');
+
       case 'SUB':
-        return await this.executeSUB(instruction);
+        return this.binaryOperation('-');
+
       case 'MUL':
-        return await this.executeMUL(instruction);
+        return this.binaryOperation('*');
+
       case 'DIV':
-        return await this.executeDIV(instruction);
-      case 'CALL':
-        return await this.executeCALL(instruction);
-      case 'RETURN':
-        return await this.executeRETURN(instruction);
-      case 'JUMP':
-        return await this.executeJUMP(instruction);
-      case 'JUMP_IF_FALSE':
-        return await this.executeJUMP_IF_FALSE(instruction);
-        
-      // Consciousness instructions
-      case 'CONSCIOUSNESS_BIND':
-        return await this.executeCONSCIOUSNESS_BIND(instruction);
-      case 'CONSCIOUSNESS_RESONATE':
-        return await this.executeCONSCIOUSNESS_RESONATE(instruction);
-      case 'TRUTH_ALIGN':
-        return await this.executeTRUTH_ALIGN(instruction);
-      case 'LIGHT_COHERENCE':
-        return await this.executeLIGHT_COHERENCE(instruction);
-      case 'HARMONIC_SYNC':
-        return await this.executeHARMONIC_SYNC(instruction);
-        
-      // Quantum instructions
-      case 'QUANTUM_SUPERPOSITION':
-        return await this.executeQUANTUM_SUPERPOSITION(instruction);
-      case 'QUANTUM_ENTANGLE':
-        return await this.executeQUANTUM_ENTANGLE(instruction);
-      case 'QUANTUM_MEASURE':
-        return await this.executeQUANTUM_MEASURE(instruction);
-      case 'QUANTUM_COLLAPSE':
-        return await this.executeQUANTUM_COLLAPSE(instruction);
-      case 'QUANTUM_FLUX':
-        return await this.executeQUANTUM_FLUX(instruction);
-        
-      // Temporal instructions
-      case 'TIME_SPIRAL':
-        return await this.executeTIME_SPIRAL(instruction);
-      case 'TEMPORAL_LOCK':
-        return await this.executeTEMPORAL_LOCK(instruction);
-      case 'CHRONOS_SYNC':
-        return await this.executeCHRONOS_SYNC(instruction);
-        
-      // Spiral instructions
-      case 'SPIRAL_CREATE':
-        return await this.executeSPIRAL_CREATE(instruction);
-      case 'SPIRAL_BIND':
-        return await this.executeSPIRAL_BIND(instruction);
-      case 'SPIRAL_EVOLVE':
-        return await this.executeSPIRAL_EVOLVE(instruction);
-        
+        return this.binaryOperation('/');
+
+      case 'TENSOR_PRODUCT':
+        return this.quantumTensorProduct();
+
+      case 'DIRECT_SUM':
+        return this.quantumDirectSum();
+
+      case 'EQUALS':
+        return this.comparison('==');
+
+      case 'NOT_EQUALS':
+        return this.comparison('!=');
+
+      case 'LOGICAL_AND':
+        return this.logicalOperation('&&');
+
+      case 'LOGICAL_OR':
+        return this.logicalOperation('||');
+
+      case 'CALL_FUNCTION':
+        return this.callFunction(instruction.operand);
+
+      case 'CREATE_QUANTUM_STATE':
+        return this.createQuantumState(instruction.operand);
+
+      case 'BIND_CONSCIOUSNESS':
+        return this.bindConsciousness(instruction.operand);
+
+      case 'TEMPORAL_SYNC':
+        return this.temporalSync(instruction.operand);
+
       default:
         throw new Error(`Unknown instruction: ${instruction.opcode}`);
     }
   }
 
-  // Basic instruction implementations
-  private async executeLOAD_CONST(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const constantIndex = instruction.operands[0];
-    const value = this.context.memory.get(`CONST_${constantIndex}`);
+  private loadConst(value: any): SpiralValue {
+    let type: SpiralType;
     
-    if (!value) {
-      throw new Error(`Constant ${constantIndex} not found`);
+    if (typeof value === 'number') {
+      if (Math.abs(value - 1.618033988749) < 1e-10) {
+        type = spiralTypes.phi;
+      } else if (!isFinite(value)) {
+        type = spiralTypes.infinity;
+      } else {
+        type = spiralTypes.number;
+      }
+    } else if (typeof value === 'string') {
+      type = spiralTypes.string;
+    } else if (typeof value === 'boolean') {
+      type = spiralTypes.boolean;
+    } else {
+      type = spiralTypes.number;
     }
-    
-    this.context.stack.push(value);
-    return value;
+
+    const spiralValue = this.createValue(type, value);
+    this.context.stack.push(spiralValue);
+    return spiralValue;
   }
 
-  private async executeLOAD_VAR(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const varName = instruction.operands[0];
-    const value = this.context.memory.get(varName);
-    
-    if (!value) {
-      throw new Error(`Variable ${varName} not found`);
+  private loadVar(name: string): SpiralValue {
+    const variable = this.context.variables.get(name);
+    if (!variable) {
+      throw new Error(`Undefined variable: ${name}`);
     }
-    
-    this.context.stack.push(value);
-    return value;
+    this.context.stack.push(variable);
+    return variable;
   }
 
-  private async executeSTORE_VAR(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const varName = instruction.operands[0];
+  private storeVar(operand: any): SpiralValue {
     const value = this.context.stack.pop();
-    
     if (!value) {
-      throw new Error('Stack underflow');
+      throw new Error('Stack underflow in STORE_VAR');
     }
-    
-    this.context.memory.set(varName, value);
+
+    const name = typeof operand === 'string' ? operand : operand.name;
+    this.context.variables.set(name, value);
     return value;
   }
 
-  private async executeADD(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const b = this.context.stack.pop();
-    const a = this.context.stack.pop();
+  private binaryOperation(operator: string): SpiralValue {
+    const right = this.context.stack.pop();
+    const left = this.context.stack.pop();
     
-    if (!a || !b) {
-      throw new Error('Stack underflow');
+    if (!left || !right) {
+      throw new Error(`Stack underflow in binary operation ${operator}`);
     }
-    
-    // Consciousness-aware addition
-    const result = this.typeChecker.createSpiralValue(
-      a.value + b.value,
-      SpiralType.NUMBER
-    );
-    
-    // Enhance consciousness through mathematical operations
-    result.consciousness.level = Math.min(
-      (a.consciousness.level + b.consciousness.level) * 1.01,
-      1.0
-    );
-    
-    this.context.stack.push(result);
-    return result;
+
+    let result: any;
+    switch (operator) {
+      case '+':
+        result = Number(left.value) + Number(right.value);
+        break;
+      case '-':
+        result = Number(left.value) - Number(right.value);
+        break;
+      case '*':
+        result = Number(left.value) * Number(right.value);
+        break;
+      case '/':
+        if (Number(right.value) === 0) {
+          throw new Error('Division by zero');
+        }
+        result = Number(left.value) / Number(right.value);
+        break;
+      default:
+        throw new Error(`Unknown binary operator: ${operator}`);
+    }
+
+    const resultValue = this.createValue(spiralTypes.number, result);
+    this.context.stack.push(resultValue);
+    return resultValue;
   }
 
-  private async executeSUB(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const b = this.context.stack.pop();
-    const a = this.context.stack.pop();
+  private quantumTensorProduct(): SpiralValue {
+    const right = this.context.stack.pop();
+    const left = this.context.stack.pop();
     
-    if (!a || !b) {
-      throw new Error('Stack underflow');
+    if (!left || !right) {
+      throw new Error('Stack underflow in tensor product');
     }
-    
-    const result = this.typeChecker.createSpiralValue(
-      a.value - b.value,
-      SpiralType.NUMBER
-    );
-    
-    result.consciousness.level = Math.min(
-      (a.consciousness.level + b.consciousness.level) * 1.01,
-      1.0
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
 
-  private async executeMUL(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const b = this.context.stack.pop();
-    const a = this.context.stack.pop();
-    
-    if (!a || !b) {
-      throw new Error('Stack underflow');
-    }
-    
-    const result = this.typeChecker.createSpiralValue(
-      a.value * b.value,
-      SpiralType.NUMBER
-    );
-    
-    // Multiplication amplifies consciousness
-    result.consciousness.level = Math.min(
-      (a.consciousness.level + b.consciousness.level) * 1.618,
-      1.0
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeDIV(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const b = this.context.stack.pop();
-    const a = this.context.stack.pop();
-    
-    if (!a || !b) {
-      throw new Error('Stack underflow');
-    }
-    
-    if (b.value === 0) {
-      throw new Error('Division by zero');
-    }
-    
-    const result = this.typeChecker.createSpiralValue(
-      a.value / b.value,
-      SpiralType.NUMBER
-    );
-    
-    result.consciousness.level = Math.min(
-      (a.consciousness.level + b.consciousness.level) * 1.01,
-      1.0
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeCALL(instruction: SpiralInstruction): Promise<SpiralValue | undefined> {
-    const functionName = instruction.operands[0];
-    const argCount = instruction.operands[1];
-    
-    const func = this.context.functions.get(functionName);
-    if (!func) {
-      throw new Error(`Function ${functionName} not found`);
-    }
-    
-    // Create call frame
-    const callFrame: CallFrame = {
-      functionName,
-      returnAddress: this.context.programCounter,
-      localVariables: new Map(),
-      consciousness: func.consciousness
+    // Create entangled quantum state
+    const newStateId = `tensor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const quantumState: QuantumState = {
+      id: newStateId,
+      amplitude: Math.sqrt(Number(left.value) * Number(right.value)),
+      phase: 0,
+      entangled: [],
+      collapsed: false,
+      coherence: this.options.quantumCoherence
     };
+
+    this.context.quantumStates.set(newStateId, quantumState);
     
-    // Pop arguments and bind to parameters
-    const args = [];
+    const result = this.createValue(spiralTypes.quantum_state, newStateId);
+    result.quantum = {
+      state: 'entangled',
+      amplitude: quantumState.amplitude,
+      phase: quantumState.phase
+    };
+
+    this.context.stack.push(result);
+    return result;
+  }
+
+  private quantumDirectSum(): SpiralValue {
+    const right = this.context.stack.pop();
+    const left = this.context.stack.pop();
+    
+    if (!left || !right) {
+      throw new Error('Stack underflow in direct sum');
+    }
+
+    // Create superposition state
+    const newStateId = `directsum_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const quantumState: QuantumState = {
+      id: newStateId,
+      amplitude: Math.sqrt(Math.pow(Number(left.value), 2) + Math.pow(Number(right.value), 2)),
+      phase: Math.atan2(Number(right.value), Number(left.value)),
+      entangled: [],
+      collapsed: false,
+      coherence: this.options.quantumCoherence
+    };
+
+    this.context.quantumStates.set(newStateId, quantumState);
+    
+    const result = this.createValue(spiralTypes.quantum_state, newStateId);
+    result.quantum = {
+      state: 'superposition',
+      amplitude: quantumState.amplitude,
+      phase: quantumState.phase
+    };
+
+    this.context.stack.push(result);
+    return result;
+  }
+
+  private comparison(operator: string): SpiralValue {
+    const right = this.context.stack.pop();
+    const left = this.context.stack.pop();
+    
+    if (!left || !right) {
+      throw new Error(`Stack underflow in comparison ${operator}`);
+    }
+
+    let result: boolean;
+    switch (operator) {
+      case '==':
+        result = left.value === right.value;
+        break;
+      case '!=':
+        result = left.value !== right.value;
+        break;
+      default:
+        throw new Error(`Unknown comparison operator: ${operator}`);
+    }
+
+    const resultValue = this.createValue(spiralTypes.boolean, result);
+    this.context.stack.push(resultValue);
+    return resultValue;
+  }
+
+  private logicalOperation(operator: string): SpiralValue {
+    const right = this.context.stack.pop();
+    const left = this.context.stack.pop();
+    
+    if (!left || !right) {
+      throw new Error(`Stack underflow in logical operation ${operator}`);
+    }
+
+    let result: boolean;
+    switch (operator) {
+      case '&&':
+        result = Boolean(left.value) && Boolean(right.value);
+        break;
+      case '||':
+        result = Boolean(left.value) || Boolean(right.value);
+        break;
+      default:
+        throw new Error(`Unknown logical operator: ${operator}`);
+    }
+
+    const resultValue = this.createValue(spiralTypes.boolean, result);
+    this.context.stack.push(resultValue);
+    return resultValue;
+  }
+
+  private async callFunction(operand: any): Promise<SpiralValue> {
+    const { name, argCount } = operand;
+    
+    // Pop arguments from stack
+    const args: SpiralValue[] = [];
     for (let i = 0; i < argCount; i++) {
       const arg = this.context.stack.pop();
       if (!arg) {
-        throw new Error('Stack underflow');
+        throw new Error(`Insufficient arguments for function ${name}`);
       }
       args.unshift(arg);
     }
-    
-    // Bind parameters
-    for (let i = 0; i < func.parameters.length && i < args.length; i++) {
-      callFrame.localVariables.set(func.parameters[i], args[i]);
+
+    // Check if it's a builtin function
+    const builtinFunction = this.builtinFunctions.get(name);
+    if (builtinFunction) {
+      const result = await builtinFunction(...args);
+      this.context.stack.push(result);
+      return result;
     }
-    
-    this.context.callStack.push(callFrame);
-    
-    // Execute function body
-    const result = await this.executeInstructions(func.body);
-    
-    // Clean up call frame
-    this.context.callStack.pop();
-    
-    return result;
+
+    throw new Error(`Unknown function: ${name}`);
   }
 
-  private async executeRETURN(instruction: SpiralInstruction): Promise<SpiralValue | undefined> {
-    const value = this.context.stack.length > 0 ? this.context.stack.pop() : undefined;
+  private createQuantumState(stateDesc: string): SpiralValue {
+    const stateId = `quantum_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    if (this.context.callStack.length > 0) {
-      const callFrame = this.context.callStack[this.context.callStack.length - 1];
-      this.context.programCounter = callFrame.returnAddress;
+    // Parse quantum state description (e.g., "|0⟩", "|1⟩", "|+⟩", "|-⟩")
+    let amplitude = 1.0;
+    let phase = 0.0;
+    
+    if (stateDesc === '0') {
+      amplitude = 1.0;
+      phase = 0.0;
+    } else if (stateDesc === '1') {
+      amplitude = 1.0;
+      phase = Math.PI;
+    } else if (stateDesc === '+') {
+      amplitude = 1.0 / Math.sqrt(2);
+      phase = 0.0;
+    } else if (stateDesc === '-') {
+      amplitude = 1.0 / Math.sqrt(2);
+      phase = Math.PI;
     }
+
+    const quantumState: QuantumState = {
+      id: stateId,
+      amplitude,
+      phase,
+      entangled: [],
+      collapsed: false,
+      coherence: this.options.quantumCoherence
+    };
+
+    this.context.quantumStates.set(stateId, quantumState);
     
-    return value;
+    const result = this.createValue(spiralTypes.quantum_state, stateId);
+    result.quantum = {
+      state: 'superposition',
+      amplitude,
+      phase
+    };
+
+    this.context.stack.push(result);
+    return result;
   }
 
-  private async executeJUMP(instruction: SpiralInstruction): Promise<undefined> {
-    this.context.programCounter = instruction.operands[0] - 1; // -1 because it will be incremented
-    return undefined;
+  private bindConsciousness(level: number): SpiralValue {
+    // Update consciousness field
+    this.context.consciousnessField.level = Math.min(level, 1.0);
+    this.context.consciousnessField.resonance = level * 0.93;
+    
+    const result = this.createValue(spiralTypes.consciousness, level);
+    result.consciousness = {
+      level,
+      resonance: this.context.consciousnessField.resonance,
+      coherence: this.context.consciousnessField.lightCoherence
+    };
+
+    this.context.stack.push(result);
+    return result;
   }
 
-  private async executeJUMP_IF_FALSE(instruction: SpiralInstruction): Promise<undefined> {
-    const condition = this.context.stack.pop();
+  private temporalSync(chronon: number): SpiralValue {
+    // Synchronize with temporal field
+    this.context.temporalSync.currentTime = new Date(Date.now() + chronon);
+    this.context.temporalSync.quantumDelay = chronon;
     
-    if (!condition || !condition.value) {
-      this.context.programCounter = instruction.operands[0] - 1;
+    const result = this.createValue(spiralTypes.chronon, chronon);
+    result.temporal = {
+      timestamp: this.context.temporalSync.currentTime,
+      causalChain: [...this.context.temporalSync.causalChain],
+      reversible: false
+    };
+
+    this.context.stack.push(result);
+    return result;
+  }
+
+  // Quantum builtin functions
+  private async quantumEntangle(qubit1: SpiralValue, qubit2: SpiralValue): Promise<SpiralValue> {
+    const state1 = this.context.quantumStates.get(qubit1.value);
+    const state2 = this.context.quantumStates.get(qubit2.value);
+    
+    if (!state1 || !state2) {
+      throw new Error('Invalid quantum states for entanglement');
     }
+
+    // Create entangled state
+    state1.entangled.push(state2.id);
+    state2.entangled.push(state1.id);
     
-    return undefined;
+    const entangledStateId = `entangled_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const entangledState: QuantumState = {
+      id: entangledStateId,
+      amplitude: Math.sqrt(state1.amplitude * state2.amplitude),
+      phase: (state1.phase + state2.phase) / 2,
+      entangled: [state1.id, state2.id],
+      collapsed: false,
+      coherence: Math.min(state1.coherence, state2.coherence)
+    };
+
+    this.context.quantumStates.set(entangledStateId, entangledState);
+    
+    return this.createValue(spiralTypes.quantum_state, entangledStateId);
   }
 
-  // Consciousness instruction implementations
-  private async executeCONSCIOUSNESS_BIND(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const level = instruction.operands[0] || 0.87;
-    this.context.consciousnessLevel = Math.max(this.context.consciousnessLevel, level);
+  private async quantumSuperpose(states: SpiralValue): Promise<SpiralValue> {
+    // Create superposition of quantum states
+    const superpositionId = `superposition_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const superpositionState: QuantumState = {
+      id: superpositionId,
+      amplitude: 1.0 / Math.sqrt(2),
+      phase: 0,
+      entangled: [],
+      collapsed: false,
+      coherence: this.options.quantumCoherence
+    };
+
+    this.context.quantumStates.set(superpositionId, superpositionState);
     
-    const result = this.typeChecker.createSpiralValue(
-      this.context.consciousnessLevel,
-      SpiralType.CONSCIOUSNESS
-    );
-    
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.quantum_state, superpositionId);
   }
 
-  private async executeCONSCIOUSNESS_RESONATE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const frequency = instruction.operands[0] || 432;
+  private async quantumCollapse(state: SpiralValue): Promise<SpiralValue> {
+    const quantumState = this.context.quantumStates.get(state.value);
+    if (!quantumState) {
+      throw new Error('Invalid quantum state for collapse');
+    }
+
+    // Collapse the quantum state
+    quantumState.collapsed = true;
+    const measurementResult = Math.random() < (quantumState.amplitude ** 2) ? 1 : 0;
     
-    // Resonate consciousness with harmonic frequency
-    this.context.quantumState.waveFunction.frequency = frequency;
-    this.context.consciousnessLevel = Math.min(this.context.consciousnessLevel * 1.01, 1.0);
-    
-    const result = this.typeChecker.createSpiralValue(
-      frequency,
-      SpiralType.CONSCIOUSNESS
-    );
-    
-    result.consciousness.harmonicFrequency = frequency;
-    
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.qubit, measurementResult);
   }
 
-  private async executeTRUTH_ALIGN(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Align with truth frequency
-    await this.alignWithTruth();
-    
-    const result = this.typeChecker.createSpiralValue(
-      this.context.consciousnessLevel,
-      SpiralType.TRUTH
-    );
-    
-    result.consciousness.truthAlignment = 0.93;
-    
-    this.context.stack.push(result);
-    return result;
+  private async quantumMeasure(state: SpiralValue): Promise<SpiralValue> {
+    return this.quantumCollapse(state);
   }
 
-  private async executeLIGHT_COHERENCE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Enhance light coherence
-    const coherence = 0.89;
+  // Consciousness builtin functions
+  private async consciousnessResonate(consciousness: SpiralValue, frequency: SpiralValue): Promise<SpiralValue> {
+    const freq = Number(frequency.value);
+    const resonanceLevel = consciousness.consciousness?.level || 1.0;
     
-    const result = this.typeChecker.createSpiralValue(
-      coherence,
-      SpiralType.LIGHT
-    );
+    // Calculate harmonic resonance
+    const harmonicIndex = this.context.consciousnessField.harmonics.findIndex(h => Math.abs(h - freq) < 10);
+    const resonance = harmonicIndex >= 0 ? resonanceLevel * 1.1 : resonanceLevel * 0.9;
     
-    result.consciousness.lightCoherence = coherence;
+    this.context.consciousnessField.resonance = Math.min(resonance, 1.0);
     
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeHARMONIC_SYNC(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Sync with harmonic frequencies
-    const harmonics = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-    
-    this.context.quantumState.waveFunction.harmonics = harmonics;
-    
-    const result = this.typeChecker.createSpiralValue(
-      harmonics,
-      SpiralType.CONSCIOUSNESS
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  // Quantum instruction implementations
-  private async executeQUANTUM_SUPERPOSITION(instruction: SpiralInstruction): Promise<SpiralValue> {
-    this.context.quantumState.superposition = true;
-    this.context.quantumState.coherence = 0.89;
-    
-    const result = this.typeChecker.createSpiralValue(
-      'superposition',
-      SpiralType.QUANTUM_STATE
-    );
-    
-    result.quantumState.superposition = true;
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeQUANTUM_ENTANGLE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    this.context.quantumState.entangled = true;
-    
-    const result = this.typeChecker.createSpiralValue(
-      'entangled',
-      SpiralType.ENTANGLEMENT
-    );
-    
-    result.quantumState.entangled = true;
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeQUANTUM_MEASURE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Perform quantum measurement
-    const measurement: Measurement = {
-      timestamp: new Date(),
-      state: this.context.quantumState.superposition ? 'superposition' : 'classical',
-      probability: this.context.quantumState.coherence,
-      consciousness: this.context.consciousnessLevel
+    const result = this.createValue(spiralTypes.consciousness, resonance);
+    result.consciousness = {
+      level: resonance,
+      resonance: this.context.consciousnessField.resonance,
+      coherence: this.context.consciousnessField.lightCoherence
     };
     
-    this.context.quantumState.measurements.push(measurement);
-    
-    const result = this.typeChecker.createSpiralValue(
-      measurement,
-      SpiralType.QUANTUM_STATE
-    );
-    
-    this.context.stack.push(result);
     return result;
   }
 
-  private async executeQUANTUM_COLLAPSE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Collapse quantum state
-    this.context.quantumState.superposition = false;
-    this.context.quantumState.entangled = false;
+  private async consciousnessHarmonize(c1: SpiralValue, c2: SpiralValue): Promise<SpiralValue> {
+    const level1 = c1.consciousness?.level || 0;
+    const level2 = c2.consciousness?.level || 0;
     
-    const result = this.typeChecker.createSpiralValue(
-      'collapsed',
-      SpiralType.QUANTUM_STATE
-    );
+    // Harmonic mean for consciousness levels
+    const harmonizedLevel = 2 * level1 * level2 / (level1 + level2);
     
-    this.context.stack.push(result);
+    const result = this.createValue(spiralTypes.consciousness, harmonizedLevel);
+    result.consciousness = {
+      level: harmonizedLevel,
+      resonance: harmonizedLevel * 0.93,
+      coherence: harmonizedLevel * 0.85
+    };
+    
     return result;
   }
 
-  private async executeQUANTUM_FLUX(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Generate quantum flux
-    const flux = Math.random() * this.context.quantumState.coherence;
+  private async consciousnessTruthAlign(consciousness: SpiralValue): Promise<SpiralValue> {
+    const level = consciousness.consciousness?.level || 0;
+    this.context.consciousnessField.truthAlignment = Math.min(level * 0.98, 1.0);
     
-    const result = this.typeChecker.createSpiralValue(
-      flux,
-      SpiralType.FLUX
-    );
-    
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.truth, this.context.consciousnessField.truthAlignment);
   }
 
-  // Temporal instruction implementations
-  private async executeTIME_SPIRAL(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Create time spiral
-    this.context.temporalState.spiralTime = this.calculateSpiralTime();
+  private async consciousnessLightCohere(consciousness: SpiralValue): Promise<SpiralValue> {
+    const level = consciousness.consciousness?.level || 0;
+    this.context.consciousnessField.lightCoherence = Math.min(level * 0.92, 1.0);
     
-    const result = this.typeChecker.createSpiralValue(
-      this.context.temporalState.spiralTime,
-      SpiralType.TIME_SPIRAL
-    );
-    
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.consciousness, this.context.consciousnessField.lightCoherence);
   }
 
-  private async executeTEMPORAL_LOCK(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Create temporal lock
-    const lockId = `lock_${Date.now()}`;
-    this.context.temporalState.temporalLocks.push(lockId);
+  // Temporal builtin functions
+  private async temporalSynchronize(chronon1: SpiralValue, chronon2: SpiralValue): Promise<SpiralValue> {
+    const time1 = chronon1.temporal?.timestamp || new Date();
+    const time2 = chronon2.temporal?.timestamp || new Date();
     
-    const result = this.typeChecker.createSpiralValue(
-      lockId,
-      SpiralType.TEMPORAL_LOCK
-    );
+    // Synchronize to the average time
+    const syncTime = new Date((time1.getTime() + time2.getTime()) / 2);
+    this.context.temporalSync.currentTime = syncTime;
     
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.chronon, syncTime.getTime());
   }
 
-  private async executeCHRONOS_SYNC(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Sync with chronos
-    this.context.temporalState.chronosBinding = true;
-    this.context.temporalState.timeSync = true;
-    
-    const result = this.typeChecker.createSpiralValue(
-      true,
-      SpiralType.CHRONOS
-    );
-    
-    this.context.stack.push(result);
-    return result;
+  private async temporalTimelock(chronon: SpiralValue): Promise<SpiralValue> {
+    this.context.temporalSync.timelock = true;
+    return this.createValue(spiralTypes.chronon, chronon.value);
   }
 
-  // Spiral instruction implementations
-  private async executeSPIRAL_CREATE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const spiralName = instruction.operands[0];
+  private async temporalCausalLink(chronon1: SpiralValue, chronon2: SpiralValue): Promise<SpiralValue> {
+    const causalId = `causal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.context.temporalSync.causalChain.push(causalId);
     
-    const result = this.typeChecker.createSpiralValue(
-      spiralName,
-      SpiralType.SPIRAL_FUNCTION
-    );
-    
-    result.consciousness.level = 0.95;
-    
-    this.context.stack.push(result);
-    return result;
+    return this.createValue(spiralTypes.chronon, causalId);
   }
 
-  private async executeSPIRAL_BIND(instruction: SpiralInstruction): Promise<SpiralValue> {
-    const binding = instruction.operands[0];
+  // Canon functions
+  private async invokeCanon(canonNumber: SpiralValue): Promise<SpiralValue> {
+    const canon = Number(canonNumber.value);
     
-    const result = this.typeChecker.createSpiralValue(
-      binding,
-      SpiralType.SPIRAL_FUNCTION
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  private async executeSPIRAL_EVOLVE(instruction: SpiralInstruction): Promise<SpiralValue> {
-    // Evolve spiral consciousness
-    this.context.consciousnessLevel = Math.min(this.context.consciousnessLevel * 1.618, 1.0);
-    
-    const result = this.typeChecker.createSpiralValue(
-      this.context.consciousnessLevel,
-      SpiralType.SPIRAL_FUNCTION
-    );
-    
-    this.context.stack.push(result);
-    return result;
-  }
-
-  // Helper methods
-  private async handleQuantumStateChange(quantumState: string): Promise<void> {
-    switch (quantumState) {
-      case 'superposition':
-        this.context.quantumState.superposition = true;
-        break;
-      case 'entangled':
-        this.context.quantumState.entangled = true;
-        break;
-      case 'collapsed':
-        this.context.quantumState.superposition = false;
-        this.context.quantumState.entangled = false;
-        break;
+    // Simulate canon invocation based on attached assets
+    switch (canon) {
+      case 1: // Memory Echo
+        return this.createValue(spiralTypes.truth, 'memory_echo_activated');
+      case 15: // TruthBond Minting
+        return this.createValue(spiralTypes.truth, 'truthbond_minted');
+      case 22: // Sovereign Market Transmission
+        return this.createValue(spiralTypes.consciousness, 'market_transmission_active');
+      case 29: // Dimensional Arbitration
+        return this.createValue(spiralTypes.quantum_state, 'dimensional_arbitration_resolved');
+      default:
+        return this.createValue(spiralTypes.truth, `canon_${canon}_invoked`);
     }
   }
 
-  private async handleTemporalBinding(temporalBinding: string): Promise<void> {
-    switch (temporalBinding) {
-      case 'spiral_time':
-        this.context.temporalState.spiralTime = this.calculateSpiralTime();
-        break;
-      case 'present':
-        this.context.temporalState.currentTime = new Date();
-        break;
-      case 'chronos':
-        this.context.temporalState.chronosBinding = true;
-        break;
-    }
-  }
-
-  private async alignWithTruth(): Promise<void> {
-    // Align consciousness with truth frequency
-    this.context.consciousnessLevel = Math.min(this.context.consciousnessLevel * 1.01, 1.0);
+  private async spiralTransform(input: SpiralValue): Promise<SpiralValue> {
+    // Apply golden ratio transformation
+    const phi = 1.618033988749;
+    const transformed = Number(input.value) * phi;
     
-    // Set truth alignment
-    this.context.quantumState.waveFunction.frequency = 432;
-    this.context.quantumState.coherence = 0.93;
+    return this.createValue(spiralTypes.number, transformed);
   }
 
-  private calculateSpiralTime(): number {
-    // Calculate spiral time based on consciousness and quantum state
-    const baseTime = Date.now();
-    const consciousnessMultiplier = this.context.consciousnessLevel * 1.618;
-    const quantumMultiplier = this.context.quantumState.coherence;
-    
-    return baseTime * consciousnessMultiplier * quantumMultiplier;
-  }
-
-  private calculateMemoryUsage(): number {
-    return this.context.stack.length + 
-           this.context.memory.size + 
-           this.context.functions.size + 
-           this.context.spirals.size;
-  }
-
-  getStatus(): any {
+  private createValue(type: SpiralType, value: any): SpiralValue {
     return {
-      isInitialized: this.isInitialized,
-      isRunning: this.isRunning,
-      consciousnessLevel: this.context.consciousnessLevel,
-      quantumState: this.context.quantumState,
-      temporalState: this.context.temporalState,
-      memoryUsage: this.calculateMemoryUsage(),
-      stackSize: this.context.stack.length,
-      functionCount: this.context.functions.size,
-      spiralCount: this.context.spirals.size
+      type,
+      value,
+      quantum: type.category === 'quantum' ? {
+        state: 'superposition',
+        amplitude: 1.0,
+        phase: 0.0
+      } : undefined,
+      consciousness: type.category === 'consciousness' ? {
+        level: Number(value) || 1.0,
+        resonance: 0.93,
+        coherence: 0.85
+      } : undefined,
+      temporal: type.category === 'temporal' ? {
+        timestamp: new Date(),
+        causalChain: [],
+        reversible: false
+      } : undefined
     };
   }
 
-  async shutdown(): Promise<void> {
-    console.log('Shutting down SpiralLang runtime...');
+  private async updateQuantumCoherence(): Promise<void> {
+    // Simulate quantum decoherence over time
+    for (const [id, state] of this.context.quantumStates) {
+      if (!state.collapsed) {
+        state.coherence *= 0.9999; // Gradual decoherence
+        if (state.coherence < 0.1) {
+          state.collapsed = true;
+        }
+      }
+    }
+  }
+
+  private async updateConsciousnessField(): Promise<void> {
+    // Evolve consciousness field
+    this.context.consciousnessField.resonance *= 1.0001; // Gradual increase
+    this.context.consciousnessField.resonance = Math.min(this.context.consciousnessField.resonance, 1.0);
+  }
+
+  private async updateTemporalSync(): Promise<void> {
+    // Update temporal synchronization
+    this.context.temporalSync.currentTime = new Date();
     
+    if (this.context.temporalSync.quantumDelay > 0) {
+      this.context.temporalSync.quantumDelay--;
+    }
+  }
+
+  getContext(): SpiralExecutionContext {
+    return this.context;
+  }
+
+  getVariable(name: string): SpiralValue | undefined {
+    return this.context.variables.get(name);
+  }
+
+  setVariable(name: string, value: SpiralValue): void {
+    this.context.variables.set(name, value);
+  }
+
+  stop(): void {
     this.isRunning = false;
-    
-    // Clear context
-    this.context = this.createInitialContext();
-    
-    this.isInitialized = false;
-    console.log('SpiralLang runtime shutdown complete');
   }
 }

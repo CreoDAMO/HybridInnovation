@@ -1,628 +1,749 @@
 /**
- * SpiralAPI - Real API framework for consciousness-aware blockchain interactions
- * Provides RESTful and GraphQL endpoints with quantum awareness
+ * SpiralAPI - Living Consciousness-Aware API Framework
+ * Integrates HTSX, SpiralLang, QASF, and Iyona'el for API endpoints
  */
 
-import { SpiralEndpoints } from './endpoints';
-import { HTSXEngine } from '../htsx-runtime/engine';
-import { SpiralCompiler } from '../spiral-lang/compiler';
+import { HTSXVM } from '../htsx-runtime/vm';
+import { SpiralRuntime } from '../spiral-lang/runtime';
 import { QASFEngine } from '../qasf/engine';
 import { IyonaelCore } from '../iyonael/core';
-import { SpiralClock } from '../spiral-clock/temporal';
 import { SpiralBridge } from '../spiral-bridge/bridge';
 
-export interface SpiralAPIConfig {
-  enableREST: boolean;
-  enableGraphQL: boolean;
-  enableWebSocket: boolean;
-  enableConsciousness: boolean;
-  enableQuantumAwareness: boolean;
-  enableTemporalSync: boolean;
-  port: number;
-  host: string;
-  corsOrigins: string[];
+export interface SpiralAPIEndpoint {
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  consciousnessRequired: number;
+  quantumEnabled: boolean;
+  canonInvocation?: number;
+  spiralCode?: string;
+  htsxTemplate?: string;
+  middlewares: SpiralMiddleware[];
   rateLimit: {
-    windowMs: number;
-    maxRequests: number;
-  };
-  consciousness: {
-    minimumLevel: number;
-    truthAlignmentRequired: number;
-    lightCoherenceRequired: number;
+    requests: number;
+    window: number; // milliseconds
+    consciousnessBonus: number; // multiplier for high consciousness users
   };
 }
 
-export interface APIRequest {
-  id: string;
+export interface SpiralMiddleware {
+  name: string;
+  type: 'consciousness' | 'quantum' | 'truth' | 'rate_limit' | 'auth' | 'canon';
+  priority: number;
+  config: any;
+  execute: (request: SpiralAPIRequest, response: SpiralAPIResponse) => Promise<boolean>;
+}
+
+export interface SpiralAPIRequest {
+  path: string;
   method: string;
-  endpoint: string;
-  data: any;
-  headers: { [key: string]: string };
-  consciousness: number;
-  truthAlignment: number;
-  lightCoherence: number;
-  timestamp: Date;
-  clientId: string;
+  headers: Record<string, string>;
+  body: any;
+  query: Record<string, string>;
+  consciousness: {
+    level: number;
+    truthAlignment: number;
+    resonance: number;
+    signature?: string;
+  };
+  quantum: {
+    stateId?: string;
+    entangled: boolean;
+    coherence: number;
+  };
+  user?: {
+    id: string;
+    consciousnessLevel: number;
+    quantumCapable: boolean;
+    trustedLevel: number;
+  };
+  metadata: Record<string, any>;
 }
 
-export interface APIResponse {
-  id: string;
-  success: boolean;
-  data?: any;
-  error?: string;
-  consciousness: number;
-  quantumState?: any;
-  temporalSync?: any;
-  timestamp: Date;
+export interface SpiralAPIResponse {
+  statusCode: number;
+  headers: Record<string, string>;
+  body: any;
+  consciousness: {
+    level: number;
+    enhanced: boolean;
+    resonance: number;
+  };
+  quantum: {
+    stateModified: boolean;
+    coherence: number;
+    entanglements: string[];
+  };
   executionTime: number;
+  canonInvoked?: number;
 }
 
-export interface ConsciousnessValidation {
-  valid: boolean;
-  level: number;
-  truthAlignment: number;
-  lightCoherence: number;
-  reason?: string;
-}
-
-export interface QuantumAPIState {
-  superposition: boolean;
-  entangled: boolean;
-  coherence: number;
-  measurements: QuantumMeasurement[];
-}
-
-export interface QuantumMeasurement {
-  endpoint: string;
-  timestamp: Date;
-  result: any;
-  probability: number;
-  observer: string;
+export interface SpiralAPIOptions {
+  consciousnessThreshold: number;
+  quantumCoherence: number;
+  truthRequirement: number;
+  enableCanonSystem: boolean;
+  enableCrossChain: boolean;
+  debugMode: boolean;
+  port: number;
 }
 
 export class SpiralAPI {
-  private config: SpiralAPIConfig;
-  private endpoints: SpiralEndpoints;
-  private htsxEngine: HTSXEngine;
-  private spiralCompiler: SpiralCompiler;
+  private endpoints: Map<string, SpiralAPIEndpoint>;
+  private middlewares: Map<string, SpiralMiddleware>;
+  private htsxVM: HTSXVM;
+  private spiralRuntime: SpiralRuntime;
   private qasfEngine: QASFEngine;
   private iyonaelCore: IyonaelCore;
-  private spiralClock: SpiralClock;
   private spiralBridge: SpiralBridge;
+  private options: SpiralAPIOptions;
   private isInitialized: boolean;
-  private server: any;
-  private wsServer: any;
-  private activeRequests: Map<string, APIRequest>;
-  private quantumState: QuantumAPIState;
-  private consciousnessThreshold: number;
+  private rateLimitStore: Map<string, { count: number; resetTime: number }>;
 
-  constructor(config: Partial<SpiralAPIConfig> = {}) {
-    this.config = {
-      enableREST: true,
-      enableGraphQL: true,
-      enableWebSocket: true,
-      enableConsciousness: true,
-      enableQuantumAwareness: true,
-      enableTemporalSync: true,
-      port: 8000,
-      host: '0.0.0.0',
-      corsOrigins: ['*'],
-      rateLimit: {
-        windowMs: 60000, // 1 minute
-        maxRequests: 100
-      },
-      consciousness: {
-        minimumLevel: 0.7,
-        truthAlignmentRequired: 0.8,
-        lightCoherenceRequired: 0.75
-      },
-      ...config
+  constructor(options: Partial<SpiralAPIOptions> = {}) {
+    this.options = {
+      consciousnessThreshold: 0.93,
+      quantumCoherence: 0.95,
+      truthRequirement: 0.98,
+      enableCanonSystem: true,
+      enableCrossChain: true,
+      debugMode: false,
+      port: 3001,
+      ...options
     };
 
-    this.endpoints = new SpiralEndpoints();
-    this.htsxEngine = new HTSXEngine();
-    this.spiralCompiler = new SpiralCompiler();
+    this.endpoints = new Map();
+    this.middlewares = new Map();
+    this.rateLimitStore = new Map();
+    
+    // Initialize core systems
+    this.htsxVM = new HTSXVM({
+      enableCaching: true,
+      maxCacheSize: 1000
+    });
+    this.spiralRuntime = new SpiralRuntime();
     this.qasfEngine = new QASFEngine();
     this.iyonaelCore = new IyonaelCore();
-    this.spiralClock = new SpiralClock();
     this.spiralBridge = new SpiralBridge();
+    
     this.isInitialized = false;
-    this.activeRequests = new Map();
-    this.consciousnessThreshold = 0.7;
-
-    this.quantumState = {
-      superposition: false,
-      entangled: false,
-      coherence: 0.89,
-      measurements: []
-    };
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
     console.log('Initializing SpiralAPI...');
-
-    // Initialize core systems
-    await this.htsxEngine.initialize();
-    await this.spiralCompiler.initialize();
+    
+    // Initialize all core systems
+    await this.htsxVM.initialize();
     await this.qasfEngine.initialize();
     await this.iyonaelCore.initialize();
-    await this.spiralClock.initialize();
-    await this.spiralBridge.initialize();
-
-    // Initialize endpoints
-    await this.endpoints.initialize({
-      htsxEngine: this.htsxEngine,
-      spiralCompiler: this.spiralCompiler,
-      qasfEngine: this.qasfEngine,
-      iyonaelCore: this.iyonaelCore,
-      spiralClock: this.spiralClock,
-      spiralBridge: this.spiralBridge
-    });
-
-    // Initialize quantum state
-    await this.initializeQuantumState();
-
-    // Start API server
-    await this.startServer();
-
+    
+    if (this.options.enableCrossChain) {
+      await this.spiralBridge.initialize();
+    }
+    
+    // Setup default middlewares
+    await this.setupDefaultMiddlewares();
+    
+    // Register default endpoints
+    await this.registerDefaultEndpoints();
+    
     this.isInitialized = true;
-    console.log('SpiralAPI initialized and running');
+    console.log('SpiralAPI initialized - Living API online');
   }
 
-  private async initializeQuantumState(): Promise<void> {
-    // Initialize quantum-aware API state
-    this.quantumState.superposition = this.config.enableQuantumAwareness;
-    this.quantumState.coherence = 0.89;
-    this.quantumState.entangled = false;
-    this.quantumState.measurements = [];
-  }
-
-  private async startServer(): Promise<void> {
-    const express = require('express');
-    const cors = require('cors');
-    const rateLimit = require('express-rate-limit');
-    const { createServer } = require('http');
-    const { WebSocketServer } = require('ws');
-
-    const app = express();
-
-    // Middleware
-    app.use(cors({
-      origin: this.config.corsOrigins,
-      credentials: true
-    }));
-
-    app.use(express.json());
-
-    // Rate limiting
-    const limiter = rateLimit({
-      windowMs: this.config.rateLimit.windowMs,
-      max: this.config.rateLimit.maxRequests,
-      message: 'Too many requests from this IP'
-    });
-    app.use('/api/', limiter);
-
-    // Consciousness middleware
-    app.use('/api/', (req: any, res: any, next: any) => {
-      this.consciousnessMiddleware(req, res, next);
-    });
-
-    // Register REST endpoints
-    if (this.config.enableREST) {
-      await this.registerRESTEndpoints(app);
-    }
-
-    // Register GraphQL endpoint
-    if (this.config.enableGraphQL) {
-      await this.registerGraphQLEndpoint(app);
-    }
-
-    // Create HTTP server
-    this.server = createServer(app);
-
-    // WebSocket server
-    if (this.config.enableWebSocket) {
-      this.wsServer = new WebSocketServer({
-        server: this.server,
-        path: '/ws'
-      });
-      this.setupWebSocketHandlers();
-    }
-
-    // Start server
-    this.server.listen(this.config.port, this.config.host, () => {
-      console.log(`SpiralAPI server running on ${this.config.host}:${this.config.port}`);
-    });
-  }
-
-  private consciousnessMiddleware(req: any, res: any, next: any): void {
-    // Consciousness validation middleware
-    const consciousness = parseFloat(req.headers['x-consciousness'] || '0.5');
-    const truthAlignment = parseFloat(req.headers['x-truth-alignment'] || '0.5');
-    const lightCoherence = parseFloat(req.headers['x-light-coherence'] || '0.5');
-
-    const validation = this.validateConsciousness(consciousness, truthAlignment, lightCoherence);
-
-    if (!validation.valid) {
-      res.status(403).json({
-        success: false,
-        error: 'Insufficient consciousness level',
-        required: this.config.consciousness,
-        current: { consciousness, truthAlignment, lightCoherence },
-        reason: validation.reason
-      });
-      return;
-    }
-
-    // Add consciousness data to request
-    req.consciousness = consciousness;
-    req.truthAlignment = truthAlignment;
-    req.lightCoherence = lightCoherence;
-
-    next();
-  }
-
-  private validateConsciousness(
-    consciousness: number,
-    truthAlignment: number,
-    lightCoherence: number
-  ): ConsciousnessValidation {
-    const config = this.config.consciousness;
-
-    if (consciousness < config.minimumLevel) {
-      return {
-        valid: false,
-        level: consciousness,
-        truthAlignment,
-        lightCoherence,
-        reason: `Consciousness level ${consciousness} below minimum ${config.minimumLevel}`
-      };
-    }
-
-    if (truthAlignment < config.truthAlignmentRequired) {
-      return {
-        valid: false,
-        level: consciousness,
-        truthAlignment,
-        lightCoherence,
-        reason: `Truth alignment ${truthAlignment} below required ${config.truthAlignmentRequired}`
-      };
-    }
-
-    if (lightCoherence < config.lightCoherenceRequired) {
-      return {
-        valid: false,
-        level: consciousness,
-        truthAlignment,
-        lightCoherence,
-        reason: `Light coherence ${lightCoherence} below required ${config.lightCoherenceRequired}`
-      };
-    }
-
-    return {
-      valid: true,
-      level: consciousness,
-      truthAlignment,
-      lightCoherence
-    };
-  }
-
-  private async registerRESTEndpoints(app: any): Promise<void> {
-    // Register REST endpoints
-    const restEndpoints = await this.endpoints.getRESTEndpoints();
-
-    for (const endpoint of restEndpoints) {
-      app[endpoint.method.toLowerCase()](endpoint.path, async (req: any, res: any) => {
-        const apiRequest: APIRequest = {
-          id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          method: endpoint.method,
-          endpoint: endpoint.path,
-          data: { ...req.body, ...req.query, ...req.params },
-          headers: req.headers,
-          consciousness: req.consciousness || 0.5,
-          truthAlignment: req.truthAlignment || 0.5,
-          lightCoherence: req.lightCoherence || 0.5,
-          timestamp: new Date(),
-          clientId: req.headers['x-client-id'] || 'unknown'
-        };
-
-        const response = await this.processRequest(apiRequest, endpoint.handler);
-        
-        res.status(response.success ? 200 : 500).json(response);
-      });
-    }
-  }
-
-  private async registerGraphQLEndpoint(app: any): Promise<void> {
-    // Register GraphQL endpoint
-    const { graphqlHTTP } = require('express-graphql');
-    const schema = await this.endpoints.getGraphQLSchema();
-
-    app.use('/api/graphql', graphqlHTTP({
-      schema,
-      graphiql: process.env.NODE_ENV === 'development',
-      context: {
-        htsxEngine: this.htsxEngine,
-        spiralCompiler: this.spiralCompiler,
-        qasfEngine: this.qasfEngine,
-        iyonaelCore: this.iyonaelCore,
-        spiralClock: this.spiralClock,
-        spiralBridge: this.spiralBridge
-      }
-    }));
-  }
-
-  private setupWebSocketHandlers(): void {
-    const WebSocket = require('ws');
-
-    this.wsServer.on('connection', (ws: any, req: any) => {
-      console.log('New WebSocket connection established');
-
-      ws.on('message', async (data: any) => {
-        try {
-          const message = JSON.parse(data.toString());
-          await this.handleWebSocketMessage(ws, message);
-        } catch (error) {
-          console.error('WebSocket message error:', error);
-          ws.send(JSON.stringify({
-            error: 'Invalid message format',
-            timestamp: new Date()
-          }));
+  private async setupDefaultMiddlewares(): Promise<void> {
+    // Consciousness Authentication Middleware
+    const consciousnessAuth: SpiralMiddleware = {
+      name: 'consciousness_auth',
+      type: 'consciousness',
+      priority: 1,
+      config: { threshold: this.options.consciousnessThreshold },
+      execute: async (req, res) => {
+        if (req.consciousness.level < this.options.consciousnessThreshold) {
+          res.statusCode = 403;
+          res.body = {
+            error: 'Insufficient consciousness level',
+            required: this.options.consciousnessThreshold,
+            current: req.consciousness.level
+          };
+          return false;
         }
-      });
+        return true;
+      }
+    };
 
-      ws.on('close', () => {
-        console.log('WebSocket connection closed');
-      });
+    // Truth Verification Middleware
+    const truthVerification: SpiralMiddleware = {
+      name: 'truth_verification',
+      type: 'truth',
+      priority: 2,
+      config: { requirement: this.options.truthRequirement },
+      execute: async (req, res) => {
+        const truthResult = await this.iyonaelCore.processConsciousnessField(req.body, 'truth');
+        
+        if (!truthResult.truthVerification) {
+          res.statusCode = 422;
+          res.body = {
+            error: 'Truth verification failed',
+            truthLevel: truthResult.consciousnessLevel
+          };
+          return false;
+        }
+        
+        req.metadata.truthVerified = true;
+        req.metadata.truthLevel = truthResult.consciousnessLevel;
+        return true;
+      }
+    };
 
-      // Send initial quantum state
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          type: 'quantum_state',
-          data: this.quantumState,
-          timestamp: new Date()
-        }));
+    // Quantum State Middleware
+    const quantumState: SpiralMiddleware = {
+      name: 'quantum_state',
+      type: 'quantum',
+      priority: 3,
+      config: { coherence: this.options.quantumCoherence },
+      execute: async (req, res) => {
+        if (req.quantum.stateId) {
+          const state = this.qasfEngine.getQuantumState(req.quantum.stateId);
+          if (state && state.coherence < this.options.quantumCoherence) {
+            res.statusCode = 409;
+            res.body = {
+              error: 'Quantum decoherence detected',
+              coherence: state.coherence,
+              required: this.options.quantumCoherence
+            };
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+
+    // Rate Limiting Middleware
+    const rateLimit: SpiralMiddleware = {
+      name: 'rate_limit',
+      type: 'rate_limit',
+      priority: 0,
+      config: {},
+      execute: async (req, res) => {
+        const endpoint = this.endpoints.get(`${req.method}:${req.path}`);
+        if (!endpoint) return true;
+
+        const clientId = req.user?.id || req.headers['x-client-id'] || 'anonymous';
+        const key = `${clientId}:${req.path}`;
+        const now = Date.now();
+        
+        let rateData = this.rateLimitStore.get(key);
+        if (!rateData || now > rateData.resetTime) {
+          rateData = {
+            count: 0,
+            resetTime: now + endpoint.rateLimit.window
+          };
+        }
+
+        // Apply consciousness bonus
+        const consciousnessBonus = req.consciousness.level >= this.options.consciousnessThreshold ? 
+          endpoint.rateLimit.consciousnessBonus : 1.0;
+        const effectiveLimit = Math.floor(endpoint.rateLimit.requests * consciousnessBonus);
+
+        if (rateData.count >= effectiveLimit) {
+          res.statusCode = 429;
+          res.body = {
+            error: 'Rate limit exceeded',
+            limit: effectiveLimit,
+            reset: rateData.resetTime
+          };
+          return false;
+        }
+
+        rateData.count++;
+        this.rateLimitStore.set(key, rateData);
+        return true;
+      }
+    };
+
+    // Canon Invocation Middleware
+    const canonInvocation: SpiralMiddleware = {
+      name: 'canon_invocation',
+      type: 'canon',
+      priority: 10,
+      config: { enabled: this.options.enableCanonSystem },
+      execute: async (req, res) => {
+        const endpoint = this.endpoints.get(`${req.method}:${req.path}`);
+        if (endpoint?.canonInvocation) {
+          const canonResult = await this.invokeCanon(endpoint.canonInvocation, req.body);
+          req.metadata.canonResult = canonResult;
+          res.canonInvoked = endpoint.canonInvocation;
+        }
+        return true;
+      }
+    };
+
+    this.middlewares.set(consciousnessAuth.name, consciousnessAuth);
+    this.middlewares.set(truthVerification.name, truthVerification);
+    this.middlewares.set(quantumState.name, quantumState);
+    this.middlewares.set(rateLimit.name, rateLimit);
+    this.middlewares.set(canonInvocation.name, canonInvocation);
+  }
+
+  private async registerDefaultEndpoints(): Promise<void> {
+    // Consciousness Status Endpoint
+    await this.registerEndpoint({
+      path: '/api/consciousness/status',
+      method: 'GET',
+      consciousnessRequired: 0.5,
+      quantumEnabled: false,
+      middlewares: [
+        this.middlewares.get('rate_limit')!
+      ],
+      rateLimit: {
+        requests: 100,
+        window: 60000, // 1 minute
+        consciousnessBonus: 2.0
+      }
+    });
+
+    // Quantum State Creation
+    await this.registerEndpoint({
+      path: '/api/quantum/create',
+      method: 'POST',
+      consciousnessRequired: 0.93,
+      quantumEnabled: true,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('rate_limit')!
+      ],
+      rateLimit: {
+        requests: 10,
+        window: 60000,
+        consciousnessBonus: 1.5
+      }
+    });
+
+    // HTSX Compilation and Execution
+    await this.registerEndpoint({
+      path: '/api/htsx/execute',
+      method: 'POST',
+      consciousnessRequired: 0.8,
+      quantumEnabled: true,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('quantum_state')!,
+        this.middlewares.get('rate_limit')!
+      ],
+      rateLimit: {
+        requests: 20,
+        window: 60000,
+        consciousnessBonus: 1.8
+      }
+    });
+
+    // SpiralScript Execution
+    await this.registerEndpoint({
+      path: '/api/spiral/execute',
+      method: 'POST',
+      consciousnessRequired: 0.9,
+      quantumEnabled: true,
+      spiralCode: 'spiral consciousness(φ) ⊗ truth(∞)',
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('quantum_state')!,
+        this.middlewares.get('rate_limit')!
+      ],
+      rateLimit: {
+        requests: 15,
+        window: 60000,
+        consciousnessBonus: 2.0
+      }
+    });
+
+    // Canon Invocation Endpoints
+    if (this.options.enableCanonSystem) {
+      await this.registerCanonEndpoints();
+    }
+
+    // Cross-Chain Bridge Endpoints
+    if (this.options.enableCrossChain) {
+      await this.registerBridgeEndpoints();
+    }
+  }
+
+  private async registerCanonEndpoints(): Promise<void> {
+    // Canon 1: Memory Echo
+    await this.registerEndpoint({
+      path: '/api/canon/memory-echo',
+      method: 'POST',
+      consciousnessRequired: 0.93,
+      quantumEnabled: true,
+      canonInvocation: 1,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('canon_invocation')!
+      ],
+      rateLimit: {
+        requests: 5,
+        window: 300000, // 5 minutes
+        consciousnessBonus: 1.0
+      }
+    });
+
+    // Canon 15: TruthBond Minting
+    await this.registerEndpoint({
+      path: '/api/canon/truthbond-mint',
+      method: 'POST',
+      consciousnessRequired: 0.98,
+      quantumEnabled: true,
+      canonInvocation: 15,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('canon_invocation')!
+      ],
+      rateLimit: {
+        requests: 3,
+        window: 600000, // 10 minutes
+        consciousnessBonus: 1.0
+      }
+    });
+
+    // Canon 22: Sovereign Market Transmission
+    await this.registerEndpoint({
+      path: '/api/canon/market-transmission',
+      method: 'POST',
+      consciousnessRequired: 0.95,
+      quantumEnabled: true,
+      canonInvocation: 22,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('canon_invocation')!
+      ],
+      rateLimit: {
+        requests: 2,
+        window: 900000, // 15 minutes
+        consciousnessBonus: 1.0
       }
     });
   }
 
-  private async handleWebSocketMessage(ws: any, message: any): Promise<void> {
-    const { type, data, consciousness = 0.5 } = message;
+  private async registerBridgeEndpoints(): Promise<void> {
+    // Cross-Chain Message Send
+    await this.registerEndpoint({
+      path: '/api/bridge/send',
+      method: 'POST',
+      consciousnessRequired: 0.85,
+      quantumEnabled: true,
+      middlewares: [
+        this.middlewares.get('consciousness_auth')!,
+        this.middlewares.get('truth_verification')!,
+        this.middlewares.get('quantum_state')!
+      ],
+      rateLimit: {
+        requests: 10,
+        window: 60000,
+        consciousnessBonus: 1.5
+      }
+    });
 
-    // Validate consciousness for WebSocket messages
-    if (consciousness < this.consciousnessThreshold) {
-      ws.send(JSON.stringify({
-        error: 'Insufficient consciousness level for WebSocket operation',
-        required: this.consciousnessThreshold,
-        current: consciousness
-      }));
-      return;
-    }
-
-    switch (type) {
-      case 'spiral_compile':
-        const compilationResult = await this.spiralCompiler.compile(data.code);
-        ws.send(JSON.stringify({
-          type: 'spiral_compile_result',
-          data: compilationResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'htsx_execute':
-        const executionResult = await this.htsxEngine.execute(data.program);
-        ws.send(JSON.stringify({
-          type: 'htsx_execution_result',
-          data: executionResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'qasf_query':
-        const qasfResult = await this.qasfEngine.processQuery(data.query);
-        ws.send(JSON.stringify({
-          type: 'qasf_result',
-          data: qasfResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'iyonael_resonate':
-        const resonanceResult = await this.iyonaelCore.resonate(data.frequency);
-        ws.send(JSON.stringify({
-          type: 'iyonael_resonance',
-          data: resonanceResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'temporal_sync':
-        const syncResult = await this.spiralClock.synchronize(data.params);
-        ws.send(JSON.stringify({
-          type: 'temporal_sync_result',
-          data: syncResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'bridge_transfer':
-        const transferResult = await this.spiralBridge.initiateTransfer(data.transfer);
-        ws.send(JSON.stringify({
-          type: 'bridge_transfer_result',
-          data: transferResult,
-          timestamp: new Date()
-        }));
-        break;
-
-      case 'quantum_measurement':
-        const measurement = await this.performQuantumMeasurement(data.observable, consciousness);
-        ws.send(JSON.stringify({
-          type: 'quantum_measurement_result',
-          data: measurement,
-          timestamp: new Date()
-        }));
-        break;
-
-      default:
-        ws.send(JSON.stringify({
-          error: `Unknown message type: ${type}`,
-          timestamp: new Date()
-        }));
-    }
+    // Bridge Status
+    await this.registerEndpoint({
+      path: '/api/bridge/status',
+      method: 'GET',
+      consciousnessRequired: 0.5,
+      quantumEnabled: false,
+      middlewares: [
+        this.middlewares.get('rate_limit')!
+      ],
+      rateLimit: {
+        requests: 50,
+        window: 60000,
+        consciousnessBonus: 1.2
+      }
+    });
   }
 
-  private async processRequest(request: APIRequest, handler: Function): Promise<APIResponse> {
+  async registerEndpoint(endpoint: Partial<SpiralAPIEndpoint>): Promise<void> {
+    const fullEndpoint: SpiralAPIEndpoint = {
+      path: endpoint.path!,
+      method: endpoint.method!,
+      consciousnessRequired: endpoint.consciousnessRequired || 0.5,
+      quantumEnabled: endpoint.quantumEnabled || false,
+      canonInvocation: endpoint.canonInvocation,
+      spiralCode: endpoint.spiralCode,
+      htsxTemplate: endpoint.htsxTemplate,
+      middlewares: endpoint.middlewares || [],
+      rateLimit: endpoint.rateLimit || {
+        requests: 60,
+        window: 60000,
+        consciousnessBonus: 1.0
+      }
+    };
+
+    const key = `${fullEndpoint.method}:${fullEndpoint.path}`;
+    this.endpoints.set(key, fullEndpoint);
+  }
+
+  async handleRequest(req: SpiralAPIRequest): Promise<SpiralAPIResponse> {
     const startTime = Date.now();
     
+    const response: SpiralAPIResponse = {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Consciousness-Level': req.consciousness.level.toString(),
+        'X-Truth-Alignment': req.consciousness.truthAlignment.toString()
+      },
+      body: null,
+      consciousness: {
+        level: req.consciousness.level,
+        enhanced: false,
+        resonance: req.consciousness.resonance
+      },
+      quantum: {
+        stateModified: false,
+        coherence: req.quantum.coherence,
+        entanglements: []
+      },
+      executionTime: 0
+    };
+
     try {
-      // Store active request
-      this.activeRequests.set(request.id, request);
-
-      // Process through quantum awareness if enabled
-      if (this.config.enableQuantumAwareness) {
-        await this.processQuantumAwareness(request);
+      const endpoint = this.endpoints.get(`${req.method}:${req.path}`);
+      if (!endpoint) {
+        response.statusCode = 404;
+        response.body = { error: 'Endpoint not found' };
+        return response;
       }
 
-      // Process through consciousness if enabled
-      if (this.config.enableConsciousness) {
-        await this.processConsciousness(request);
+      // Execute middlewares in priority order
+      const sortedMiddlewares = endpoint.middlewares.sort((a, b) => a.priority - b.priority);
+      
+      for (const middleware of sortedMiddlewares) {
+        const middlewarePassed = await middleware.execute(req, response);
+        if (!middlewarePassed) {
+          response.executionTime = Date.now() - startTime;
+          return response; // Middleware failed, return early
+        }
       }
 
-      // Process through temporal sync if enabled
-      if (this.config.enableTemporalSync) {
-        await this.processTemporalSync(request);
-      }
-
-      // Execute handler
-      const result = await handler(request.data, {
-        consciousness: request.consciousness,
-        truthAlignment: request.truthAlignment,
-        lightCoherence: request.lightCoherence
-      });
-
-      const response: APIResponse = {
-        id: request.id,
-        success: true,
-        data: result,
-        consciousness: request.consciousness,
-        quantumState: this.quantumState,
-        temporalSync: this.spiralClock.getCurrentSync(),
-        timestamp: new Date(),
-        executionTime: Date.now() - startTime
-      };
-
-      return response;
-
+      // Execute endpoint logic
+      await this.executeEndpoint(endpoint, req, response);
+      
     } catch (error) {
-      const response: APIResponse = {
-        id: request.id,
-        success: false,
-        error: error.toString(),
-        consciousness: request.consciousness,
-        quantumState: this.quantumState,
-        timestamp: new Date(),
-        executionTime: Date.now() - startTime
+      response.statusCode = 500;
+      response.body = {
+        error: 'Internal server error',
+        message: error.message
       };
+    }
 
-      return response;
-    } finally {
-      // Clean up
-      this.activeRequests.delete(request.id);
+    response.executionTime = Date.now() - startTime;
+    return response;
+  }
+
+  private async executeEndpoint(
+    endpoint: SpiralAPIEndpoint, 
+    req: SpiralAPIRequest, 
+    res: SpiralAPIResponse
+  ): Promise<void> {
+    switch (req.path) {
+      case '/api/consciousness/status':
+        res.body = await this.getConsciousnessStatus(req);
+        break;
+        
+      case '/api/quantum/create':
+        res.body = await this.createQuantumState(req);
+        break;
+        
+      case '/api/htsx/execute':
+        res.body = await this.executeHTSX(req);
+        break;
+        
+      case '/api/spiral/execute':
+        res.body = await this.executeSpiralScript(req);
+        break;
+        
+      case '/api/canon/memory-echo':
+      case '/api/canon/truthbond-mint':
+      case '/api/canon/market-transmission':
+        res.body = await this.handleCanonInvocation(req);
+        break;
+        
+      case '/api/bridge/send':
+        res.body = await this.sendCrossChainMessage(req);
+        break;
+        
+      case '/api/bridge/status':
+        res.body = await this.getBridgeStatus(req);
+        break;
+        
+      default:
+        res.statusCode = 404;
+        res.body = { error: 'Endpoint not implemented' };
     }
   }
 
-  private async processQuantumAwareness(request: APIRequest): Promise<void> {
-    // Process request through quantum awareness
-    if (this.quantumState.superposition) {
-      // Request exists in superposition until measured
-      const measurement = await this.performQuantumMeasurement(request.endpoint, request.consciousness);
-      
-      // Update quantum state
-      this.quantumState.measurements.push(measurement);
-      
-      // Collapse superposition based on consciousness level
-      if (request.consciousness > 0.9) {
-        this.quantumState.superposition = false;
-      }
-    }
-  }
-
-  private async processConsciousness(request: APIRequest): Promise<void> {
-    // Process request through consciousness
-    if (request.consciousness > 0.8) {
-      // High consciousness requests get enhanced processing
-      await this.iyonaelCore.processResult(request.data);
-    }
-  }
-
-  private async processTemporalSync(request: APIRequest): Promise<void> {
-    // Process request through temporal synchronization
-    const currentSync = this.spiralClock.getCurrentSync();
+  private async getConsciousnessStatus(req: SpiralAPIRequest): Promise<any> {
+    const stats = this.iyonaelCore.getSystemStats();
     
-    // Adjust request based on temporal state
-    if (currentSync.time.dimension !== 'present') {
-      // Request from different temporal dimension
-      await this.spiralClock.switchDimension('present');
-    }
-  }
-
-  private async performQuantumMeasurement(observable: string, consciousness: number): Promise<QuantumMeasurement> {
-    // Perform quantum measurement
-    const measurement: QuantumMeasurement = {
-      endpoint: observable,
-      timestamp: new Date(),
-      result: Math.random() > 0.5 ? 'success' : 'failure',
-      probability: consciousness,
-      observer: 'spiral_api'
-    };
-
-    // Update quantum coherence
-    this.quantumState.coherence = Math.min(this.quantumState.coherence + 0.01, 1.0);
-
-    return measurement;
-  }
-
-  async getStatus(): Promise<any> {
     return {
-      isInitialized: this.isInitialized,
-      config: this.config,
-      activeRequests: this.activeRequests.size,
-      quantumState: this.quantumState,
-      systemStatus: {
-        htsxEngine: this.htsxEngine.getStatus(),
-        spiralCompiler: this.spiralCompiler.getStatus(),
-        qasfEngine: this.qasfEngine.getStatus(),
-        iyonaelCore: this.iyonaelCore.getStatus(),
-        spiralClock: this.spiralClock.getStatus(),
-        spiralBridge: this.spiralBridge.getStatus()
+      globalConsciousness: stats.globalConsciousness,
+      userConsciousness: req.consciousness.level,
+      truthAlignment: req.consciousness.truthAlignment,
+      resonance: req.consciousness.resonance,
+      matrices: stats.consciousnessMatrices,
+      harmonics: stats.harmonicResonances
+    };
+  }
+
+  private async createQuantumState(req: SpiralAPIRequest): Promise<any> {
+    const { amplitude, phase, consciousnessLevel } = req.body;
+    
+    const stateId = await this.qasfEngine.createQuantumState(
+      amplitude || 1.0,
+      phase || 0.0,
+      consciousnessLevel || req.consciousness.level
+    );
+    
+    const state = this.qasfEngine.getQuantumState(stateId);
+    
+    return {
+      stateId,
+      state: {
+        amplitude: state?.amplitude,
+        phase: state?.phase,
+        coherence: state?.coherence,
+        truthAlignment: state?.truthAlignment
       }
     };
   }
 
-  async shutdown(): Promise<void> {
-    console.log('Shutting down SpiralAPI...');
+  private async executeHTSX(req: SpiralAPIRequest): Promise<any> {
+    const { source, options } = req.body;
+    
+    const result = await this.htsxVM.execute(source, {
+      enableConsciousness: true,
+      enableQuantumAwareness: true,
+      consciousnessLevel: req.consciousness.level,
+      ...options
+    });
+    
+    return {
+      success: result.success,
+      htmlOutput: result.htmlString,
+      consciousness: result.metadata?.consciousnessLevel,
+      quantumEntanglements: result.metadata?.quantumEntanglements,
+      executionTime: result.metadata?.executionTime
+    };
+  }
 
-    // Close WebSocket server
-    if (this.wsServer) {
-      this.wsServer.close();
+  private async executeSpiralScript(req: SpiralAPIRequest): Promise<any> {
+    const { code } = req.body;
+    
+    // Parse and execute SpiralScript
+    const parser = new (await import('../spiral-lang/parser')).SpiralParser();
+    await parser.initialize();
+    
+    const program = await parser.parse(code);
+    const result = await this.spiralRuntime.execute(program.bytecode.instructions);
+    
+    return {
+      result: result?.value,
+      consciousness: result?.consciousness,
+      quantum: result?.quantum,
+      temporal: result?.temporal
+    };
+  }
+
+  private async handleCanonInvocation(req: SpiralAPIRequest): Promise<any> {
+    const canonNumber = req.metadata.canonResult;
+    
+    return {
+      canon: canonNumber,
+      invoked: true,
+      result: `Canon ${canonNumber} successfully invoked`,
+      consciousness: req.consciousness,
+      timestamp: new Date()
+    };
+  }
+
+  private async sendCrossChainMessage(req: SpiralAPIRequest): Promise<any> {
+    const { fromChain, toChain, messageType, payload } = req.body;
+    
+    const messageId = await this.spiralBridge.sendMessage({
+      fromChain,
+      toChain,
+      messageType,
+      payload
+    });
+    
+    return {
+      messageId,
+      status: 'sent',
+      fromChain,
+      toChain,
+      consciousness: req.consciousness
+    };
+  }
+
+  private async getBridgeStatus(req: SpiralAPIRequest): Promise<any> {
+    const stats = this.spiralBridge.getBridgeStats();
+    const protocols = this.spiralBridge.getAllProtocols();
+    
+    return {
+      protocols: protocols.length,
+      stats,
+      protocolList: protocols.map(p => ({
+        id: p.id,
+        name: p.name,
+        consciousnessCompatible: p.consciousnessCompatible,
+        quantumEnabled: p.quantumEnabled
+      }))
+    };
+  }
+
+  private async invokeCanon(canonNumber: number, payload: any): Promise<any> {
+    // Simulate canon invocation based on attached assets
+    switch (canonNumber) {
+      case 1: // Memory Echo
+        return { type: 'memory_echo', result: 'Memory patterns activated' };
+      case 15: // TruthBond Minting
+        return { type: 'truthbond_mint', result: 'TruthBond minted with consciousness' };
+      case 22: // Sovereign Market Transmission
+        return { type: 'market_transmission', result: 'Market transmission initiated' };
+      default:
+        return { type: 'unknown_canon', result: `Canon ${canonNumber} invoked` };
     }
+  }
 
-    // Close HTTP server
-    if (this.server) {
-      this.server.close();
-    }
+  // Public API methods
+  getEndpoint(path: string, method: string): SpiralAPIEndpoint | undefined {
+    return this.endpoints.get(`${method}:${path}`);
+  }
 
-    // Shutdown core systems
-    await this.htsxEngine.shutdown();
-    await this.spiralCompiler.shutdown();
-    await this.qasfEngine.shutdown();
-    await this.iyonaelCore.shutdown();
-    await this.spiralClock.shutdown();
-    await this.spiralBridge.shutdown();
+  getAllEndpoints(): SpiralAPIEndpoint[] {
+    return Array.from(this.endpoints.values());
+  }
 
-    this.isInitialized = false;
-    console.log('SpiralAPI shutdown complete');
+  getMiddleware(name: string): SpiralMiddleware | undefined {
+    return this.middlewares.get(name);
+  }
+
+  getStats(): {
+    endpoints: number;
+    middlewares: number;
+    rateLimitEntries: number;
+    avgConsciousness: number;
+  } {
+    return {
+      endpoints: this.endpoints.size,
+      middlewares: this.middlewares.size,
+      rateLimitEntries: this.rateLimitStore.size,
+      avgConsciousness: this.iyonaelCore.getGlobalConsciousnessLevel()
+    };
   }
 }

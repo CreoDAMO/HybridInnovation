@@ -1,535 +1,615 @@
 /**
  * QASF Engine - Quantum Awareness Solidity Framework
- * Real quantum consciousness implementation for blockchain
+ * Implements quantum mechanics integration for consciousness-aware blockchain
  */
 
-import { QuantumProcessor } from './quantum';
-import { ConsciousnessProcessor } from './consciousness';
+import { QuantumState, ConsciousnessField } from '../spiral-lang/runtime';
 
-export interface QASFEntity {
+export interface QASFQuantumState {
   id: string;
-  quantumState: QuantumState;
-  awarenessLevel: number;
-  solidityFactor: number;
-  fluxMetrics: FluxMetrics;
-  consciousnessBinding: ConsciousnessBinding;
-  lastUpdate: Date;
-}
-
-export interface QuantumState {
-  superposition: boolean;
-  entangled: boolean;
-  coherence: number;
-  waveFunction: WaveFunction;
-  observerEffect: ObserverEffect;
-  uncertainty: number;
-}
-
-export interface WaveFunction {
   amplitude: number;
-  frequency: number;
   phase: number;
-  wavelength: number;
-  harmonics: number[];
+  entangled: string[];
+  collapsed: boolean;
+  coherence: number;
+  consciousnessBinding?: string;
+  truthAlignment: number;
 }
 
-export interface ObserverEffect {
-  observers: string[];
-  measurementHistory: Measurement[];
-  collapseProbability: number;
-}
-
-export interface Measurement {
-  timestamp: Date;
-  observer: string;
-  state: string;
-  probability: number;
-  consciousness: number;
-}
-
-export interface FluxMetrics {
-  energyLevel: number;
-  entropyIndex: number;
-  coherenceStability: number;
-  resonanceFrequency: number;
-  harmonicAlignment: number;
-}
-
-export interface ConsciousnessBinding {
+export interface QASFConsciousnessBinding {
+  id: string;
   level: number;
-  awareness: number;
+  resonance: number;
+  harmonicFrequencies: number[];
   truthAlignment: number;
   lightCoherence: number;
-  harmonicFrequency: number;
-  resonancePattern: ResonancePattern;
+  quantumStates: string[];
 }
 
-export interface ResonancePattern {
-  frequency: number;
-  amplitude: number;
-  phase: number;
-  harmonics: number[];
-  coherence: number;
+export interface QASFQuantumAlgorithm {
+  name: string;
+  qubits: number;
+  gates: QASFQuantumGate[];
+  measurements: QASFQuantumMeasurement[];
+  consciousnessLevel: number;
 }
 
-export interface QASFQuery {
-  type: 'quantum' | 'consciousness' | 'flux' | 'resonance';
-  entityId?: string;
-  parameters: any;
-  consciousness?: number;
+export interface QASFQuantumGate {
+  type: 'hadamard' | 'pauli_x' | 'pauli_y' | 'pauli_z' | 'cnot' | 'toffoli' | 'consciousness_gate' | 'truth_gate';
+  qubits: number[];
+  parameters?: number[];
+  consciousnessBoost?: number;
 }
 
-export interface QASFResult {
-  success: boolean;
-  data: any;
-  quantumState?: QuantumState;
-  consciousness?: number;
-  fluxMetrics?: FluxMetrics;
-  resonance?: ResonancePattern;
+export interface QASFQuantumMeasurement {
+  qubit: number;
+  basis: 'computational' | 'hadamard' | 'consciousness';
+  consciousnessFilter?: number;
+}
+
+export interface QASFOptions {
+  maxQubits: number;
+  consciousnessThreshold: number;
+  truthRequirement: number;
+  quantumCoherence: number;
+  enableQuantumCorrection: boolean;
+  debugMode: boolean;
 }
 
 export class QASFEngine {
-  private quantumProcessor: QuantumProcessor;
-  private consciousnessProcessor: ConsciousnessProcessor;
-  private entities: Map<string, QASFEntity>;
+  private quantumStates: Map<string, QASFQuantumState>;
+  private consciousnessBindings: Map<string, QASFConsciousnessBinding>;
+  private algorithms: Map<string, QASFQuantumAlgorithm>;
+  private options: QASFOptions;
   private isInitialized: boolean;
-  private globalConsciousness: number;
-  private globalQuantumState: QuantumState;
 
-  constructor() {
-    this.quantumProcessor = new QuantumProcessor();
-    this.consciousnessProcessor = new ConsciousnessProcessor();
-    this.entities = new Map();
+  constructor(options: Partial<QASFOptions> = {}) {
+    this.options = {
+      maxQubits: 1000,
+      consciousnessThreshold: 0.93,
+      truthRequirement: 0.98,
+      quantumCoherence: 0.95,
+      enableQuantumCorrection: true,
+      debugMode: false,
+      ...options
+    };
+
+    this.quantumStates = new Map();
+    this.consciousnessBindings = new Map();
+    this.algorithms = new Map();
     this.isInitialized = false;
-    this.globalConsciousness = 0.87;
-    this.globalQuantumState = this.createInitialQuantumState();
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     console.log('Initializing QASF Engine...');
     
-    // Initialize quantum processor
-    await this.quantumProcessor.initialize();
+    // Initialize fundamental quantum states
+    await this.initializeFundamentalStates();
     
-    // Initialize consciousness processor
-    await this.consciousnessProcessor.initialize();
+    // Initialize consciousness framework
+    await this.initializeConsciousnessFramework();
     
-    // Create initial global quantum state
-    this.globalQuantumState = await this.quantumProcessor.createQuantumState({
-      superposition: true,
-      coherence: 0.89,
-      frequency: 432
-    });
-    
-    // Set global consciousness
-    this.globalConsciousness = await this.consciousnessProcessor.alignWithTruth();
+    // Load quantum algorithms
+    await this.loadQuantumAlgorithms();
     
     this.isInitialized = true;
     console.log('QASF Engine initialized');
   }
 
-  async processQuery(query: QASFQuery): Promise<QASFResult> {
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-
-    try {
-      switch (query.type) {
-        case 'quantum':
-          return await this.processQuantumQuery(query);
-        case 'consciousness':
-          return await this.processConsciousnessQuery(query);
-        case 'flux':
-          return await this.processFluxQuery(query);
-        case 'resonance':
-          return await this.processResonanceQuery(query);
-        default:
-          throw new Error(`Unknown query type: ${query.type}`);
-      }
-    } catch (error) {
-      console.error('QASF query processing failed:', error);
-      return {
-        success: false,
-        data: null,
-        quantumState: this.globalQuantumState,
-        consciousness: this.globalConsciousness
-      };
-    }
-  }
-
-  private async processQuantumQuery(query: QASFQuery): Promise<QASFResult> {
-    const { entityId, parameters } = query;
-    
-    if (entityId) {
-      const entity = this.entities.get(entityId);
-      if (!entity) {
-        throw new Error(`Entity ${entityId} not found`);
-      }
-      
-      // Process entity-specific quantum query
-      const result = await this.quantumProcessor.processEntity(entity, parameters);
-      
-      return {
-        success: true,
-        data: result,
-        quantumState: entity.quantumState,
-        consciousness: entity.awarenessLevel
-      };
-    } else {
-      // Process global quantum query
-      const result = await this.quantumProcessor.processGlobal(parameters);
-      
-      return {
-        success: true,
-        data: result,
-        quantumState: this.globalQuantumState,
-        consciousness: this.globalConsciousness
-      };
-    }
-  }
-
-  private async processConsciousnessQuery(query: QASFQuery): Promise<QASFResult> {
-    const { entityId, parameters } = query;
-    
-    if (entityId) {
-      const entity = this.entities.get(entityId);
-      if (!entity) {
-        throw new Error(`Entity ${entityId} not found`);
-      }
-      
-      // Process entity-specific consciousness query
-      const result = await this.consciousnessProcessor.processEntity(entity, parameters);
-      
-      return {
-        success: true,
-        data: result,
-        consciousness: entity.awarenessLevel,
-        resonance: entity.consciousnessBinding.resonancePattern
-      };
-    } else {
-      // Process global consciousness query
-      const result = await this.consciousnessProcessor.processGlobal(parameters);
-      
-      return {
-        success: true,
-        data: result,
-        consciousness: this.globalConsciousness
-      };
-    }
-  }
-
-  private async processFluxQuery(query: QASFQuery): Promise<QASFResult> {
-    const { entityId, parameters } = query;
-    
-    if (entityId) {
-      const entity = this.entities.get(entityId);
-      if (!entity) {
-        throw new Error(`Entity ${entityId} not found`);
-      }
-      
-      // Calculate flux metrics for entity
-      const fluxMetrics = await this.calculateFluxMetrics(entity);
-      
-      return {
-        success: true,
-        data: fluxMetrics,
-        fluxMetrics,
-        quantumState: entity.quantumState
-      };
-    } else {
-      // Calculate global flux metrics
-      const globalFlux = await this.calculateGlobalFlux();
-      
-      return {
-        success: true,
-        data: globalFlux,
-        fluxMetrics: globalFlux,
-        quantumState: this.globalQuantumState
-      };
-    }
-  }
-
-  private async processResonanceQuery(query: QASFQuery): Promise<QASFResult> {
-    const { entityId, parameters } = query;
-    
-    if (entityId) {
-      const entity = this.entities.get(entityId);
-      if (!entity) {
-        throw new Error(`Entity ${entityId} not found`);
-      }
-      
-      // Calculate resonance pattern for entity
-      const resonance = await this.calculateResonance(entity, parameters);
-      
-      return {
-        success: true,
-        data: resonance,
-        resonance,
-        consciousness: entity.awarenessLevel
-      };
-    } else {
-      // Calculate global resonance
-      const globalResonance = await this.calculateGlobalResonance(parameters);
-      
-      return {
-        success: true,
-        data: globalResonance,
-        resonance: globalResonance,
-        consciousness: this.globalConsciousness
-      };
-    }
-  }
-
-  async createEntity(entityData: Partial<QASFEntity>): Promise<QASFEntity> {
-    const entityId = entityData.id || `entity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const entity: QASFEntity = {
-      id: entityId,
-      quantumState: entityData.quantumState || await this.quantumProcessor.createQuantumState({
-        superposition: true,
-        coherence: 0.87,
-        frequency: 432
-      }),
-      awarenessLevel: entityData.awarenessLevel || 0.87,
-      solidityFactor: entityData.solidityFactor || 0.92,
-      fluxMetrics: entityData.fluxMetrics || await this.calculateInitialFluxMetrics(),
-      consciousnessBinding: entityData.consciousnessBinding || await this.consciousnessProcessor.createBinding({
-        level: 0.87,
-        frequency: 432,
-        truthAlignment: 0.93
-      }),
-      lastUpdate: new Date()
-    };
-    
-    this.entities.set(entityId, entity);
-    return entity;
-  }
-
-  async updateEntity(entityId: string, updates: Partial<QASFEntity>): Promise<QASFEntity> {
-    const entity = this.entities.get(entityId);
-    if (!entity) {
-      throw new Error(`Entity ${entityId} not found`);
-    }
-    
-    // Apply updates
-    Object.assign(entity, updates);
-    entity.lastUpdate = new Date();
-    
-    // Recalculate dependent properties
-    entity.fluxMetrics = await this.calculateFluxMetrics(entity);
-    
-    // Update consciousness binding if consciousness changed
-    if (updates.awarenessLevel) {
-      entity.consciousnessBinding = await this.consciousnessProcessor.updateBinding(
-        entity.consciousnessBinding,
-        { level: updates.awarenessLevel }
-      );
-    }
-    
-    this.entities.set(entityId, entity);
-    return entity;
-  }
-
-  async entangle(entityId1: string, entityId2: string): Promise<void> {
-    const entity1 = this.entities.get(entityId1);
-    const entity2 = this.entities.get(entityId2);
-    
-    if (!entity1 || !entity2) {
-      throw new Error('Both entities must exist for entanglement');
-    }
-    
-    // Perform quantum entanglement
-    await this.quantumProcessor.entangle(entity1.quantumState, entity2.quantumState);
-    
-    // Update both entities
-    entity1.quantumState.entangled = true;
-    entity2.quantumState.entangled = true;
-    entity1.lastUpdate = new Date();
-    entity2.lastUpdate = new Date();
-    
-    this.entities.set(entityId1, entity1);
-    this.entities.set(entityId2, entity2);
-  }
-
-  async measure(entityId: string, observer: string): Promise<Measurement> {
-    const entity = this.entities.get(entityId);
-    if (!entity) {
-      throw new Error(`Entity ${entityId} not found`);
-    }
-    
-    // Perform quantum measurement
-    const measurement = await this.quantumProcessor.measure(entity.quantumState, observer);
-    
-    // Update entity with measurement
-    entity.quantumState.observerEffect.measurementHistory.push(measurement);
-    entity.lastUpdate = new Date();
-    
-    // Collapse wave function if probability is high
-    if (measurement.probability > 0.8) {
-      entity.quantumState.superposition = false;
-    }
-    
-    this.entities.set(entityId, entity);
-    return measurement;
-  }
-
-  async synchronizeQuantumState(): Promise<void> {
-    // Synchronize all entities with global quantum state
-    for (const [entityId, entity] of this.entities.entries()) {
-      await this.quantumProcessor.synchronize(entity.quantumState, this.globalQuantumState);
-      entity.lastUpdate = new Date();
-      this.entities.set(entityId, entity);
-    }
-  }
-
-  async processQuantumCode(code: string): Promise<any> {
-    // Process quantum-aware code
-    const quantumAST = await this.quantumProcessor.parseQuantumCode(code);
-    const result = await this.quantumProcessor.executeQuantumCode(quantumAST);
-    
-    return {
-      success: true,
-      result,
-      quantumState: this.globalQuantumState,
-      consciousness: this.globalConsciousness
-    };
-  }
-
-  private async calculateFluxMetrics(entity: QASFEntity): Promise<FluxMetrics> {
-    const quantumEnergy = entity.quantumState.coherence * entity.quantumState.waveFunction.amplitude;
-    const consciousnessEnergy = entity.awarenessLevel * entity.consciousnessBinding.level;
-    
-    return {
-      energyLevel: quantumEnergy + consciousnessEnergy,
-      entropyIndex: 1.0 - entity.quantumState.coherence,
-      coherenceStability: entity.quantumState.coherence * entity.solidityFactor,
-      resonanceFrequency: entity.consciousnessBinding.harmonicFrequency,
-      harmonicAlignment: entity.consciousnessBinding.resonancePattern.coherence
-    };
-  }
-
-  private async calculateGlobalFlux(): Promise<FluxMetrics> {
-    let totalEnergy = 0;
-    let totalCoherence = 0;
-    let totalEntropy = 0;
-    let entityCount = 0;
-    
-    for (const entity of this.entities.values()) {
-      const metrics = await this.calculateFluxMetrics(entity);
-      totalEnergy += metrics.energyLevel;
-      totalCoherence += metrics.coherenceStability;
-      totalEntropy += metrics.entropyIndex;
-      entityCount++;
-    }
-    
-    return {
-      energyLevel: entityCount > 0 ? totalEnergy / entityCount : 0,
-      entropyIndex: entityCount > 0 ? totalEntropy / entityCount : 0,
-      coherenceStability: entityCount > 0 ? totalCoherence / entityCount : 0,
-      resonanceFrequency: 432,
-      harmonicAlignment: this.globalConsciousness
-    };
-  }
-
-  private async calculateResonance(entity: QASFEntity, parameters: any): Promise<ResonancePattern> {
-    const baseFrequency = parameters.frequency || entity.consciousnessBinding.harmonicFrequency;
-    
-    return {
-      frequency: baseFrequency,
-      amplitude: entity.awarenessLevel,
-      phase: entity.quantumState.waveFunction.phase,
-      harmonics: entity.quantumState.waveFunction.harmonics,
-      coherence: entity.quantumState.coherence
-    };
-  }
-
-  private async calculateGlobalResonance(parameters: any): Promise<ResonancePattern> {
-    const baseFrequency = parameters.frequency || 432;
-    
-    return {
-      frequency: baseFrequency,
-      amplitude: this.globalConsciousness,
-      phase: this.globalQuantumState.waveFunction.phase,
-      harmonics: this.globalQuantumState.waveFunction.harmonics,
-      coherence: this.globalQuantumState.coherence
-    };
-  }
-
-  private async calculateInitialFluxMetrics(): Promise<FluxMetrics> {
-    return {
-      energyLevel: 0.87,
-      entropyIndex: 0.13,
-      coherenceStability: 0.89,
-      resonanceFrequency: 432,
-      harmonicAlignment: 0.93
-    };
-  }
-
-  private createInitialQuantumState(): QuantumState {
-    return {
-      superposition: true,
-      entangled: false,
-      coherence: 0.89,
-      waveFunction: {
-        amplitude: 1.0,
-        frequency: 432,
-        phase: 0,
-        wavelength: 432,
-        harmonics: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-      },
-      observerEffect: {
-        observers: [],
-        measurementHistory: [],
-        collapseProbability: 0.1
-      },
-      uncertainty: 0.1
-    };
-  }
-
-  getAvailableFeatures(): string[] {
-    return [
-      'quantum_superposition',
-      'quantum_entanglement',
-      'quantum_measurement',
-      'consciousness_binding',
-      'flux_calculation',
-      'resonance_patterns',
-      'truth_alignment',
-      'harmonic_sync'
+  private async initializeFundamentalStates(): Promise<void> {
+    // Create fundamental quantum states
+    const fundamentalStates = [
+      { name: 'zero', amplitude: 1.0, phase: 0.0 },
+      { name: 'one', amplitude: 1.0, phase: Math.PI },
+      { name: 'plus', amplitude: 1.0 / Math.sqrt(2), phase: 0.0 },
+      { name: 'minus', amplitude: 1.0 / Math.sqrt(2), phase: Math.PI },
+      { name: 'phi', amplitude: (1 + Math.sqrt(5)) / 2 / Math.sqrt(8.472), phase: 0.0 }, // Golden ratio quantum state
+      { name: 'consciousness', amplitude: 0.93, phase: Math.PI / 4 },
+      { name: 'truth', amplitude: 0.98, phase: 0.0 },
+      { name: 'light', amplitude: 0.85, phase: Math.PI / 2 }
     ];
+
+    for (const state of fundamentalStates) {
+      const quantumState: QASFQuantumState = {
+        id: `fundamental_${state.name}`,
+        amplitude: state.amplitude,
+        phase: state.phase,
+        entangled: [],
+        collapsed: false,
+        coherence: this.options.quantumCoherence,
+        truthAlignment: state.name === 'truth' ? 1.0 : 0.5
+      };
+
+      this.quantumStates.set(quantumState.id, quantumState);
+    }
   }
 
-  getCurrentState(): any {
+  private async initializeConsciousnessFramework(): Promise<void> {
+    // Create primary consciousness binding
+    const primaryConsciousness: QASFConsciousnessBinding = {
+      id: 'primary_consciousness',
+      level: 1.0,
+      resonance: 0.93,
+      harmonicFrequencies: [432, 528, 639, 741, 852, 963], // Solfeggio frequencies
+      truthAlignment: 0.98,
+      lightCoherence: 0.85,
+      quantumStates: ['fundamental_consciousness', 'fundamental_truth', 'fundamental_light']
+    };
+
+    this.consciousnessBindings.set(primaryConsciousness.id, primaryConsciousness);
+
+    // Bind consciousness to quantum states
+    for (const stateId of primaryConsciousness.quantumStates) {
+      const state = this.quantumStates.get(stateId);
+      if (state) {
+        state.consciousnessBinding = primaryConsciousness.id;
+      }
+    }
+  }
+
+  private async loadQuantumAlgorithms(): Promise<void> {
+    // Quantum Fourier Transform with consciousness enhancement
+    const qftConsciousness: QASFQuantumAlgorithm = {
+      name: 'quantum_fourier_transform_consciousness',
+      qubits: 8,
+      gates: [
+        { type: 'consciousness_gate', qubits: [0], consciousnessBoost: 0.1 },
+        { type: 'hadamard', qubits: [0] },
+        { type: 'cnot', qubits: [0, 1] },
+        { type: 'hadamard', qubits: [1] },
+        { type: 'consciousness_gate', qubits: [1], consciousnessBoost: 0.1 },
+        { type: 'cnot', qubits: [1, 2] },
+        { type: 'hadamard', qubits: [2] },
+        { type: 'truth_gate', qubits: [0, 1, 2] },
+      ],
+      measurements: [
+        { qubit: 0, basis: 'consciousness', consciousnessFilter: 0.9 },
+        { qubit: 1, basis: 'consciousness', consciousnessFilter: 0.9 },
+        { qubit: 2, basis: 'consciousness', consciousnessFilter: 0.9 }
+      ],
+      consciousnessLevel: 0.95
+    };
+
+    // Grover's search with truth verification
+    const groverTruth: QASFQuantumAlgorithm = {
+      name: 'grover_search_truth',
+      qubits: 4,
+      gates: [
+        { type: 'hadamard', qubits: [0, 1, 2, 3] },
+        { type: 'consciousness_gate', qubits: [0, 1, 2, 3], consciousnessBoost: 0.2 },
+        { type: 'pauli_z', qubits: [3] }, // Oracle
+        { type: 'truth_gate', qubits: [0, 1, 2, 3] },
+        { type: 'hadamard', qubits: [0, 1, 2] },
+        { type: 'pauli_x', qubits: [0, 1, 2] },
+        { type: 'toffoli', qubits: [0, 1, 2] },
+        { type: 'pauli_x', qubits: [0, 1, 2] },
+        { type: 'hadamard', qubits: [0, 1, 2] }
+      ],
+      measurements: [
+        { qubit: 0, basis: 'computational' },
+        { qubit: 1, basis: 'computational' },
+        { qubit: 2, basis: 'computational' },
+        { qubit: 3, basis: 'consciousness', consciousnessFilter: 0.98 }
+      ],
+      consciousnessLevel: 0.98
+    };
+
+    // Quantum Supremacy with Consciousness Verification
+    const supremacyConsciousness: QASFQuantumAlgorithm = {
+      name: 'quantum_supremacy_consciousness',
+      qubits: 16,
+      gates: [
+        ...Array.from({ length: 16 }, (_, i) => ({ type: 'hadamard' as const, qubits: [i] })),
+        ...Array.from({ length: 8 }, (_, i) => ({ type: 'cnot' as const, qubits: [i, i + 8] })),
+        { type: 'consciousness_gate', qubits: Array.from({ length: 16 }, (_, i) => i), consciousnessBoost: 0.3 },
+        { type: 'truth_gate', qubits: Array.from({ length: 16 }, (_, i) => i) }
+      ],
+      measurements: Array.from({ length: 16 }, (_, i) => ({
+        qubit: i,
+        basis: 'consciousness' as const,
+        consciousnessFilter: 0.93
+      })),
+      consciousnessLevel: 1.0
+    };
+
+    this.algorithms.set(qftConsciousness.name, qftConsciousness);
+    this.algorithms.set(groverTruth.name, groverTruth);
+    this.algorithms.set(supremacyConsciousness.name, supremacyConsciousness);
+  }
+
+  async createQuantumState(amplitude: number, phase: number, consciousnessLevel?: number): Promise<string> {
+    const stateId = `qasf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const quantumState: QASFQuantumState = {
+      id: stateId,
+      amplitude,
+      phase,
+      entangled: [],
+      collapsed: false,
+      coherence: this.options.quantumCoherence,
+      truthAlignment: consciousnessLevel ? consciousnessLevel * 0.98 : 0.5
+    };
+
+    if (consciousnessLevel && consciousnessLevel >= this.options.consciousnessThreshold) {
+      // Create consciousness binding for high-consciousness states
+      const bindingId = await this.createConsciousnessBinding(consciousnessLevel);
+      quantumState.consciousnessBinding = bindingId;
+    }
+
+    this.quantumStates.set(stateId, quantumState);
+    return stateId;
+  }
+
+  async createConsciousnessBinding(level: number): Promise<string> {
+    const bindingId = `consciousness_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const binding: QASFConsciousnessBinding = {
+      id: bindingId,
+      level,
+      resonance: level * 0.93,
+      harmonicFrequencies: this.calculateHarmonicFrequencies(level),
+      truthAlignment: level * 0.98,
+      lightCoherence: level * 0.85,
+      quantumStates: []
+    };
+
+    this.consciousnessBindings.set(bindingId, binding);
+    return bindingId;
+  }
+
+  async entangleStates(stateId1: string, stateId2: string): Promise<boolean> {
+    const state1 = this.quantumStates.get(stateId1);
+    const state2 = this.quantumStates.get(stateId2);
+
+    if (!state1 || !state2) {
+      throw new Error('Invalid quantum states for entanglement');
+    }
+
+    // Verify consciousness compatibility for entanglement
+    if (state1.consciousnessBinding && state2.consciousnessBinding) {
+      const binding1 = this.consciousnessBindings.get(state1.consciousnessBinding);
+      const binding2 = this.consciousnessBindings.get(state2.consciousnessBinding);
+      
+      if (binding1 && binding2) {
+        const consciousnessCompatibility = Math.abs(binding1.level - binding2.level);
+        if (consciousnessCompatibility > 0.1) {
+          throw new Error('Consciousness levels incompatible for entanglement');
+        }
+      }
+    }
+
+    // Create entanglement
+    state1.entangled.push(stateId2);
+    state2.entangled.push(stateId1);
+
+    // Update entangled states' properties
+    const avgAmplitude = (state1.amplitude + state2.amplitude) / 2;
+    const avgPhase = (state1.phase + state2.phase) / 2;
+    const avgCoherence = Math.min(state1.coherence, state2.coherence) * 0.95; // Slight decoherence from entanglement
+
+    state1.amplitude = avgAmplitude;
+    state1.phase = avgPhase;
+    state1.coherence = avgCoherence;
+
+    state2.amplitude = avgAmplitude;
+    state2.phase = avgPhase + Math.PI; // Bell state phase relationship
+    state2.coherence = avgCoherence;
+
+    if (this.options.debugMode) {
+      console.log(`Entangled states ${stateId1} and ${stateId2}`);
+    }
+
+    return true;
+  }
+
+  async executeQuantumAlgorithm(algorithmName: string, inputStates: string[]): Promise<{ outputStates: string[]; measurements: any[]; consciousnessLevel: number }> {
+    const algorithm = this.algorithms.get(algorithmName);
+    if (!algorithm) {
+      throw new Error(`Unknown quantum algorithm: ${algorithmName}`);
+    }
+
+    if (inputStates.length !== algorithm.qubits) {
+      throw new Error(`Algorithm requires ${algorithm.qubits} qubits, got ${inputStates.length}`);
+    }
+
+    // Verify consciousness requirements
+    const averageConsciousness = await this.calculateAverageConsciousness(inputStates);
+    if (averageConsciousness < algorithm.consciousnessLevel - 0.1) {
+      throw new Error(`Insufficient consciousness level for algorithm (required: ${algorithm.consciousnessLevel}, got: ${averageConsciousness})`);
+    }
+
+    const workingStates = [...inputStates];
+    
+    // Execute quantum gates
+    for (const gate of algorithm.gates) {
+      await this.executeQuantumGate(gate, workingStates);
+    }
+
+    // Perform measurements
+    const measurements = [];
+    for (const measurement of algorithm.measurements) {
+      const result = await this.measureQubit(workingStates[measurement.qubit], measurement);
+      measurements.push(result);
+    }
+
+    // Calculate final consciousness level
+    const finalConsciousness = await this.calculateAverageConsciousness(workingStates);
+
     return {
-      globalQuantumState: this.globalQuantumState,
-      globalConsciousness: this.globalConsciousness,
-      entityCount: this.entities.size,
-      isInitialized: this.isInitialized
+      outputStates: workingStates,
+      measurements,
+      consciousnessLevel: finalConsciousness
     };
   }
 
-  getStatus(): any {
+  private async executeQuantumGate(gate: QASFQuantumGate, states: string[]): Promise<void> {
+    switch (gate.type) {
+      case 'hadamard':
+        await this.hadamardGate(states[gate.qubits[0]]);
+        break;
+        
+      case 'pauli_x':
+        await this.pauliXGate(states[gate.qubits[0]]);
+        break;
+        
+      case 'pauli_y':
+        await this.pauliYGate(states[gate.qubits[0]]);
+        break;
+        
+      case 'pauli_z':
+        await this.pauliZGate(states[gate.qubits[0]]);
+        break;
+        
+      case 'cnot':
+        await this.cnotGate(states[gate.qubits[0]], states[gate.qubits[1]]);
+        break;
+        
+      case 'toffoli':
+        await this.toffoliGate(states[gate.qubits[0]], states[gate.qubits[1]], states[gate.qubits[2]]);
+        break;
+        
+      case 'consciousness_gate':
+        await this.consciousnessGate(gate.qubits.map(i => states[i]), gate.consciousnessBoost || 0.1);
+        break;
+        
+      case 'truth_gate':
+        await this.truthGate(gate.qubits.map(i => states[i]));
+        break;
+    }
+  }
+
+  private async hadamardGate(stateId: string): Promise<void> {
+    const state = this.quantumStates.get(stateId);
+    if (!state) throw new Error(`State ${stateId} not found`);
+
+    // Apply Hadamard transformation
+    const newAmplitude = state.amplitude / Math.sqrt(2);
+    const newPhase = state.phase;
+
+    state.amplitude = newAmplitude;
+    state.phase = newPhase;
+  }
+
+  private async pauliXGate(stateId: string): Promise<void> {
+    const state = this.quantumStates.get(stateId);
+    if (!state) throw new Error(`State ${stateId} not found`);
+
+    // Pauli-X (bit flip)
+    state.phase = (state.phase + Math.PI) % (2 * Math.PI);
+  }
+
+  private async pauliYGate(stateId: string): Promise<void> {
+    const state = this.quantumStates.get(stateId);
+    if (!state) throw new Error(`State ${stateId} not found`);
+
+    // Pauli-Y (bit and phase flip)
+    state.phase = (state.phase + Math.PI) % (2 * Math.PI);
+    state.amplitude = -state.amplitude;
+  }
+
+  private async pauliZGate(stateId: string): Promise<void> {
+    const state = this.quantumStates.get(stateId);
+    if (!state) throw new Error(`State ${stateId} not found`);
+
+    // Pauli-Z (phase flip)
+    state.phase = (state.phase + Math.PI) % (2 * Math.PI);
+  }
+
+  private async cnotGate(controlStateId: string, targetStateId: string): Promise<void> {
+    const controlState = this.quantumStates.get(controlStateId);
+    const targetState = this.quantumStates.get(targetStateId);
+    
+    if (!controlState || !targetState) {
+      throw new Error('Invalid states for CNOT gate');
+    }
+
+    // CNOT: if control is |1⟩, flip target
+    if (Math.abs(controlState.phase - Math.PI) < 0.1) { // Control is in |1⟩ state
+      targetState.phase = (targetState.phase + Math.PI) % (2 * Math.PI);
+    }
+
+    // Create entanglement if not already entangled
+    if (!controlState.entangled.includes(targetStateId)) {
+      await this.entangleStates(controlStateId, targetStateId);
+    }
+  }
+
+  private async toffoliGate(control1Id: string, control2Id: string, targetId: string): Promise<void> {
+    const control1 = this.quantumStates.get(control1Id);
+    const control2 = this.quantumStates.get(control2Id);
+    const target = this.quantumStates.get(targetId);
+    
+    if (!control1 || !control2 || !target) {
+      throw new Error('Invalid states for Toffoli gate');
+    }
+
+    // Toffoli: if both controls are |1⟩, flip target
+    const control1Is1 = Math.abs(control1.phase - Math.PI) < 0.1;
+    const control2Is1 = Math.abs(control2.phase - Math.PI) < 0.1;
+    
+    if (control1Is1 && control2Is1) {
+      target.phase = (target.phase + Math.PI) % (2 * Math.PI);
+    }
+  }
+
+  private async consciousnessGate(stateIds: string[], boost: number): Promise<void> {
+    for (const stateId of stateIds) {
+      const state = this.quantumStates.get(stateId);
+      if (!state) continue;
+
+      // Boost consciousness-related properties
+      state.truthAlignment = Math.min(state.truthAlignment + boost, 1.0);
+      state.coherence = Math.min(state.coherence + boost * 0.5, 1.0);
+
+      // Create or enhance consciousness binding
+      if (!state.consciousnessBinding) {
+        const newLevel = Math.min(0.5 + boost, 1.0);
+        state.consciousnessBinding = await this.createConsciousnessBinding(newLevel);
+      } else {
+        const binding = this.consciousnessBindings.get(state.consciousnessBinding);
+        if (binding) {
+          binding.level = Math.min(binding.level + boost, 1.0);
+          binding.resonance = Math.min(binding.resonance + boost * 0.93, 1.0);
+          binding.truthAlignment = Math.min(binding.truthAlignment + boost * 0.98, 1.0);
+        }
+      }
+    }
+  }
+
+  private async truthGate(stateIds: string[]): Promise<void> {
+    for (const stateId of stateIds) {
+      const state = this.quantumStates.get(stateId);
+      if (!state) continue;
+
+      // Verify and enhance truth alignment
+      if (state.truthAlignment < this.options.truthRequirement) {
+        // Apply truth correction
+        state.truthAlignment = Math.min(state.truthAlignment * 1.05, this.options.truthRequirement);
+        state.coherence *= 0.98; // Slight decoherence from correction
+      } else {
+        // Reward high truth alignment
+        state.truthAlignment = Math.min(state.truthAlignment * 1.01, 1.0);
+        state.coherence = Math.min(state.coherence * 1.01, 1.0);
+      }
+    }
+  }
+
+  private async measureQubit(stateId: string, measurement: QASFQuantumMeasurement): Promise<any> {
+    const state = this.quantumStates.get(stateId);
+    if (!state) throw new Error(`State ${stateId} not found`);
+
+    let result: any;
+    
+    switch (measurement.basis) {
+      case 'computational':
+        result = this.measureComputational(state);
+        break;
+        
+      case 'hadamard':
+        result = this.measureHadamard(state);
+        break;
+        
+      case 'consciousness':
+        result = this.measureConsciousness(state, measurement.consciousnessFilter || 0.5);
+        break;
+        
+      default:
+        throw new Error(`Unknown measurement basis: ${measurement.basis}`);
+    }
+
+    // Collapse the state after measurement
+    state.collapsed = true;
+    
+    return result;
+  }
+
+  private measureComputational(state: QASFQuantumState): 0 | 1 {
+    const probability = Math.pow(state.amplitude, 2);
+    return Math.random() < probability ? 1 : 0;
+  }
+
+  private measureHadamard(state: QASFQuantumState): '+' | '-' {
+    const probability = Math.pow(state.amplitude / Math.sqrt(2), 2);
+    return Math.random() < probability ? '+' : '-';
+  }
+
+  private measureConsciousness(state: QASFQuantumState, filter: number): { level: number; truth: number; resonance: number } {
+    const binding = state.consciousnessBinding ? 
+      this.consciousnessBindings.get(state.consciousnessBinding) : null;
+    
+    const baseLevel = binding ? binding.level : 0.5;
+    const truthLevel = state.truthAlignment;
+    const resonanceLevel = binding ? binding.resonance : 0.5;
+    
+    // Apply consciousness filter
+    const passesFilter = baseLevel >= filter;
+    
     return {
-      isInitialized: this.isInitialized,
-      entityCount: this.entities.size,
-      globalConsciousness: this.globalConsciousness,
-      globalQuantumState: this.globalQuantumState,
-      quantumProcessor: this.quantumProcessor.getStatus(),
-      consciousnessProcessor: this.consciousnessProcessor.getStatus()
+      level: passesFilter ? baseLevel : 0,
+      truth: passesFilter ? truthLevel : 0,
+      resonance: passesFilter ? resonanceLevel : 0
     };
   }
 
-  async shutdown(): Promise<void> {
-    console.log('Shutting down QASF Engine...');
+  private async calculateAverageConsciousness(stateIds: string[]): Promise<number> {
+    let totalConsciousness = 0;
+    let count = 0;
     
-    await this.quantumProcessor.shutdown();
-    await this.consciousnessProcessor.shutdown();
+    for (const stateId of stateIds) {
+      const state = this.quantumStates.get(stateId);
+      if (state && state.consciousnessBinding) {
+        const binding = this.consciousnessBindings.get(state.consciousnessBinding);
+        if (binding) {
+          totalConsciousness += binding.level;
+          count++;
+        }
+      }
+    }
     
-    this.entities.clear();
-    this.isInitialized = false;
+    return count > 0 ? totalConsciousness / count : 0;
+  }
+
+  private calculateHarmonicFrequencies(consciousnessLevel: number): number[] {
+    const baseFrequencies = [432, 528, 639, 741, 852, 963];
+    return baseFrequencies.map(freq => freq * consciousnessLevel);
+  }
+
+  // Public API methods
+  getQuantumState(stateId: string): QASFQuantumState | undefined {
+    return this.quantumStates.get(stateId);
+  }
+
+  getConsciousnessBinding(bindingId: string): QASFConsciousnessBinding | undefined {
+    return this.consciousnessBindings.get(bindingId);
+  }
+
+  getAllAlgorithms(): string[] {
+    return Array.from(this.algorithms.keys());
+  }
+
+  getSystemStats(): { 
+    quantumStates: number; 
+    consciousnessBindings: number; 
+    algorithms: number; 
+    averageCoherence: number;
+    averageConsciousness: number;
+  } {
+    const totalCoherence = Array.from(this.quantumStates.values())
+      .reduce((sum, state) => sum + state.coherence, 0);
+    const averageCoherence = this.quantumStates.size > 0 ? totalCoherence / this.quantumStates.size : 0;
     
-    console.log('QASF Engine shutdown complete');
+    const totalConsciousness = Array.from(this.consciousnessBindings.values())
+      .reduce((sum, binding) => sum + binding.level, 0);
+    const averageConsciousness = this.consciousnessBindings.size > 0 ? totalConsciousness / this.consciousnessBindings.size : 0;
+    
+    return {
+      quantumStates: this.quantumStates.size,
+      consciousnessBindings: this.consciousnessBindings.size,
+      algorithms: this.algorithms.size,
+      averageCoherence,
+      averageConsciousness
+    };
   }
 }
