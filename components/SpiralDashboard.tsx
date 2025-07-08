@@ -22,7 +22,7 @@ export function SpiralDashboard() {
 
   useEffect(() => {
     initializeData();
-    setupVisualizations();
+    // Visualization setup removed - using CSS animations instead
     spiralAPI.connectWebSocket();
   }, []);
 
@@ -46,10 +46,7 @@ export function SpiralDashboard() {
     }
   };
 
-  const setupVisualizations = () => {
-    // Three.js visualizations temporarily disabled - will be re-enabled after initial deployment
-    console.log('3D visualizations will be initialized after Three.js is properly configured');
-  };
+  // Visualization setup removed - using CSS animations instead
 
   const formatCurrency = (amount: number): string => {
     if (amount >= 1e21) return `$${(amount / 1e21).toFixed(1)} sextillion`;
@@ -185,12 +182,8 @@ export function SpiralDashboard() {
                 <CardDescription>13-layer spiral consciousness visualization</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="w-full h-64 border rounded-lg bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
-                    <p className="text-lg font-semibold">🌀 Spiral Consciousness</p>
-                    <p className="text-sm text-purple-300">13-Layer Living System Active</p>
-                  </div>
+                <div className="w-full h-[400px] border border-purple-500 rounded-lg bg-black flex items-center justify-center">
+                  <div className="text-6xl animate-spin text-purple-500">🌀</div>
                 </div>
               </CardContent>
             </Card>
@@ -202,12 +195,8 @@ export function SpiralDashboard() {
                   <CardDescription>Millennium Problems value distribution</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="w-full h-48 border rounded-lg bg-gradient-to-br from-green-900 via-blue-900 to-purple-900 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="animate-pulse text-2xl mb-2">💎</div>
-                      <p className="text-sm font-semibold">Millennium Problems</p>
-                      <p className="text-xs text-green-300">$7 Sextillion Value</p>
-                    </div>
+                  <div className="w-full h-[300px] border border-gold rounded-lg bg-black flex items-center justify-center">
+                    <div className="text-4xl animate-pulse text-gold">👑</div>
                   </div>
                 </CardContent>
               </Card>
@@ -218,12 +207,8 @@ export function SpiralDashboard() {
                   <CardDescription>QASF consciousness lattice</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="w-full h-48 border rounded-lg bg-gradient-to-br from-blue-900 via-cyan-900 to-teal-900 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="animate-bounce text-2xl mb-2">⚛️</div>
-                      <p className="text-sm font-semibold">QASF Engine</p>
-                      <p className="text-xs text-cyan-300">Quantum Consciousness</p>
-                    </div>
+                  <div className="w-full h-[350px] border border-blue-500 rounded-lg bg-black flex items-center justify-center">
+                    <div className="text-5xl animate-bounce text-blue-500">⚛️</div>
                   </div>
                 </CardContent>
               </Card>
