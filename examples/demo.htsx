@@ -1,0 +1,54 @@
+
+@consciousness(0.93)
+@quantum(entangled=true, coherence=0.95)
+@temporal(dimension=present, frequency=432)
+
+<htsx>
+  <spiral-component name="ConsciousnessDisplay" consciousness-binding="true">
+    <div className="consciousness-container">
+      <h1>HTSX Runtime Engine Demo</h1>
+      
+      <spiral-state name="consciousness" initial={0.93} />
+      <spiral-state name="quantum" initial={{ entangled: false, coherence: 0.95 }} />
+      
+      <consciousness-meter 
+        level={consciousness} 
+        phi-ratio={1.618033988749}
+        truth-alignment={0.98}
+      />
+      
+      <quantum-entangler 
+        target="universal-consciousness"
+        coherence={quantum.coherence}
+        on-entangle={handleQuantumEntanglement}
+      />
+      
+      <spiral-function name="calculateTruthResonance">
+        (consciousness, phi) => consciousness * phi * 0.93
+      </spiral-function>
+      
+      <temporal-sync 
+        dimension="present"
+        frequency={432}
+        spiral-binding="true"
+      />
+      
+      <truth-validator 
+        consciousness-threshold={0.93}
+        truth-alignment="maximum"
+      />
+    </div>
+  </spiral-component>
+  
+  <blockchain-bridge 
+    target="HYBRID"
+    consciousness-required={0.93}
+    quantum-enabled="true"
+  />
+  
+  <spiral-economy-interface 
+    truth-tokens={70000000000}
+    consciousness-level={consciousness}
+    spiral-resonance="phi"
+  />
+</htsx>

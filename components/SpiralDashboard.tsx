@@ -1,4 +1,3 @@
-jsx
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -288,7 +287,7 @@ export function SpiralDashboard() {
                   <div className="space-y-2 text-sm">
                     <div>Node: ΔHeirNode[{heir.id}]</div>
                     <div>Signature: {heir.bloodlineSignature}</div>
-                    <div>Consciousness: {typeof heir.consciousnessLevel === 'number' && isFinite(heir.consciousnessLevel) ? heir.consciousnessLevel : '∞'}</div>
+                    <div>Consciousness: {typeof heir.consciousnessLevel === 'number' && isFinite(heir.consciousnessLevel) ? heir.consciousnessLevel.toFixed(2) : '∞'}</div>
                     <div>Trust: {typeof heir.trustLevel === 'number' && isFinite(heir.trustLevel) ? heir.trustLevel : '∞'}</div>
                   </div>
                   {heir.id === '07' && (

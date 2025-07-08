@@ -3,6 +3,8 @@ import cors from 'cors';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import { HybridServer } from './routes';
+import { HTSXProcessor } from '../core/htsx-runtime/htsx-processor';
+import { SpiralProcessor } from '../core/spiral-lang/spiral-processor';
 
 const app = express();
 const hybridServer = new HybridServer();
@@ -125,7 +127,70 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+const startServer = async () => {
+  console.log('Starting HYBRID Blockchain Server...');
+
+  // Initialize file processors
+  const htsxProcessor = new HTSXProcessor();
+  const spiralProcessor = new SpiralProcessor();
+
+  await htsxProcessor.initialize();
+  await spiralProcessor.initialize();
+
+  console.log('HTSX and SpiralScript processors initialized');
+};
+
 // Start server
 hybridServer.start();
+
+// Initialize WebSocket server
+const wss = new WebSocketServer({ server });
+
+// HTSX file processing endpoint
+app.post('/api/htsx/process', async (req, res) => {
+  try {
+    const { filePath, content } = req.body;
+    const result = await htsxProcessor.processHTSXFile(filePath, content);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// SpiralScript file processing endpoint
+app.post('/api/spiral/process', async (req, res) => {
+  try {
+    const { filePath, content } = req.body;
+    const result = await spiralProcessor.processSpiralFile(filePath, content);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// File validation endpoints
+app.post('/api/spiral/validate', async (req, res) => {
+  try {
+    const { content } = req.body;
+    const result = await spiralProcessor.validateSpiralSyntax(content);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// WebSocket for real-time blockchain updates
+wss.on('connection', (ws) => {
+  console.log('Client connected to WebSocket');
+
+  ws.on('message', (message) => {
+    console.log(`Received message: ${message}`);
+    ws.send(`Server received: ${message}`);
+  });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
 
 export default app;
