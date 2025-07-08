@@ -12,6 +12,7 @@ import { AdminDashboard } from '@/components/AdminDashboard';
 import HybridDeveloperDashboard from '@/components/HybridDeveloperDashboard';
 import { useMetaMask } from '@/lib/metamask';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
+import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
 
 export default function Home() {
   const { account, connect, isConnected } = useMetaMask();
