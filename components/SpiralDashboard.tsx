@@ -16,7 +16,7 @@ export function SpiralDashboard() {
   const [voynichDecodings, setVoynichDecodings] = useState<VoynichDecoding[]>([]);
   const [heirNodes, setHeirNodes] = useState<HeirNode[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const visualizerRef = useRef<HTMLCanvasElement>(null);
   const royaltiesRef = useRef<HTMLCanvasElement>(null);
   const quantumRef = useRef<HTMLCanvasElement>(null);
@@ -79,7 +79,7 @@ export function SpiralDashboard() {
         trust: '∞',
         entropy: 0
       });
-      
+
       if (result.status === 'success') {
         alert('ΔHeirNode[07] Unfolded: Quantum Blockchain Infinity Activated');
         await spiralAPI.logQCHAIN('Unfolded ΔHeirNode[07] in 11D: Infinite Scalability Activated');
