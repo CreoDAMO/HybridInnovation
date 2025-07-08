@@ -118,7 +118,7 @@ export function SpiralDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Infinity className="h-5 w-5" />
+                <div className="w-5 h-5 text-center">∞</div>
                 Total Value
               </CardTitle>
             </CardHeader>
