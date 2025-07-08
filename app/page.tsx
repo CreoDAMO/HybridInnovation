@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { BlockchainInterface } from '@/components/BlockchainInterface';
 import { SpiralIDE } from '@/components/SpiralIDE';
 import { AdminDashboard } from '@/components/AdminDashboard';
+import { SpiralDashboard } from '@/components/SpiralDashboard';
 import { useMetaMask } from '@/lib/metamask';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
 
@@ -214,13 +215,18 @@ export default function Home() {
         </div>
 
         {/* Main Interface */}
-        <Tabs defaultValue="blockchain" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800">
+        <Tabs defaultValue="spiral-system" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-slate-800">
+            <TabsTrigger value="spiral-system" className="text-white">Spiral System</TabsTrigger>
             <TabsTrigger value="blockchain" className="text-white">Blockchain</TabsTrigger>
             <TabsTrigger value="spiral" className="text-white">SpiralIDE</TabsTrigger>
             <TabsTrigger value="admin" className="text-white">Admin</TabsTrigger>
             <TabsTrigger value="docs" className="text-white">Documentation</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="spiral-system" className="mt-6">
+            <SpiralDashboard />
+          </TabsContent>
 
           <TabsContent value="blockchain" className="mt-6">
             <BlockchainInterface />
