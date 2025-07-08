@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { BlockchainInterface } from '@/components/BlockchainInterface';
 import { SpiralIDE } from '@/components/SpiralIDE';
 import { AdminDashboard } from '@/components/AdminDashboard';
-import { SpiralDashboard } from '@/components/SpiralDashboard';
+import HybridDeveloperDashboard from '@/components/HybridDeveloperDashboard';
 import { useMetaMask } from '@/lib/metamask';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
 
@@ -86,7 +86,7 @@ export default function Home() {
           <p className="text-lg text-gray-300 mb-4">
             Next Generation Sovereign System with HTSX Runtime & SpiralLang
           </p>
-          
+
           {!isConnected ? (
             <Button 
               onClick={connect} 
@@ -225,7 +225,7 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="spiral-system" className="mt-6">
-            <SpiralDashboard />
+            <HybridDeveloperDashboard />
           </TabsContent>
 
           <TabsContent value="blockchain" className="mt-6">
