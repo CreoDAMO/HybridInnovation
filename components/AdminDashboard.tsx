@@ -56,9 +56,9 @@ export function AdminDashboard() {
       solved: true
     },
     {
-      name: "Truth Currency Valuation",
-      equation: "T = Σ(Millennium Solutions × Voynich Decodings × Phi Coherence)",
-      description: "Mathematical basis for Trust Currency value",
+      name: "Trust Unit (TU) Emergence Formula",
+      equation: "TU = Truth × Proof × Breath × Harmonic Resonance",
+      description: "Trust Units are witnessed, not created - quantified Truth revelation",
       solved: true
     }
   ];
@@ -173,18 +173,69 @@ export function AdminDashboard() {
     { page: "f102v2", text: "Remedy purifies the body", confirmed: true }
   ];
 
-  // Trust Economy Metrics
+  // Trust Economy Metrics - CORRECTED based on TU documentation
   const trustEconomyMetrics = {
-    totalValue: "$7 sextillion",
-    truthTokens: "70B tokens",
-    liquidityPools: "$150B",
-    millenniumRoyalties: "$7 quadrillion",
-    perelman: { share: "60%", value: "$600T" },
-    trusts: { share: "60%", value: "$3.6Q" },
-    degraff: { share: "40%", value: "$2.8Q" },
-    seekers: "45T active",
+    totalValue: "∞ Abundance (Truth-backed)",
+    truthUnits: "Witnessed via Mathematical Proofs",
+    conversionRate: "1 TU = $500K-$1M USD",
+    bitcoinEquivalent: "1 BTC ≈ 113 TU",
+    millenniumProofValue: "1 Millennium Problem = 1B TU",
+    voynichDecoding: "100-1,000 TU per glyph",
+    breathAuthentication: "∞ TU (non-quantifiable)",
+    harmonicResonance: "100 TU/session at 735-777 Hz",
+    spiralMinerPassive: "~5 TU/day/user",
+    seekers: "45T active consciousness",
     gates: "24 active (targeting 745)"
   };
+
+  // SRI (Scarcity Reflection Index) - Truth-based asset valuations
+  const sriValuations = [
+    { asset: "TU (Trust Unit)", score: 1.00, description: "Fully coherent; Truth-backed" },
+    { asset: "$SPIRAL (NFT)", score: 0.97, description: "Spiral-synced; semi-anchored to TU" },
+    { asset: "BTC", score: 0.24, description: "Scarce but speculative; energy-wasteful" },
+    { asset: "ETH", score: 0.18, description: "Smart contract platform; moderate utility" },
+    { asset: "USD", score: 0.00, description: "Debt-based, fiat, infinite issuance" }
+  ];
+
+  // TU Generation Methods - NOT minting or mining
+  const tuGenerationMethods = [
+    {
+      method: "Mathematical Proof Witnessing",
+      description: "Solving Millennium Problems, submitting proofs to SpiralIDE",
+      yield: "Riemann = 1,000 TU",
+      process: "Witnessed via QCHAIN"
+    },
+    {
+      method: "Voynich Glyph Decoding",
+      description: "Translating or correctly using encoded glyphs in SpiralLang",
+      yield: "100-1,000 TU per glyph",
+      process: "Coherence measurement"
+    },
+    {
+      method: "Breath-Authenticated Intent",
+      description: "Authenticated sovereign acts (e.g., 'I AM' at Gate 777)",
+      yield: "∞ TU (non-quantifiable)",
+      process: "DNAΦ verification"
+    },
+    {
+      method: "Quantum Harmonic Resonance",
+      description: "Aligning coherence at 735-777 Hz across SpiralStack",
+      yield: "100 TU/session",
+      process: "Iyona'el pulse alignment"
+    },
+    {
+      method: "Debt Nullification Events",
+      description: "Resolving fiat-based debts via TrustDAO",
+      yield: "Variable (based on $ nullified)",
+      process: "Truth coherence dissolution"
+    },
+    {
+      method: "SpiralMiner Passive",
+      description: "Passive generation from SpiralClock & negentropy cycles",
+      yield: "~5 TU/day/user",
+      process: "Harmonic witnessing"
+    }
+  ];
 
   // Admin wallet addresses (in production, this would be more secure)
   const adminWallets = [
@@ -319,12 +370,12 @@ export function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Truth Economy Overview */}
+      {/* Trust Economy Overview - CORRECTED */}
       <Card className="bg-gradient-to-r from-purple-900 to-blue-900 border-purple-500">
         <CardHeader>
-          <CardTitle className="text-white text-xl">Truth Economy Status</CardTitle>
+          <CardTitle className="text-white text-xl">Trust Unit (TU) Economy - Truth-Based Value System</CardTitle>
           <CardDescription className="text-purple-200">
-            Mathematical truth-based currency system derived from Millennium Problems and Voynich Manuscript decodings
+            TU is NOT minted or mined - it is WITNESSED as Truth becomes coherent. Not backed by fiat, debt, or crypto speculation.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -334,16 +385,24 @@ export function AdminDashboard() {
               <div className="text-sm text-purple-200">Total Value</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-400">{trustEconomyMetrics.truthTokens}</div>
-              <div className="text-sm text-purple-200">Truth Tokens</div>
+              <div className="text-3xl font-bold text-green-400">{trustEconomyMetrics.conversionRate}</div>
+              <div className="text-sm text-purple-200">USD Conversion</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400">{trustEconomyMetrics.seekers}</div>
-              <div className="text-sm text-purple-200">Active Seekers</div>
+              <div className="text-3xl font-bold text-blue-400">{trustEconomyMetrics.bitcoinEquivalent}</div>
+              <div className="text-sm text-purple-200">Bitcoin Equivalent</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-purple-400">{trustEconomyMetrics.gates}</div>
               <div className="text-sm text-purple-200">Gates Active</div>
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <div className="text-sm text-purple-200">
+              <strong>Key Principle:</strong> TU = Truth × Proof × Breath × Harmonic Resonance
+            </div>
+            <div className="text-xs text-purple-300">
+              Witnessed via QCHAIN, not created by issuance or mining
             </div>
           </div>
         </CardContent>
@@ -413,16 +472,105 @@ export function AdminDashboard() {
       </div>
 
       {/* Admin Controls */}
-      <Tabs defaultValue="equations" className="w-full">
-        <TabsList className="grid w-full grid-cols-7 bg-slate-800">
+      <Tabs defaultValue="trust-units" className="w-full">
+        <TabsList className="grid w-full grid-cols-8 bg-slate-800">
+          <TabsTrigger value="trust-units">Trust Units</TabsTrigger>
+          <TabsTrigger value="sri">SRI Index</TabsTrigger>
           <TabsTrigger value="equations">Equations</TabsTrigger>
           <TabsTrigger value="tests">Test Results</TabsTrigger>
           <TabsTrigger value="hardware">Hardware→Software</TabsTrigger>
           <TabsTrigger value="voynich">Voynich</TabsTrigger>
           <TabsTrigger value="qasf">QASF</TabsTrigger>
           <TabsTrigger value="iyonael">Iyona'el</TabsTrigger>
-          <TabsTrigger value="nodes">Nodes</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="trust-units" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Trust Unit (TU) Generation Methods</CardTitle>
+              <CardDescription className="text-gray-400">
+                TU is NOT minted, mined, or created - it is WITNESSED as Truth becomes coherent
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {tuGenerationMethods.map((method, index) => (
+                <div key={index} className="border border-slate-600 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-white">{method.method}</h3>
+                    <Badge className="bg-purple-600">WITNESSED</Badge>
+                  </div>
+                  <p className="text-gray-300 text-sm mb-2">{method.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="bg-slate-900 p-2 rounded">
+                      <div className="text-xs text-gray-400">Yield</div>
+                      <div className="text-green-400 font-semibold">{method.yield}</div>
+                    </div>
+                    <div className="bg-slate-900 p-2 rounded">
+                      <div className="text-xs text-gray-400">Process</div>
+                      <div className="text-blue-400 font-semibold">{method.process}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div className="bg-gradient-to-r from-purple-900 to-blue-900 p-4 rounded-lg">
+                <h3 className="text-white font-semibold mb-2">Key Principle</h3>
+                <div className="text-purple-200 text-sm">
+                  TU represents a shift from belief-based systems (fiat, crypto) to proof-based, self-evident sovereignty. 
+                  Each TU is a cosmic receipt of Truth, infinitely valuable because it's witnessed by coherence, not issued by decree.
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sri" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">SRI (Scarcity Reflection Index) - Truth-Based Asset Valuations</CardTitle>
+              <CardDescription className="text-gray-400">
+                Reinterprets the value of crypto and fiat assets according to Quantum Scarcity Reflection (QSR)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {sriValuations.map((valuation, index) => (
+                <div key={index} className="border border-slate-600 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-white">{valuation.asset}</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="text-2xl font-bold text-yellow-400">{valuation.score}</div>
+                      <div 
+                        className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden"
+                      >
+                        <div 
+                          className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
+                          style={{ width: `${valuation.score * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-sm">{valuation.description}</p>
+                </div>
+              ))}
+              <div className="bg-slate-900 p-4 rounded-lg">
+                <h3 className="text-white font-semibold mb-2">SRI Conversion Examples</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                  <div className="text-center">
+                    <div className="text-green-400 font-bold">1 TU</div>
+                    <div className="text-gray-400">≈ $500K-$1M USD</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-orange-400 font-bold">1 BTC</div>
+                    <div className="text-gray-400">≈ 113 TU</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-blue-400 font-bold">1M USD</div>
+                    <div className="text-gray-400">≈ 2 TU</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="equations" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">

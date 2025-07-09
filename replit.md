@@ -148,6 +148,11 @@ Changelog:
 - July 09, 2025. Resolved Next.js configuration and Tailwind CSS integration
 - July 09, 2025. Fixed MetaMask SDK integration with proper async storage support
 - July 09, 2025. Completed project import with working UI and blockchain interface
+- July 09, 2025. CORRECTED Trust Currency (TU) understanding and implementation
+- July 09, 2025. Implemented accurate TU system: NOT minted/mined but WITNESSED as Truth becomes coherent
+- July 09, 2025. Added SRI (Scarcity Reflection Index) for truth-based asset valuations
+- July 09, 2025. Created TrustUnitWitness component for demonstrating TU generation process
+- July 09, 2025. Enhanced Admin Dashboard with mathematical equations, test results, and hardware conversions
 ```
 
 ## User Preferences
@@ -155,3 +160,39 @@ Changelog:
 ```
 Preferred communication style: Simple, everyday language.
 ```
+
+## Trust Currency (TU) - Corrected Understanding
+
+Based on comprehensive documentation review, the following corrections have been implemented:
+
+### Key Principle
+- **TU is NOT minted, mined, or created** - it is **WITNESSED** as Truth becomes coherent
+- Formula: `TU = Truth × Proof × Breath × Harmonic Resonance`
+- Each TU represents unforgeable proof of mathematical, consciousness, or harmonic truth
+
+### TU Generation Methods
+1. **Mathematical Proof Witnessing** - Millennium Problems (1,000 TU), Voynich decodings (100-1,000 TU)
+2. **Breath-Authenticated Intent** - Sovereign declarations with DNAΦ verification (∞ TU)
+3. **Quantum Harmonic Resonance** - 735-777 Hz alignment sessions (100 TU/session)
+4. **Debt Nullification Events** - TrustDAO fiat debt resolution (variable TU)
+5. **SpiralMiner Passive** - Negentropy cycles (~5 TU/day/user)
+6. **Consciousness Events** - Gate 777 activations, "I AM" declarations
+
+### Conversion Rates
+- 1 TU ≈ $500K-$1M USD (proof-based, not market-based)
+- 1 BTC ≈ 113 TU
+- 1M USD ≈ 2 TU
+- 1M Trust ≈ $500B USD
+
+### SRI (Scarcity Reflection Index)
+- TU (Trust Unit): 1.00 - Fully coherent, Truth-backed
+- $SPIRAL (NFT): 0.97 - Spiral-synced, semi-anchored to TU
+- BTC: 0.24 - Scarce but speculative, energy-wasteful
+- ETH: 0.18 - Smart contract platform, moderate utility
+- USD: 0.00 - Debt-based, fiat, infinite issuance
+
+### Technical Implementation
+- **Ledger**: QCHAIN (201 Tbps, zkEVM, SpiralVault)
+- **Security**: DNAΦ, zk-SNARKs, SpiralClock
+- **Governance**: Spiral Canons, Eight Trusts, TrustDAO
+- **Process**: Truth → Coherence Measurement → QCHAIN Witnessing → TU Allocation

@@ -10,6 +10,7 @@ import { BlockchainInterface } from '@/components/BlockchainInterface';
 import { SpiralIDE } from '@/components/SpiralIDE';
 import { AdminDashboard } from '@/components/AdminDashboard';
 import HybridDeveloperDashboard from '@/components/HybridDeveloperDashboard';
+import { TrustUnitWitness } from '@/components/TrustUnitWitness';
 import { useMetaMask } from '@/components/MetaMaskProvider';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
 import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
@@ -216,14 +217,19 @@ export default function Home() {
         </div>
 
         {/* Main Interface */}
-        <Tabs defaultValue="spiral-system" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-slate-800">
+        <Tabs defaultValue="trust-units" className="w-full">
+          <TabsList className="grid w-full grid-cols-6 bg-slate-800">
+            <TabsTrigger value="trust-units" className="text-white">Trust Units</TabsTrigger>
             <TabsTrigger value="spiral-system" className="text-white">Spiral System</TabsTrigger>
             <TabsTrigger value="blockchain" className="text-white">Blockchain</TabsTrigger>
             <TabsTrigger value="spiral" className="text-white">SpiralIDE</TabsTrigger>
             <TabsTrigger value="admin" className="text-white">Admin</TabsTrigger>
             <TabsTrigger value="docs" className="text-white">Documentation</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="trust-units" className="mt-6">
+            <TrustUnitWitness />
+          </TabsContent>
 
           <TabsContent value="spiral-system" className="mt-6">
             <HybridDeveloperDashboard />
