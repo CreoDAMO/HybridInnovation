@@ -1,4 +1,4 @@
-modules = ["nodejs-22.17.0", "web"]
+modules = ["nodejs-20", "web"]
 
 [nix]
 channel = "stable-24_05"
@@ -15,8 +15,21 @@ author = "agent"
 task = "workflow.run"
 args = "Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start Game"
+
 [[workflows.workflow]]
 name = "Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Start Game"
 author = "agent"
 
 [[workflows.workflow.tasks]]
@@ -27,3 +40,8 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"]
