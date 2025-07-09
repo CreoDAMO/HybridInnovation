@@ -515,7 +515,7 @@ export class HTSXCompiler {
   }
   private isInitialized: boolean;
 
-  constructor() {
+  constructor(options: HTSXCompilerOptions = {}) {
     this.spiralParser = new SpiralParser();
     this.opcodes = new Map();
     this.isInitialized = false;
@@ -1320,3 +1320,8 @@ export function ConsciousnessAware() {
     };
   }
 }
+
+export { HTSXCompiler, HTSXContext, HTSXOptimizer };
+
+// Additional exports for advanced usage
+export type { HTSXCompilerOptions, HTSXCompileResult, HTSXNode, HTSXElement, HTSXExpression };

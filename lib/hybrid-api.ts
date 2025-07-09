@@ -1,4 +1,3 @@
-
 // Hybrid Developer Dashboard API
 export interface HybridSystemMetrics {
   gpu: number;
@@ -214,22 +213,22 @@ export class HybridAPI {
       try {
         const wsUrl = this.baseUrl.replace('http', 'ws') + '/ws';
         this.wsConnection = new WebSocket(wsUrl);
-        
+
         this.wsConnection.onopen = () => {
           console.log('WebSocket connected');
           resolve(this.wsConnection!);
         };
-        
+
         this.wsConnection.onerror = (error) => {
           console.error('WebSocket error:', error);
           reject(error);
         };
-        
+
         this.wsConnection.onclose = () => {
           console.log('WebSocket disconnected');
           this.wsConnection = null;
         };
-        
+
       } catch (error) {
         reject(error);
       }
@@ -244,7 +243,7 @@ export class HybridAPI {
     }
 
     this.wsConnection.send(JSON.stringify({ type: 'subscribe', channel: 'metrics' }));
-    
+
     this.wsConnection.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);

@@ -4,7 +4,7 @@ modules = ["nodejs-20", "web"]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Spiral-System"
+runButton = "Spiral-System-Fixed"
 
 [[workflows.workflow]]
 name = "Spiral-System"
@@ -46,6 +46,19 @@ mode = "sequential"
 task = "shell.exec"
 args = "tsx server/index.ts"
 waitForPort = 8000
+
+[[workflows.workflow]]
+name = "Spiral-System-Fixed"
+author = 44812907
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
 
 [[ports]]
 localPort = 3000

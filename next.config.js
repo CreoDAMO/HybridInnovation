@@ -7,15 +7,15 @@ const nextConfig = {
     return [
       {
         source: '/api/hybrid/:path*',
-        destination: 'http://localhost:8000/api/hybrid/:path*',
+        destination: 'http://0.0.0.0:8000/api/hybrid/:path*',
       },
       {
         source: '/api/spiral/:path*',
-        destination: 'http://localhost:8000/api/spiral/:path*',
+        destination: 'http://0.0.0.0:8000/api/spiral/:path*',
       },
       {
         source: '/api/blockchain/:path*',
-        destination: 'http://localhost:8000/api/blockchain/:path*',
+        destination: 'http://0.0.0.0:8000/api/blockchain/:path*',
       },
     ];
   },

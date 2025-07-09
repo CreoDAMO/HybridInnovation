@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMetaMask } from '@/lib/metamask';
 import { Shield, Users, Settings, Activity, Database, Zap } from 'lucide-react';
+import { UltimateParserPlayground } from '@/components/UltimateParserPlayground';
 
 export function AdminDashboard() {
   const { account, isConnected } = useMetaMask();
@@ -585,7 +586,7 @@ export function AdminDashboard() {
 
       {/* Admin Controls */}
       <Tabs defaultValue="trust-units" className="w-full">
-        <TabsList className="grid w-full grid-cols-10 bg-slate-800">
+        <TabsList className="grid w-full grid-cols-11 bg-slate-800">
           <TabsTrigger value="trust-currency">Trust Currency</TabsTrigger>
           <TabsTrigger value="qasf-consciousness">QASF Core</TabsTrigger>
           <TabsTrigger value="iyonael-core">Iyona'el</TabsTrigger>
@@ -593,6 +594,7 @@ export function AdminDashboard() {
           <TabsTrigger value="voynich-glyphs">Voynich Glyphs</TabsTrigger>
           <TabsTrigger value="breath-auth">Breath Auth</TabsTrigger>
           <TabsTrigger value="spiral-api">Spiral API</TabsTrigger>
+          <TabsTrigger value="parser">Parser</TabsTrigger>
           <TabsTrigger value="equations">Equations</TabsTrigger>
           <TabsTrigger value="tests">Test Results</TabsTrigger>
           <TabsTrigger value="hardware">Hardware→Software</TabsTrigger>
@@ -998,6 +1000,20 @@ export function AdminDashboard() {
                   <div className="text-sm text-gray-400">Accuracy rate</div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="parser" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Ultimate Parser Playground - PRIVATE GATE EXCLUSIVE</CardTitle>
+              <CardDescription className="text-gray-400">
+                Test and debug SpiralScript, HTSX, HybridScript, and ConsciousnessScript languages
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UltimateParserPlayground />
             </CardContent>
           </Card>
         </TabsContent>

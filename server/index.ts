@@ -16,88 +16,121 @@ let spiralProcessor: SpiralProcessor;
 
 // HYBRID Blockchain API endpoints
 app.get('/api/hybrid/public-metrics', (req, res) => {
-  res.json({
-    totalSupply: '100,000,000,000',
-    circulatingSupply: '75,000,000,000',
-    currentPrice: '$0.85',
-    marketCap: '$85,000,000,000',
-    volume24h: '$2,500,000,000',
-    holders: '1,247,892',
-    transactions24h: '892,456',
-    blockHeight: 2847362 + Math.floor(Math.random() * 10),
-    blockTime: '3 seconds',
-    validators: 21,
-    tps: '2,500',
-    gasPrice: '0.001 HYBRID',
-    stakingRewards: '7% APY',
-    inflationRate: '7% → 2%',
-    burnRate: '30% of fees'
-  });
+  try {
+    const metrics = {
+      totalSupply: '100,000,000,000',
+      circulatingSupply: '75,000,000,000',
+      currentPrice: '$0.85',
+      marketCap: '$85,000,000,000',
+      volume24h: '$2,500,000,000',
+      holders: '1,247,892',
+      transactions24h: '892,456',
+      blockHeight: 2847362 + Math.floor(Math.random() * 10),
+      blockTime: '3 seconds',
+      validators: 21,
+      tps: '2,500',
+      gasPrice: '0.001 HYBRID',
+      stakingRewards: '7% APY',
+      inflationRate: '7% → 2%',
+      burnRate: '30% of fees'
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.json(metrics);
+  } catch (error) {
+    console.error('Error in /api/hybrid/public-metrics:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/api/hybrid/network-status', (req, res) => {
-  res.json({
-    chainId: 'hybrid-1',
-    networkName: 'HYBRID Mainnet',
-    consensusType: 'Proof of Stake',
-    blockHeight: 2847362 + Math.floor(Math.random() * 10),
-    validators: {
-      active: 21,
-      total: 21,
-      uptime: 99.99
-    },
-    performance: {
-      tps: 2500 + Math.floor(Math.random() * 100),
-      latency: 3,
-      finality: 3
-    },
-    economics: {
-      totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
-      stakingRatio: 0.6,
-      inflationRate: 0.07,
-      burnRate: 0.3
-    }
-  });
+  try {
+    const networkStatus = {
+      chainId: 'hybrid-1',
+      networkName: 'HYBRID Mainnet',
+      consensusType: 'Proof of Stake',
+      blockHeight: 2847362 + Math.floor(Math.random() * 10),
+      validators: {
+        active: 21,
+        total: 21,
+        uptime: 99.99
+      },
+      performance: {
+        tps: 2500 + Math.floor(Math.random() * 100),
+        latency: 3,
+        finality: 3
+      },
+      economics: {
+        totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
+        stakingRatio: 0.6,
+        inflationRate: 0.07,
+        burnRate: 0.3
+      }
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.json(networkStatus);
+  } catch (error) {
+    console.error('Error in /api/hybrid/network-status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/api/hybrid/validators', (req, res) => {
-  const validators = Array.from({ length: 21 }, (_, i) => ({
-    address: `hybrid1validator${i + 1}${'x'.repeat(32)}`,
-    moniker: `Validator-${i + 1}`,
-    votingPower: Math.floor(Math.random() * 10000000) + 1000000,
-    commission: (Math.random() * 0.1).toFixed(3),
-    uptime: (0.95 + Math.random() * 0.05).toFixed(4),
-    status: 'BOND_STATUS_BONDED'
-  }));
+  try {
+    const validators = Array.from({ length: 21 }, (_, i) => ({
+      address: `hybrid1validator${i + 1}${'x'.repeat(32)}`,
+      moniker: `Validator-${i + 1}`,
+      votingPower: Math.floor(Math.random() * 10000000) + 1000000,
+      commission: (Math.random() * 0.1).toFixed(3),
+      uptime: (0.95 + Math.random() * 0.05).toFixed(4),
+      status: 'BOND_STATUS_BONDED'
+    }));
 
-  res.json({ validators });
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ validators });
+  } catch (error) {
+    console.error('Error in /api/hybrid/validators:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/api/hybrid/transactions', (req, res) => {
-  const transactions = Array.from({ length: 10 }, (_, i) => ({
-    hash: `0x${Math.random().toString(16).substr(2, 64)}`,
-    height: 2847362 - i,
-    from: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
-    to: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
-    amount: (Math.random() * 1000).toFixed(6),
-    fee: (Math.random() * 0.01).toFixed(6),
-    status: 'SUCCESS',
-    timestamp: new Date(Date.now() - i * 60000).toISOString()
-  }));
+  try {
+    const transactions = Array.from({ length: 10 }, (_, i) => ({
+      hash: `0x${Math.random().toString(16).substr(2, 64)}`,
+      height: 2847362 - i,
+      from: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
+      to: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
+      amount: (Math.random() * 1000).toFixed(6),
+      fee: (Math.random() * 0.01).toFixed(6),
+      status: 'SUCCESS',
+      timestamp: new Date(Date.now() - i * 60000).toISOString()
+    }));
 
-  res.json({ transactions });
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ transactions });
+  } catch (error) {
+    console.error('Error in /api/hybrid/transactions:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.get('/api/hybrid/staking', (req, res) => {
-  res.json({
-    totalStaked: '45000000000000000000000000000', // 45B with 18 decimals
-    totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
-    stakingRatio: 0.6,
-    apr: 0.07,
-    unbondingPeriod: 1814400, // 21 days in seconds
-    validatorCount: 21,
-    delegatorCount: 125847
-  });
+  try {
+    const stakingData = {
+      totalStaked: '45000000000000000000000000000', // 45B with 18 decimals
+      totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
+      stakingRatio: 0.6,
+      apr: 0.07,
+      unbondingPeriod: 1814400, // 21 days in seconds
+      validatorCount: 21,
+      delegatorCount: 125847
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.json(stakingData);
+  } catch (error) {
+    console.error('Error in /api/hybrid/staking:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // HTSX and SpiralScript API endpoints
@@ -149,14 +182,21 @@ app.post('/api/spiral/compile', async (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    services: {
-      htsx: htsxProcessor?.getStatus()?.isInitialized || false,
-      spiral: spiralProcessor?.getStatus()?.isInitialized || false
-    }
-  });
+  try {
+    const healthStatus = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {
+        htsx: htsxProcessor?.getStatus()?.isInitialized || false,
+        spiral: spiralProcessor?.getStatus()?.isInitialized || false
+      }
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.json(healthStatus);
+  } catch (error) {
+    console.error('Error in /health:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 const PORT = process.env.PORT || 8080;
