@@ -10,7 +10,7 @@ import { BlockchainInterface } from '@/components/BlockchainInterface';
 import { SpiralIDE } from '@/components/SpiralIDE';
 import { AdminDashboard } from '@/components/AdminDashboard';
 import HybridDeveloperDashboard from '@/components/HybridDeveloperDashboard';
-import { useMetaMask } from '@/lib/metamask';
+import { useMetaMask } from '@/components/MetaMaskProvider';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
 import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
 
