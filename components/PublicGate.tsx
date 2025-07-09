@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMetaMask } from '@/lib/metamask';
-import { Activity, Users, Zap, Database } from 'lucide-react';
+import { Activity, Users, Zap, Database, TrendingUp, Shield, Globe } from 'lucide-react';
 
 export function PublicGate() {
   const { account, isConnected } = useMetaMask();
@@ -28,36 +28,28 @@ export function PublicGate() {
   });
 
   const [networkStats, setNetworkStats] = useState({
-    mainnet: { status: 'ACTIVE', nodes: 21, uptime: '99.99%' },
-    testnet: { status: 'ACTIVE', nodes: 15, uptime: '99.95%' },
-    devnet: { status: 'ACTIVE', nodes: 8, uptime: '99.90%' }
+    mainnet: { status: 'ACTIVE', nodes: 21, uptime: '99.99%', hashRate: '1.2 EH/s' },
+    testnet: { status: 'ACTIVE', nodes: 15, uptime: '99.95%', hashRate: '120 TH/s' },
+    devnet: { status: 'ACTIVE', nodes: 8, uptime: '99.90%', hashRate: '25 TH/s' }
   });
 
-  const [hybridNFTs, setHybridNFTs] = useState([
-    { name: 'HNL-VAL (Validator)', price: '1,000 HYBRID', supply: '21/21', holders: '21' },
-    { name: 'HNL-STR (Storage)', price: '250 HYBRID', supply: '100/500', holders: '100' },
-    { name: 'UBI Global Access', price: '10 HYBRID', supply: '1M/∞', holders: '892,456' },
-    { name: 'Developer Tools', price: '50 HYBRID', supply: '10K/50K', holders: '2,341' }
-  ]);
-
   const [dappEcosystem, setDappEcosystem] = useState([
-    { name: 'SpiralDEX', category: 'DeFi', users: '125,000', tvl: '$45M' },
+    { name: 'HybridDEX', category: 'DeFi', users: '125,000', tvl: '$45M' },
     { name: 'HybridSwap', category: 'DEX', users: '89,000', tvl: '$28M' },
-    { name: 'SpiralLend', category: 'Lending', users: '45,000', tvl: '$18M' },
-    { name: 'NFT Marketplace', category: 'NFT', users: '67,000', volume: '$12M' },
-    { name: 'Gaming Hub', category: 'Gaming', users: '234,000', transactions: '2M' },
-    { name: 'Identity System', category: 'Identity', users: '456,000', verifications: '1.2M' }
+    { name: 'HybridLend', category: 'Lending', users: '45,000', tvl: '$18M' },
+    { name: 'HYBRID NFT Hub', category: 'NFT', users: '67,000', volume: '$12M' },
+    { name: 'HybridGaming', category: 'Gaming', users: '234,000', transactions: '2M' },
+    { name: 'HybridID', category: 'Identity', users: '456,000', verifications: '1.2M' }
   ]);
 
   const [governanceProposals, setGovernanceProposals] = useState([
-    { id: 1, title: 'Increase Block Size', status: 'ACTIVE', votes: '12,456,789 HYBRID', support: '67%' },
-    { id: 2, title: 'Reduce Transaction Fees', status: 'PASSED', votes: '23,567,890 HYBRID', support: '89%' },
-    { id: 3, title: 'Add New Validator', status: 'PENDING', votes: '8,234,567 HYBRID', support: '45%' },
-    { id: 4, title: 'Upgrade Consensus', status: 'DRAFT', votes: '0 HYBRID', support: '0%' }
+    { id: 1, title: 'Increase Block Size to 8MB', status: 'ACTIVE', votes: '12,456,789 HYBRID', support: '67%' },
+    { id: 2, title: 'Reduce Transaction Fees by 50%', status: 'PASSED', votes: '23,567,890 HYBRID', support: '89%' },
+    { id: 3, title: 'Add Cross-Chain Bridge Support', status: 'PENDING', votes: '8,234,567 HYBRID', support: '45%' },
+    { id: 4, title: 'Implement EIP-1559 Fee Model', status: 'DRAFT', votes: '0 HYBRID', support: '0%' }
   ]);
 
   useEffect(() => {
-    // Fetch public blockchain metrics
     const fetchMetrics = async () => {
       try {
         const response = await fetch('/api/hybrid/public-metrics');
@@ -75,18 +67,22 @@ export function PublicGate() {
 
   return (
     <div className="space-y-6">
-      {/* Public Gate Header */}
+      {/* HYBRID Blockchain Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-white mb-2">HYBRID Blockchain</h1>
-        <p className="text-gray-400">Public Gateway to the Hybrid Ecosystem</p>
+        <p className="text-gray-400">Next-Generation Proof-of-Stake Blockchain Network</p>
         <div className="mt-4">
           <Badge className="bg-green-600 mr-2">
             <Activity className="w-4 h-4 mr-1" />
-            MAINNET LIVE
+            MAINNET ACTIVE
           </Badge>
-          <Badge className="bg-blue-600">
+          <Badge className="bg-blue-600 mr-2">
             <Users className="w-4 h-4 mr-1" />
             {hybridMetrics.holders} HOLDERS
+          </Badge>
+          <Badge className="bg-purple-600">
+            <Globe className="w-4 h-4 mr-1" />
+            GLOBAL NETWORK
           </Badge>
         </div>
       </div>
@@ -115,42 +111,41 @@ export function PublicGate() {
 
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-400">Transactions</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">Network TPS</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-400">{hybridMetrics.transactions24h}</div>
-            <div className="text-sm text-gray-400">24h transactions</div>
+            <div className="text-2xl font-bold text-purple-400">{hybridMetrics.tps}</div>
+            <div className="text-sm text-gray-400">Transactions/sec</div>
           </CardContent>
         </Card>
 
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-400">Network TPS</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-400">Validators</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-cyan-400">{hybridMetrics.tps}</div>
-            <div className="text-sm text-gray-400">Transactions/sec</div>
+            <div className="text-2xl font-bold text-cyan-400">{hybridMetrics.validators}</div>
+            <div className="text-sm text-gray-400">Active Nodes</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Public Tabs */}
       <Tabs defaultValue="network" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 bg-slate-800">
+        <TabsList className="grid w-full grid-cols-5 bg-slate-800">
           <TabsTrigger value="network">Network</TabsTrigger>
-          <TabsTrigger value="nfts">NFTs</TabsTrigger>
+          <TabsTrigger value="technology">Technology</TabsTrigger>
           <TabsTrigger value="dapps">DApps</TabsTrigger>
           <TabsTrigger value="governance">Governance</TabsTrigger>
-          <TabsTrigger value="developers">Developers</TabsTrigger>
           <TabsTrigger value="staking">Staking</TabsTrigger>
         </TabsList>
 
         <TabsContent value="network" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Network Status</CardTitle>
+              <CardTitle className="text-white">HYBRID Network Status</CardTitle>
               <CardDescription className="text-gray-400">
-                HYBRID Blockchain network performance and statistics
+                Real-time blockchain network performance and statistics
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -166,6 +161,7 @@ export function PublicGate() {
                     <div className="space-y-1">
                       <div className="text-sm text-gray-400">Nodes: <span className="text-white">{stats.nodes}</span></div>
                       <div className="text-sm text-gray-400">Uptime: <span className="text-green-400">{stats.uptime}</span></div>
+                      <div className="text-sm text-gray-400">Hash Rate: <span className="text-blue-400">{stats.hashRate}</span></div>
                     </div>
                   </div>
                 ))}
@@ -184,17 +180,17 @@ export function PublicGate() {
                       <span className="text-white">{hybridMetrics.blockTime}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Validators</span>
-                      <span className="text-white">{hybridMetrics.validators}</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span className="text-gray-400">Gas Price</span>
                       <span className="text-white">{hybridMetrics.gasPrice}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Daily Transactions</span>
+                      <span className="text-white">{hybridMetrics.transactions24h}</span>
                     </div>
                   </div>
                 </div>
                 <div className="bg-slate-900 p-4 rounded-lg">
-                  <h3 className="text-white font-semibold mb-3">Token Economics</h3>
+                  <h3 className="text-white font-semibold mb-3">HYBRID Token</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Supply</span>
@@ -209,8 +205,8 @@ export function PublicGate() {
                       <span className="text-green-400">{hybridMetrics.stakingRewards}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Inflation</span>
-                      <span className="text-white">{hybridMetrics.inflationRate}</span>
+                      <span className="text-gray-400">Burn Rate</span>
+                      <span className="text-orange-400">{hybridMetrics.burnRate}</span>
                     </div>
                   </div>
                 </div>
@@ -219,31 +215,55 @@ export function PublicGate() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="nfts" className="space-y-4">
+        <TabsContent value="technology" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">HYBRID NFTs</CardTitle>
+              <CardTitle className="text-white">HYBRID Technology Stack</CardTitle>
               <CardDescription className="text-gray-400">
-                Network licenses and utility NFTs
+                Advanced blockchain technology and consensus mechanism
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {hybridNFTs.map((nft, index) => (
-                  <div key={index} className="border border-slate-600 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-white">{nft.name}</h3>
-                      <Badge className="bg-blue-600">{nft.price}</Badge>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-sm text-gray-400">Supply: <span className="text-white">{nft.supply}</span></div>
-                      <div className="text-sm text-gray-400">Holders: <span className="text-white">{nft.holders}</span></div>
-                    </div>
-                    <Button className="w-full mt-3" size="sm">
-                      View Collection
-                    </Button>
+                <div className="bg-slate-900 p-4 rounded-lg">
+                  <div className="flex items-center mb-3">
+                    <Shield className="w-5 h-5 text-green-400 mr-2" />
+                    <h3 className="text-white font-semibold">Consensus Mechanism</h3>
                   </div>
-                ))}
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-400">Type: <span className="text-white">Hybrid PoS</span></div>
+                    <div className="text-sm text-gray-400">Finality: <span className="text-white">3 seconds</span></div>
+                    <div className="text-sm text-gray-400">Security: <span className="text-green-400">BFT + PoS</span></div>
+                  </div>
+                </div>
+                <div className="bg-slate-900 p-4 rounded-lg">
+                  <div className="flex items-center mb-3">
+                    <Zap className="w-5 h-5 text-yellow-400 mr-2" />
+                    <h3 className="text-white font-semibold">Performance</h3>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-400">TPS: <span className="text-white">2,500+</span></div>
+                    <div className="text-sm text-gray-400">Latency: <span className="text-white">3s finality</span></div>
+                    <div className="text-sm text-gray-400">Scalability: <span className="text-blue-400">Layer 2 Ready</span></div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-slate-900 p-4 rounded-lg">
+                <h3 className="text-white font-semibold mb-3">Key Features</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-blue-400 font-semibold">EVM Compatible</div>
+                    <div className="text-sm text-gray-400">Ethereum tooling support</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-green-400 font-semibold">Low Fees</div>
+                    <div className="text-sm text-gray-400">$0.001 average cost</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-purple-400 font-semibold">Cross-Chain</div>
+                    <div className="text-sm text-gray-400">IBC protocol support</div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -252,9 +272,9 @@ export function PublicGate() {
         <TabsContent value="dapps" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">DApp Ecosystem</CardTitle>
+              <CardTitle className="text-white">HYBRID DApp Ecosystem</CardTitle>
               <CardDescription className="text-gray-400">
-                Decentralized applications built on HYBRID
+                Decentralized applications built on HYBRID blockchain
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -287,9 +307,9 @@ export function PublicGate() {
         <TabsContent value="governance" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Governance Proposals</CardTitle>
+              <CardTitle className="text-white">HYBRID Governance</CardTitle>
               <CardDescription className="text-gray-400">
-                Community governance and voting
+                Community-driven protocol governance
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -306,7 +326,7 @@ export function PublicGate() {
                     </Badge>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-sm text-gray-400">Votes: <span className="text-white">{proposal.votes}</span></div>
+                    <div className="text-sm text-gray-400">Total Votes: <span className="text-white">{proposal.votes}</span></div>
                     <div className="text-sm text-gray-400">Support: <span className="text-green-400">{proposal.support}</span></div>
                   </div>
                   <Button className="w-full mt-3" size="sm">
@@ -318,61 +338,18 @@ export function PublicGate() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="developers" className="space-y-4">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white">Developer Resources</CardTitle>
-              <CardDescription className="text-gray-400">
-                Tools and documentation for building on HYBRID
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-900 p-4 rounded-lg">
-                  <h3 className="text-white font-semibold mb-2">Documentation</h3>
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      Getting Started Guide
-                    </Button>
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      API Reference
-                    </Button>
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      Smart Contract Guide
-                    </Button>
-                  </div>
-                </div>
-                <div className="bg-slate-900 p-4 rounded-lg">
-                  <h3 className="text-white font-semibold mb-2">Developer Tools</h3>
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      HYBRID SDK
-                    </Button>
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      Testnet Faucet
-                    </Button>
-                    <Button variant="outline" className="w-full text-left justify-start">
-                      Block Explorer
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="staking" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Staking & Rewards</CardTitle>
+              <CardTitle className="text-white">HYBRID Staking</CardTitle>
               <CardDescription className="text-gray-400">
-                Earn rewards by staking HYBRID tokens
+                Secure the network and earn rewards
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-900 p-4 rounded-lg">
-                  <h3 className="text-white font-semibold mb-2">Staking Stats</h3>
+                  <h3 className="text-white font-semibold mb-2">Network Stats</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Current APY</span>
@@ -380,11 +357,15 @@ export function PublicGate() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Staked</span>
-                      <span className="text-white">45,000,000,000 HYBRID</span>
+                      <span className="text-white">45B HYBRID</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Staking Ratio</span>
                       <span className="text-white">60%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Validators</span>
+                      <span className="text-white">{hybridMetrics.validators}</span>
                     </div>
                   </div>
                 </div>
@@ -399,6 +380,10 @@ export function PublicGate() {
                       <div className="flex justify-between">
                         <span className="text-gray-400">Rewards</span>
                         <span className="text-green-400">0 HYBRID</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Est. Monthly</span>
+                        <span className="text-blue-400">0 HYBRID</span>
                       </div>
                       <Button className="w-full mt-2">
                         Start Staking

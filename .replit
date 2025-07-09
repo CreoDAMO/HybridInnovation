@@ -19,6 +19,14 @@ args = "Spiral-Frontend"
 task = "workflow.run"
 args = "Spiral-Backend"
 
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
 [[workflows.workflow]]
 name = "Spiral-Frontend"
 author = 44812907

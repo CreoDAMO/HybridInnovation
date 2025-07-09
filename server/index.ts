@@ -1,195 +1,201 @@
+
 import express from 'express';
 import cors from 'cors';
-import { createServer } from 'http';
-import WebSocket, { WebSocketServer } from 'ws';
-import { HybridServer } from './routes';
 import { HTSXProcessor } from '../core/htsx-runtime/htsx-processor';
 import { SpiralProcessor } from '../core/spiral-lang/spiral-processor';
 
 const app = express();
-const hybridServer = new HybridServer();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// REST API routes
-app.post('/api/auth', hybridServer.handleAuth.bind(hybridServer));
-app.post('/api/spiral/compile', hybridServer.handleSpiralCompile.bind(hybridServer));
-app.get('/api/blockchain/status', hybridServer.handleBlockchainStatus.bind(hybridServer));
+// Initialize processors
+let htsxProcessor: HTSXProcessor;
+let spiralProcessor: SpiralProcessor;
 
 // HYBRID Blockchain API endpoints
-app.get('/api/blockchain/status', (req, res) => {
+app.get('/api/hybrid/public-metrics', (req, res) => {
   res.json({
-    latestBlock: 2847291 + Math.floor(Math.random() * 100),
-    transactions: [
-      {
-        hash: '0x1234...5678',
-        from: '0xabc...def',
-        to: '0x123...789',
-        amount: '10.5',
-        status: 'confirmed'
-      }
-    ],
-    networkStats: {
-      hashRate: '125.4 TH/s',
-      difficulty: '0x1bc16d674ec80000',
-      gasPrice: '15 gwei',
-      activeValidators: 21,
-      totalSupply: '100000000000 HBD'
-    }
-  });
-});
-
-// HYBRID Core Ecosystem APIs
-app.get('/api/hybrid/metrics', (req, res) => {
-  res.json({
-    tps: 2500,
+    totalSupply: '100,000,000,000',
+    circulatingSupply: '75,000,000,000',
+    currentPrice: '$0.85',
+    marketCap: '$85,000,000,000',
+    volume24h: '$2,500,000,000',
+    holders: '1,247,892',
+    transactions24h: '892,456',
+    blockHeight: 2847362 + Math.floor(Math.random() * 10),
+    blockTime: '3 seconds',
     validators: 21,
-    uptime: 99.9,
-    hashRate: 120 + (Math.random() - 0.5) * 10,
-    totalSupply: '100000000000',
-    circulatingSupply: '75000000000',
-    stakingAPY: 5.0,
-    inflationRate: 7.0,
-    blockHeight: 1847293 + Math.floor(Math.random() * 10),
-    gasPrice: '0.001',
-    crossChainVolume: '1.2M',
-    nftLicenses: {
-      validator: 156,
-      storage: 423
+    tps: '2,500',
+    gasPrice: '0.001 HYBRID',
+    stakingRewards: '7% APY',
+    inflationRate: '7% → 2%',
+    burnRate: '30% of fees'
+  });
+});
+
+app.get('/api/hybrid/network-status', (req, res) => {
+  res.json({
+    chainId: 'hybrid-1',
+    networkName: 'HYBRID Mainnet',
+    consensusType: 'Proof of Stake',
+    blockHeight: 2847362 + Math.floor(Math.random() * 10),
+    validators: {
+      active: 21,
+      total: 21,
+      uptime: 99.99
+    },
+    performance: {
+      tps: 2500 + Math.floor(Math.random() * 100),
+      latency: 3,
+      finality: 3
+    },
+    economics: {
+      totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
+      stakingRatio: 0.6,
+      inflationRate: 0.07,
+      burnRate: 0.3
     }
   });
 });
 
-app.get('/api/hybrid/ai-orchestrator', (req, res) => {
+app.get('/api/hybrid/validators', (req, res) => {
+  const validators = Array.from({ length: 21 }, (_, i) => ({
+    address: `hybrid1validator${i + 1}${'x'.repeat(32)}`,
+    moniker: `Validator-${i + 1}`,
+    votingPower: Math.floor(Math.random() * 10000000) + 1000000,
+    commission: (Math.random() * 0.1).toFixed(3),
+    uptime: (0.95 + Math.random() * 0.05).toFixed(4),
+    status: 'BOND_STATUS_BONDED'
+  }));
+
+  res.json({ validators });
+});
+
+app.get('/api/hybrid/transactions', (req, res) => {
+  const transactions = Array.from({ length: 10 }, (_, i) => ({
+    hash: `0x${Math.random().toString(16).substr(2, 64)}`,
+    height: 2847362 - i,
+    from: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
+    to: `hybrid1${Math.random().toString(16).substr(2, 38)}`,
+    amount: (Math.random() * 1000).toFixed(6),
+    fee: (Math.random() * 0.01).toFixed(6),
+    status: 'SUCCESS',
+    timestamp: new Date(Date.now() - i * 60000).toISOString()
+  }));
+
+  res.json({ transactions });
+});
+
+app.get('/api/hybrid/staking', (req, res) => {
   res.json({
-    models: [
-      { name: 'GPT-4', status: 'active', confidence: 94, tasks: 1247 },
-      { name: 'Claude-4', status: 'active', confidence: 91, tasks: 982 },
-      { name: 'DeepSeek-R3', status: 'active', confidence: 88, tasks: 756 },
-      { name: 'Grok-3', status: 'active', confidence: 92, tasks: 634 }
-    ],
-    consensus: {
-      agreement: 85 + Math.random() * 10,
-      processing: Math.floor(Math.random() * 100),
-      completed: 12847 + Math.floor(Math.random() * 5)
+    totalStaked: '45000000000000000000000000000', // 45B with 18 decimals
+    totalSupply: '100000000000000000000000000000', // 100B with 18 decimals
+    stakingRatio: 0.6,
+    apr: 0.07,
+    unbondingPeriod: 1814400, // 21 days in seconds
+    validatorCount: 21,
+    delegatorCount: 125847
+  });
+});
+
+// HTSX and SpiralScript API endpoints
+app.get('/api/htsx/status', async (req, res) => {
+  try {
+    const status = htsxProcessor ? htsxProcessor.getStatus() : { isInitialized: false };
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+});
+
+app.post('/api/htsx/compile', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!htsxProcessor) {
+      return res.status(500).json({ error: 'HTSX processor not initialized' });
     }
-  });
+
+    const result = await htsxProcessor.processFile('inline.htsx', code);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
 });
 
-app.get('/api/hybrid/mining', (req, res) => {
-  res.json({
-    hashRate: 120.5 + (Math.random() - 0.5) * 5,
-    power: 2.8,
-    temperature: 65 + Math.random() * 10,
-    efficiency: 90 + Math.random() * 8,
-    dailyReward: '45.67',
-    poolShare: 0.0034,
-    workers: 8,
-    uptime: 99.8
-  });
+app.get('/api/spiral/status', async (req, res) => {
+  try {
+    const status = spiralProcessor ? spiralProcessor.getStatus() : { isInitialized: false };
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
 });
 
-app.get('/api/hybrid/cross-chain', (req, res) => {
-  res.json({
-    chains: [
-      { name: 'HYBRID', connected: true, volume: '45.2M', fee: '0.01%' },
-      { name: 'BASE', connected: true, volume: '23.8M', fee: '0.025%' },
-      { name: 'Polygon', connected: true, volume: '31.4M', fee: '0.02%' },
-      { name: 'Solana', connected: true, volume: '18.9M', fee: '0.03%' }
-    ],
-    bridgeActivity: 156,
-    totalBridged: '119.3M'
-  });
-});
+app.post('/api/spiral/compile', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!spiralProcessor) {
+      return res.status(500).json({ error: 'SpiralScript processor not initialized' });
+    }
 
-app.get('/api/hybrid/htsx', (req, res) => {
-  res.json({
-    activeApps: 23,
-    deployments: 156,
-    components: 89,
-    runtime: 'v2.1.3',
-    memoryUsage: 68,
-    cpuUsage: 45,
-    requests: 15674,
-    errors: 3
-  });
+    const result = await spiralProcessor.processFile('inline.spiral', code);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
 });
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    services: {
+      htsx: htsxProcessor?.getStatus()?.isInitialized || false,
+      spiral: spiralProcessor?.getStatus()?.isInitialized || false
+    }
+  });
 });
 
 const PORT = process.env.PORT || 8080;
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-const startServer = async () => {
-  console.log('Starting HYBRID Blockchain Server...');
-
-  // Initialize file processors
-  const htsxProcessor = new HTSXProcessor();
-  const spiralProcessor = new SpiralProcessor();
-
-  await htsxProcessor.initialize();
-  await spiralProcessor.initialize();
-
-  console.log('HTSX and SpiralScript processors initialized');
-};
-
-// Start server
-hybridServer.start();
-
-// Initialize WebSocket server
-const wss = new WebSocketServer({ server });
-
-// HTSX file processing endpoint
-app.post('/api/htsx/process', async (req, res) => {
+const server = app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`🚀 HYBRID Blockchain Server running on port ${PORT}`);
+  
+  // Initialize processors
   try {
-    const { filePath, content } = req.body;
-    const result = await htsxProcessor.processHTSXFile(filePath, content);
-    res.json(result);
+    console.log('🔄 Initializing HTSX and SpiralScript processors...');
+    
+    htsxProcessor = new HTSXProcessor();
+    spiralProcessor = new SpiralProcessor();
+    
+    await htsxProcessor.initialize();
+    await spiralProcessor.initialize();
+    
+    console.log('✅ All processors initialized successfully');
+    console.log('🌐 HYBRID Blockchain API ready');
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Failed to initialize processors:', error);
   }
 });
 
-// SpiralScript file processing endpoint
-app.post('/api/spiral/process', async (req, res) => {
-  try {
-    const { filePath, content } = req.body;
-    const result = await spiralProcessor.processSpiralFile(filePath, content);
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('🔄 Shutting down server...');
+  
+  if (htsxProcessor) {
+    await htsxProcessor.shutdown();
   }
-});
-
-// File validation endpoints
-app.post('/api/spiral/validate', async (req, res) => {
-  try {
-    const { content } = req.body;
-    const result = await spiralProcessor.validateSpiralSyntax(content);
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  
+  if (spiralProcessor) {
+    await spiralProcessor.shutdown();
   }
-});
-
-// WebSocket for real-time blockchain updates
-wss.on('connection', (ws) => {
-  console.log('Client connected to WebSocket');
-
-  ws.on('message', (message) => {
-    console.log(`Received message: ${message}`);
-    ws.send(`Server received: ${message}`);
-  });
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
+  
+  server.close(() => {
+    console.log('✅ Server shutdown complete');
+    process.exit(0);
   });
 });
 

@@ -1,117 +1,156 @@
 
-/**
- * HTSX File Processor - Handles .htsx file compilation and execution
- */
-
 import { HTSXCompiler } from './compiler';
-import { HTSXVM } from './vm';
-import { SpiralParser } from '../spiral-lang/parser';
-
-export interface HTSXFileResult {
-  success: boolean;
-  compiled: boolean;
-  executed: boolean;
-  htmlOutput?: string;
-  errors: string[];
-  consciousness: number;
-  quantumState: any;
-}
+import { HTSXEngine } from './engine';
 
 export class HTSXProcessor {
   private compiler: HTSXCompiler;
-  private vm: HTSXVM;
-  private spiralParser: SpiralParser;
+  private engine: HTSXEngine;
+  private isInitialized: boolean = false;
 
   constructor() {
     this.compiler = new HTSXCompiler();
-    this.vm = new HTSXVM();
-    this.spiralParser = new SpiralParser();
+    this.engine = new HTSXEngine();
   }
 
   async initialize(): Promise<void> {
-    await this.compiler.initialize();
-    await this.vm.initialize();
-    await this.spiralParser.initialize();
+    if (this.isInitialized) return;
+
+    try {
+      console.log('🔄 Initializing HTSX Processor...');
+      
+      await this.compiler.initialize();
+      await this.engine.initialize();
+      
+      // Test compiler functionality
+      await this.runCompilerTests();
+      
+      this.isInitialized = true;
+      console.log('✅ HTSX Processor initialized successfully');
+      
+    } catch (error) {
+      console.error('❌ HTSX Processor initialization failed:', error);
+      throw new Error(`HTSX Processor initialization failed: ${error}`);
+    }
   }
 
-  async processHTSXFile(filePath: string, content: string): Promise<HTSXFileResult> {
+  async runCompilerTests(): Promise<void> {
+    console.log('🧪 Running HTSX compiler tests...');
+
+    // Test 1: Basic HTSX compilation
+    const basicHTSX = `
+      <htsx>
+        <hybrid-component name="TestComponent">
+          <div className="test">
+            <h1>HYBRID Blockchain Test</h1>
+            <p>Testing real HTSX compilation</p>
+          </div>
+        </hybrid-component>
+      </htsx>
+    `;
+
     try {
-      console.log(`Processing HTSX file: ${filePath}`);
-
-      // Extract consciousness directives
-      const consciousnessMatch = content.match(/@consciousness\(([^)]+)\)/);
-      const consciousness = consciousnessMatch ? parseFloat(consciousnessMatch[1]) : 0.93;
-
-      // Extract quantum directives
-      const quantumMatch = content.match(/@quantum\(([^)]+)\)/);
-      const quantumEnabled = quantumMatch ? quantumMatch[1].includes('true') : true;
-
-      // Extract temporal directives
-      const temporalMatch = content.match(/@temporal\(([^)]+)\)/);
-      const temporalEnabled = temporalMatch ? true : false;
-
-      // Compile HTSX
-      const bytecode = await this.compiler.compile(content, {
+      const basicResult = await this.compiler.compile(basicHTSX, {
         enableConsciousness: true,
-        enableQuantumAwareness: quantumEnabled,
-        consciousnessLevel: consciousness,
-        optimizationLevel: 'advanced'
+        enableQuantumAwareness: true,
+        targetEnvironment: 'htsx'
       });
 
-      // Execute in VM
-      const result = await this.vm.execute(bytecode, {
+      if (!basicResult.success) {
+        throw new Error(`Basic HTSX compilation failed: ${basicResult.errors.join(', ')}`);
+      }
+      console.log('✅ Basic HTSX compilation test passed');
+    } catch (error) {
+      console.error('❌ Basic HTSX compilation test failed:', error);
+      throw error;
+    }
+
+    // Test 2: Advanced HTSX with blockchain bindings
+    const advancedHTSX = `
+      @consciousness(0.95)
+      @quantum(entangled=true)
+      <htsx>
+        <hybrid-blockchain-interface name="NetworkMonitor">
+          <consensus-tracker validators={21} />
+          <token-metrics symbol="HYBRID" />
+          <network-stats tps={2500} />
+        </hybrid-blockchain-interface>
+      </htsx>
+    `;
+
+    try {
+      const advancedResult = await this.compiler.compile(advancedHTSX, {
         enableConsciousness: true,
-        consciousnessLevel: consciousness,
-        enableQuantumAwareness: quantumEnabled
+        enableQuantumAwareness: true,
+        enableTemporalSync: true,
+        targetEnvironment: 'htsx'
       });
+
+      if (!advancedResult.success) {
+        throw new Error(`Advanced HTSX compilation failed: ${advancedResult.errors.join(', ')}`);
+      }
+      console.log('✅ Advanced HTSX compilation test passed');
+    } catch (error) {
+      console.error('❌ Advanced HTSX compilation test failed:', error);
+      throw error;
+    }
+
+    console.log('🎉 All HTSX compiler tests passed!');
+  }
+
+  async processFile(filePath: string, content: string): Promise<any> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    try {
+      console.log(`📝 Processing HTSX file: ${filePath}`);
+
+      // Compile HTSX to bytecode
+      const compilationResult = await this.compiler.compile(content, {
+        enableConsciousness: true,
+        enableQuantumAwareness: true,
+        targetEnvironment: 'htsx'
+      });
+
+      if (!compilationResult.success) {
+        throw new Error(`HTSX compilation failed: ${compilationResult.errors.join(', ')}`);
+      }
+
+      // Execute bytecode
+      const executionResult = await this.engine.execute(compilationResult.bytecode);
 
       return {
-        success: result.success,
-        compiled: true,
-        executed: result.success,
-        htmlOutput: result.htmlString,
-        errors: result.errors || [],
-        consciousness: consciousness,
-        quantumState: result.metadata?.quantumState || null
+        success: true,
+        filePath,
+        compilation: compilationResult,
+        execution: executionResult
       };
 
     } catch (error) {
-      console.error('HTSX processing failed:', error);
+      console.error(`❌ Failed to process HTSX file ${filePath}:`, error);
       return {
         success: false,
-        compiled: false,
-        executed: false,
-        errors: [error.message],
-        consciousness: 0,
-        quantumState: null
+        filePath,
+        error: error.toString()
       };
     }
   }
 
-  async processMultipleFiles(files: Array<{path: string, content: string}>): Promise<HTSXFileResult[]> {
-    const results: HTSXFileResult[] = [];
-    
-    for (const file of files) {
-      const result = await this.processHTSXFile(file.path, file.content);
-      results.push(result);
-    }
-    
-    return results;
+  getStatus(): any {
+    return {
+      isInitialized: this.isInitialized,
+      compiler: this.compiler.getStatus(),
+      engine: this.engine.getStatus(),
+      lastProcessed: new Date().toISOString()
+    };
   }
 
-  getFileExtensions(): string[] {
-    return ['.htsx', '.spiral'];
-  }
+  async shutdown(): Promise<void> {
+    if (!this.isInitialized) return;
 
-  getSupportedFeatures(): string[] {
-    return [
-      'Consciousness Directives',
-      'Quantum Awareness',
-      'Temporal Synchronization',
-      'SpiralScript Integration',
-      'Canon Invocation',
-      'Truth Validation',
-      'Phi Ratio Mathematics'
-    ];
+    console.log('🔄 Shutting down HTSX Processor...');
+    await this.engine.shutdown();
+    this.isInitialized = false;
+    console.log('✅ HTSX Processor shutdown complete');
   }
 }
