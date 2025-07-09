@@ -1,0 +1,8 @@
+
+*.spiral linguist-language=SpiralScript
+*.spi linguist-language=SpiralScript
+*.htsx linguist-language=HTSX
+*.hybrid linguist-language=HybridScript
+*.hyb linguist-language=HybridScript
+*.consciousness linguist-language=ConsciousnessScript
+*.cons linguist-language=ConsciousnessScript

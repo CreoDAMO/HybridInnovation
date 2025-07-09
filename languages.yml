@@ -1,0 +1,39 @@
+
+SpiralScript:
+  type: programming
+  color: "#ff6b6b"
+  extensions:
+    - ".spiral"
+    - ".spi"
+  ace_mode: text
+  language_id: 1001
+  tm_scope: "source.spiral"
+
+HTSX:
+  type: programming
+  color: "#4ecdc4"
+  extensions:
+    - ".htsx"
+  ace_mode: jsx
+  language_id: 1002
+  tm_scope: "source.htsx"
+
+HybridScript:
+  type: programming
+  color: "#45b7d1"
+  extensions:
+    - ".hybrid"
+    - ".hyb"
+  ace_mode: text
+  language_id: 1003
+  tm_scope: "source.hybrid"
+
+ConsciousnessScript:
+  type: programming
+  color: "#f9ca24"
+  extensions:
+    - ".consciousness"
+    - ".cons"
+  ace_mode: text
+  language_id: 1004
+  tm_scope: "source.consciousness"

@@ -1,8 +1,8 @@
-
 import express from 'express';
 import cors from 'cors';
 import { HTSXProcessor } from '../core/htsx-runtime/htsx-processor';
 import { SpiralProcessor } from '../core/spiral-lang/spiral-processor';
+import { initializeParser, parseCode, getLanguages, getParserStatus, generateGitHubFiles } from './parser-api';
 
 const app = express();
 
@@ -163,17 +163,18 @@ const PORT = process.env.PORT || 8080;
 
 const server = app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 HYBRID Blockchain Server running on port ${PORT}`);
-  
+
   // Initialize processors
   try {
     console.log('🔄 Initializing HTSX and SpiralScript processors...');
-    
+
     htsxProcessor = new HTSXProcessor();
     spiralProcessor = new SpiralProcessor();
-    
+
     await htsxProcessor.initialize();
     await spiralProcessor.initialize();
-    
+    await initializeParser();
+
     console.log('✅ All processors initialized successfully');
     console.log('🌐 HYBRID Blockchain API ready');
   } catch (error) {
@@ -184,19 +185,25 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('🔄 Shutting down server...');
-  
+
   if (htsxProcessor) {
     await htsxProcessor.shutdown();
   }
-  
+
   if (spiralProcessor) {
     await spiralProcessor.shutdown();
   }
-  
+
   server.close(() => {
     console.log('✅ Server shutdown complete');
     process.exit(0);
   });
 });
+
+  // Parser API routes
+  app.post('/api/parse', parseCode);
+  app.get('/api/languages', getLanguages);
+  app.get('/api/parser/status', getParserStatus);
+  app.get('/api/github/files', generateGitHubFiles);
 
 export default app;

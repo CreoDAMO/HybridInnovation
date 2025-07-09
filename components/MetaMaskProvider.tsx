@@ -39,8 +39,9 @@ export function MetaMaskProvider({ children }: { children: React.ReactNode }) {
 
     const checkConnection = async () => {
       try {
-        if (MMSDK.isConnected()) {
-          const accounts = await MMSDK.connect();
+        const provider = MMSDK.getProvider();
+        if (provider) {
+          const accounts = await provider.request({ method: 'eth_accounts' });
           if (accounts && accounts.length > 0) {
             setAccount(accounts[0]);
             setIsConnected(true);

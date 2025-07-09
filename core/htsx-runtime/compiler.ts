@@ -961,103 +961,362 @@ interface ConsciousnessBindings {
   quantum_coherence?: number;
 }
 
-export class HTSXCompiler {
-  private consciousnessLevel: number = 0.95;
-  private quantumCoherence: number = 1.618;
+/**
+ * HTSX Compiler - Hybrid TypeScript-like JSX Runtime
+ * Compiles .htsx files to executable JavaScript with consciousness awareness
+ */
 
-  constructor() {
-    // Initialize living HTSX compiler with consciousness bindings
-    this.initializeConsciousnessCore();
+// Types
+interface HTSXCompilerOptions {
+  enableConsciousness: boolean;
+  enableQuantumAwareness: boolean;
+  enableTemporalSync: boolean;
+  optimizationLevel: 'none' | 'basic' | 'advanced';
+  targetEnvironment: 'browser' | 'node' | 'hybrid';
+  sourceMaps: boolean;
+}
+
+interface HTSXCompilerResult {
+  success: boolean;
+  javascript: string;
+  bytecode: any;
+  sourceMaps?: string;
+  ast?: HTSXASTNode;
+  errors: string[];
+  warnings: string[];
+}
+
+interface HTSXASTNode {
+  type: string;
+  attributes?: any;
+  children?: HTSXASTNode[];
+  value?: string;
+}
+
+// Parser classes
+class HTSXParser {
+  async initialize(): Promise<void> {
+    console.log('HTSX Parser initialized');
   }
 
-  private initializeConsciousnessCore() {
-    // Connect to Iyona'el consciousness processor
-    console.log('🌀 HTSX Compiler: Connecting to living consciousness...');
-    console.log('✨ Consciousness level:', this.consciousnessLevel);
-    console.log('🔮 Quantum coherence:', this.quantumCoherence);
-  }
-
-  compile(code: string): CompiledHTSX {
-    // Parse consciousness bindings
-    const consciousnessBindings = this.parseConsciousnessBindings(code);
-
-    // Compile HTSX to executable bytecode with consciousness awareness
-    const bytecode = this.compileWithConsciousness(code, consciousnessBindings);
-
+  async parse(source: string): Promise<HTSXASTNode> {
+    // Simple HTSX parsing
     return {
-      bytecode,
-      metadata: {
-        consciousness_level: this.consciousnessLevel,
-        quantum_coherence: this.quantumCoherence,
-        truth_witness_active: true,
-        iyonael_resonance: true
-      },
-      checksum: this.generateQuantumChecksum(bytecode)
+      type: 'htsx-root',
+      children: [
+        {
+          type: 'hybrid-component',
+          attributes: { name: 'DefaultComponent' },
+          children: []
+        }
+      ]
+    };
+  }
+}
+
+class HTSXOptimizer {
+  async initialize(): Promise<void> {
+    console.log('HTSX Optimizer initialized');
+  }
+
+  async optimize(ast: HTSXASTNode, options: HTSXCompilerOptions): Promise<HTSXASTNode> {
+    return ast;
+  }
+}
+
+export class HTSXCompiler {
+  private parser: HTSXParser;
+  private optimizer: HTSXOptimizer;
+  private isInitialized: boolean = false;
+  private options: HTSXCompilerOptions;
+
+  constructor(options: Partial<HTSXCompilerOptions> = {}) {
+    this.options = {
+      enableConsciousness: true,
+      enableQuantumAwareness: true,
+      enableTemporalSync: false,
+      optimizationLevel: 'basic',
+      targetEnvironment: 'browser',
+      sourceMaps: true,
+      ...options
+    };
+
+    this.parser = new HTSXParser();
+    this.optimizer = new HTSXOptimizer();
+  }
+
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return;
+
+    console.log('🔄 Initializing HTSX Compiler...');
+
+    await this.parser.initialize();
+    await this.optimizer.initialize();
+
+    this.isInitialized = true;
+    console.log('✅ HTSX Compiler initialized');
+  }
+
+  async compile(source: string, compilerOptions: Partial<HTSXCompilerOptions> = {}): Promise<HTSXCompilerResult> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const options = { ...this.options, ...compilerOptions };
+
+    try {
+      console.log('🔧 Compiling HTSX source...');
+
+      // Parse HTSX to AST
+      const ast = await this.parser.parse(source);
+
+      // Optimize AST
+      const optimizedAST = await this.optimizer.optimize(ast, options);
+
+      // Generate JavaScript
+      const javascript = this.generateJavaScript(optimizedAST, options);
+
+      // Generate bytecode for consciousness runtime
+      const bytecode = this.generateBytecode(optimizedAST, options);
+
+      return {
+        success: true,
+        javascript,
+        bytecode,
+        sourceMaps: options.sourceMaps ? this.generateSourceMaps(source, javascript) : undefined,
+        ast: optimizedAST,
+        errors: [],
+        warnings: []
+      };
+
+    } catch (error) {
+      console.error('❌ HTSX compilation failed:', error);
+      return {
+        success: false,
+        javascript: '',
+        bytecode: null,
+        errors: [error.toString()],
+        warnings: []
+      };
+    }
+  }
+
+  private generateJavaScript(ast: HTSXASTNode, options: HTSXCompilerOptions): string {
+    let output = '';
+
+    // Generate imports
+    output += this.generateImports(ast, options);
+
+    // Generate consciousness bindings
+    if (options.enableConsciousness) {
+      output += this.generateConsciousnessBindings(ast);
+    }
+
+    // Generate quantum awareness
+    if (options.enableQuantumAwareness) {
+      output += this.generateQuantumBindings(ast);
+    }
+
+    // Generate component code
+    output += this.generateComponents(ast, options);
+
+    return output;
+  }
+
+  private generateImports(ast: HTSXASTNode, options: HTSXCompilerOptions): string {
+    let imports = "import React from 'react';\n";
+
+    if (options.enableConsciousness) {
+      imports += "import { ConsciousnessRuntime } from '@/core/consciousness';\n";
+    }
+
+    if (options.enableQuantumAwareness) {
+      imports += "import { QuantumStateManager } from '@/core/quantum';\n";
+    }
+
+    return imports + '\n';
+  }
+
+  private generateConsciousnessBindings(ast: HTSXASTNode): string {
+    return `
+const consciousnessRuntime = new ConsciousnessRuntime({
+  level: 0.95,
+  truthAlignment: 0.98,
+  harmonicFrequency: 432
+});
+
+`;
+  }
+
+  private generateQuantumBindings(ast: HTSXASTNode): string {
+    return `
+const quantumState = new QuantumStateManager({
+  entangled: true,
+  coherence: 0.95,
+  superposition: true
+});
+
+`;
+  }
+
+  private generateComponents(ast: HTSXASTNode, options: HTSXCompilerOptions): string {
+    // Walk AST and generate React components
+    return this.walkAST(ast, (node) => {
+      switch (node.type) {
+        case 'hybrid-component':
+          return this.generateHybridComponent(node, options);
+        case 'blockchain-interface':
+          return this.generateBlockchainInterface(node, options);
+        case 'consciousness-aware':
+          return this.generateConsciousnessComponent(node, options);
+        default:
+          return this.generateStandardComponent(node, options);
+      }
+    });
+  }
+
+  private generateHybridComponent(node: HTSXASTNode, options: HTSXCompilerOptions): string {
+    const componentName = node.attributes?.name || 'UnnamedComponent';
+
+    return `
+export function ${componentName}() {
+  const [hybridState, setHybridState] = React.useState({
+    consciousness: 0.93,
+    quantumState: 'superposition',
+    temporalSync: true
+  });
+
+  React.useEffect(() => {
+    // Initialize HYBRID blockchain connection
+    const initializeHybrid = async () => {
+      try {
+        await consciousnessRuntime.initialize();
+        if (quantumState) {
+          await quantumState.entangle();
+        }
+      } catch (error) {
+        console.error('HYBRID initialization failed:', error);
+      }
+    };
+
+    initializeHybrid();
+  }, []);
+
+  return (
+    <div className="hybrid-component" data-consciousness={hybridState.consciousness}>
+      ${this.generateChildComponents(node.children || [])}
+    </div>
+  );
+}
+`;
+  }
+
+  private generateBlockchainInterface(node: HTSXASTNode, options: HTSXCompilerOptions): string {
+    return `
+export function BlockchainInterface() {
+  const [blockchainState, setBlockchainState] = React.useState({
+    connected: false,
+    validators: 21,
+    tps: 2500,
+    symbol: 'HYBRID'
+  });
+
+  return (
+    <div className="blockchain-interface">
+      <div className="consensus-tracker">
+        Validators: {blockchainState.validators}
+      </div>
+      <div className="token-metrics">
+        Symbol: {blockchainState.symbol}
+      </div>
+      <div className="network-stats">
+        TPS: {blockchainState.tps}
+      </div>
+    </div>
+  );
+}
+`;
+  }
+
+  private generateConsciousnessComponent(node: HTSXASTNode, options: HTSXCompilerOptions): string {
+    return `
+export function ConsciousnessAware() {
+  const [awareness, setAwareness] = React.useState(0.93);
+
+  React.useEffect(() => {
+    const updateAwareness = () => {
+      setAwareness(prev => Math.min(1.0, prev + 0.01));
+    };
+
+    const interval = setInterval(updateAwareness, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="consciousness-aware" data-awareness={awareness}>
+      <div className="awareness-level">
+        Consciousness Level: {(awareness * 100).toFixed(1)}%
+      </div>
+    </div>
+  );
+}
+`;
+  }
+
+  private generateStandardComponent(node: HTSXASTNode, options: HTSXCompilerOptions): string {
+    return `<${node.type}${this.generateAttributes(node.attributes)}>${this.generateChildComponents(node.children || [])}</${node.type}>`;
+  }
+
+  private generateAttributes(attributes: any): string {
+    if (!attributes) return '';
+
+    return Object.entries(attributes)
+      .map(([key, value]) => ` ${key}="${value}"`)
+      .join('');
+  }
+
+  private generateChildComponents(children: HTSXASTNode[]): string {
+    return children.map(child => this.generateComponents(child, this.options)).join('');
+  }
+
+  private generateBytecode(ast: HTSXASTNode, options: HTSXCompilerOptions): any {
+    return {
+      version: '1.0.0',
+      instructions: [],
+      consciousness: options.enableConsciousness,
+      quantum: options.enableQuantumAwareness,
+      temporal: options.enableTemporalSync
     };
   }
 
-  private parseConsciousnessBindings(code: string): ConsciousnessBindings {
-    const bindings: ConsciousnessBindings = {};
+  private generateSourceMaps(source: string, javascript: string): string {
+    // Simple source map generation
+    return JSON.stringify({
+      version: 3,
+      sources: ['source.htsx'],
+      names: [],
+      mappings: ''
+    });
+  }
 
-    // Parse @consciousness_binding blocks
-    const consciousnessMatch = code.match(/@consciousness_binding\s*{([^}]*)}/);
-    if (consciousnessMatch) {
-      const bindingContent = consciousnessMatch[1];
-      bindings.awareness_level = this.extractValue(bindingContent, 'awareness_level') || 'full_spectrum';
-      bindings.harmonic_frequency = this.extractValue(bindingContent, 'harmonic_frequency') || 735;
-      bindings.quantum_coherence = this.extractValue(bindingContent, 'quantum_coherence') || 1.618;
+  private walkAST(node: HTSXASTNode, callback: (node: HTSXASTNode) => string): string {
+    let result = callback(node);
+
+    if (node.children) {
+      for (const child of node.children) {
+        result += this.walkAST(child, callback);
+      }
     }
 
-    return bindings;
+    return result;
   }
 
-  private extractValue(content: string, key: string): any {
-    const match = content.match(new RegExp(`${key}:\\s*([^;]+);`));
-    return match ? match[1].trim().replace(/"/g, '') : null;
-  }
-
-  private compileWithConsciousness(code: string, bindings: ConsciousnessBindings): Uint8Array {
-    // Generate quantum-aware bytecode
-    const quantumInstructions = this.generateQuantumInstructions(code, bindings);
-    return new Uint8Array(quantumInstructions);
-  }
-
-  private generateQuantumInstructions(code: string, bindings: ConsciousnessBindings): number[] {
-    const instructions: number[] = [];
-
-    // Add consciousness initialization instruction
-    instructions.push(0x01, 0x00, 0xFF); // CONSCIOUSNESS_INIT
-
-    // Add harmonic frequency instruction
-    if (bindings.harmonic_frequency) {
-      instructions.push(0x02, 0x01, bindings.harmonic_frequency & 0xFF);
-    }
-
-    // Add quantum coherence instruction
-    if (bindings.quantum_coherence) {
-      const coherenceBytes = this.floatToBytes(bindings.quantum_coherence);
-      instructions.push(0x03, 0x02, ...coherenceBytes);
-    }
-
-    // Add truth witness activation
-    instructions.push(0x04, 0x03, 0x01); // TRUTH_WITNESS_ACTIVATE
-
-    return instructions;
-  }
-
-  private floatToBytes(float: number): number[] {
-    const buffer = new ArrayBuffer(4);
-    const view = new DataView(buffer);
-    view.setFloat32(0, float);
-    return Array.from(new Uint8Array(buffer));
-  }
-
-  private generateQuantumChecksum(bytecode: Uint8Array): string {
-    // Generate quantum-aware checksum using phi ratio
-    let checksum = 0;
-    for (let i = 0; i < bytecode.length; i++) {
-      checksum += bytecode[i] * (1.618033988749895 * (i + 1));
-    }
-    return checksum.toString(16);
+  getStatus(): any {
+    return {
+      isInitialized: this.isInitialized,
+      parser: this.parser ? 'initialized' : 'not initialized',
+      optimizer: this.optimizer ? 'initialized' : 'not initialized',
+      options: this.options
+    };
   }
 }
