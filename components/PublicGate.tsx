@@ -9,6 +9,7 @@ import { Activity, Users, Zap, Database, TrendingUp, Shield, Globe } from 'lucid
 
 export function PublicGate() {
   const { account, isConnected } = useMetaMask();
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting');
   const [hybridMetrics, setHybridMetrics] = useState({
     totalSupply: '100,000,000,000',
     circulatingSupply: '75,000,000,000',
@@ -53,10 +54,15 @@ export function PublicGate() {
     const fetchMetrics = async () => {
       try {
         const response = await fetch('/api/hybrid/public-metrics');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setHybridMetrics(data);
+        setConnectionStatus('connected');
       } catch (error) {
         console.error('Failed to fetch hybrid metrics:', error);
+        setConnectionStatus('disconnected');
       }
     };
 
@@ -70,7 +76,7 @@ export function PublicGate() {
       {/* HYBRID Blockchain Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-white mb-2">HYBRID Blockchain</h1>
-        <p className="text-gray-400">Next-Generation Proof-of-Stake Blockchain Network</p>
+        <p className="text-gray-400">Cosmos SDK-based EVM-Compatible Blockchain with Native HYBRID Coin</p>
         <div className="mt-4">
           <Badge className="bg-green-600 mr-2">
             <Activity className="w-4 h-4 mr-1" />
@@ -190,7 +196,7 @@ export function PublicGate() {
                   </div>
                 </div>
                 <div className="bg-slate-900 p-4 rounded-lg">
-                  <h3 className="text-white font-semibold mb-3">HYBRID Token</h3>
+                  <h3 className="text-white font-semibold mb-3">HYBRID Native Coin</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Supply</span>

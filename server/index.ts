@@ -32,7 +32,9 @@ app.get('/api/hybrid/public-metrics', (req, res) => {
       gasPrice: '0.001 HYBRID',
       stakingRewards: '7% APY',
       inflationRate: '7% → 2%',
-      burnRate: '30% of fees'
+      burnRate: '30% of fees',
+      networkType: 'Cosmos SDK with EVM Compatibility',
+      nativeCoin: 'HYBRID'
     };
     res.setHeader('Content-Type', 'application/json');
     res.json(metrics);
@@ -47,7 +49,10 @@ app.get('/api/hybrid/network-status', (req, res) => {
     const networkStatus = {
       chainId: 'hybrid-1',
       networkName: 'HYBRID Mainnet',
-      consensusType: 'Proof of Stake',
+      consensusType: 'Tendermint BFT',
+      framework: 'Cosmos SDK',
+      evmCompatibility: true,
+      nativeCoin: 'HYBRID',
       blockHeight: 2847362 + Math.floor(Math.random() * 10),
       validators: {
         active: 21,
