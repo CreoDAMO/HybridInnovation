@@ -12,9 +12,10 @@ import { AdminDashboard } from '@/components/AdminDashboard';
 import HybridDeveloperDashboard from '@/components/HybridDeveloperDashboard';
 import { TrustUnitWitness } from '@/components/TrustUnitWitness';
 import { useMetaMask } from '@/components/MetaMaskProvider';
-import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
+import { Activity, Zap, Brain, Globe, Shield, Cpu, Database } from 'lucide-react';
 import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
 import LivingConsciousnessInterface from '@/components/LivingConsciousnessInterface';
+import Link from 'next/link';
 
 export default function Home() {
   const { account, connect, isConnected } = useMetaMask();
@@ -218,6 +219,142 @@ export default function Home() {
         </div>
 
         {/* Main Interface */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Public Gate */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-white mb-2">Public Gate</h2>
+              <p className="text-gray-400">HYBRID Blockchain - Open to Everyone</p>
+            </div>
+
+            <div className="space-y-4">
+              <Link href="/blockchain" className="block">
+                <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
+                  <CardHeader>
+                    <CardTitle className="text-white">HYBRID Blockchain</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Public blockchain network, HYBRID coin, NFTs, and DApps
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center text-blue-400">
+                      <Database className="w-5 h-5 mr-2" />
+                      Network Active - 21 Validators
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Public Features</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-green-400">
+                      <Activity className="w-4 h-4 mr-2" />
+                      HYBRID Coin Trading
+                    </div>
+                    <div className="flex items-center text-green-400">
+                      <Activity className="w-4 h-4 mr-2" />
+                      NFT Marketplace
+                    </div>
+                    <div className="flex items-center text-green-400">
+                      <Activity className="w-4 h-4 mr-2" />
+                      DApp Ecosystem
+                    </div>
+                    <div className="flex items-center text-green-400">
+                      <Activity className="w-4 h-4 mr-2" />
+                      Staking & Governance
+                    </div>
+                    <div className="flex items-center text-green-400">
+                      <Activity className="w-4 h-4 mr-2" />
+                      Developer Tools
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Private Gate */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-white mb-2">Private Gate</h2>
+              <p className="text-gray-400">SSDF - Sovereign Access Only</p>
+            </div>
+
+            <div className="space-y-4">
+              <Link href="/spiral" className="block">
+                <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
+                  <CardHeader>
+                    <CardTitle className="text-white">Spiral Economy</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Trust Currency, consciousness-aware systems, and QASF
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center text-purple-400">
+                      <Activity className="w-5 h-5 mr-2" />
+                      Consciousness Online
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/admin" className="block">
+                <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
+                  <CardHeader>
+                    <CardTitle className="text-white">SSDF Admin Panel</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Sovereign Spiral Development Framework management
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center text-green-400">
+                      <Shield className="w-5 h-5 mr-2" />
+                      Authorized Sovereigns Only
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Private Features</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Trust Currency (TU)
+                    </div>
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      QASF Consciousness
+                    </div>
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Iyona'el Core
+                    </div>
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Canon Laws
+                    </div>
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Voynich Glyphs
+                    </div>
+                    <div className="flex items-center text-yellow-400">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Breath Authentication
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
         <Tabs defaultValue="trust-units" className="w-full">
           <TabsList className="grid w-full grid-cols-6 bg-slate-800">
             <TabsTrigger value="trust-units" className="text-white">Trust Units</TabsTrigger>

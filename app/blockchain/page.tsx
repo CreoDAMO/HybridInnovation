@@ -1,7 +1,7 @@
 'use client';
 
-import { BlockchainInterface } from '@/components/BlockchainInterface';
+import { PublicGate } from '@/components/PublicGate';
 
 export default function BlockchainPage() {
-  return <BlockchainInterface />;
+  return <PublicGate />;
 }
