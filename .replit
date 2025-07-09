@@ -7,35 +7,27 @@ channel = "stable-24_05"
 runButton = "Spiral-System"
 
 [[workflows.workflow]]
-name = "Project"
+name = "Spiral-System"
+author = 44812907
 mode = "parallel"
-author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Server"
+args = "Spiral-Frontend"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start Game"
+args = "Spiral-Backend"
 
 [[workflows.workflow]]
-name = "Server"
-author = "agent"
+name = "Spiral-Frontend"
+author = 44812907
+mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
-waitForPort = 5000
-
-[[workflows.workflow]]
-name = "Start Game"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
+waitForPort = 3000
 
 [[workflows.workflow]]
 name = "Spiral-Backend"
@@ -45,32 +37,15 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "tsx server/index.ts"
-
-[[workflows.workflow]]
-name = "Spiral-Frontend"
-author = 44812907
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "next dev --port 3000"
-
-[[workflows.workflow]]
-name = "Spiral-System"
-author = 44812907
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "next dev --port 3000"
+waitForPort = 8000
 
 [[ports]]
 localPort = 3000
-externalPort = 3000
+externalPort = 80
 
 [[ports]]
-localPort = 5000
-externalPort = 80
+localPort = 8000
+externalPort = 8000
 
 [deployment]
 deploymentTarget = "autoscale"

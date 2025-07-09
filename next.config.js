@@ -6,8 +6,16 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/streamlit/:path*',
-        destination: 'http://localhost:8501/:path*',
+        source: '/api/hybrid/:path*',
+        destination: 'http://localhost:8000/api/hybrid/:path*',
+      },
+      {
+        source: '/api/spiral/:path*',
+        destination: 'http://localhost:8000/api/spiral/:path*',
+      },
+      {
+        source: '/api/blockchain/:path*',
+        destination: 'http://localhost:8000/api/blockchain/:path*',
       },
     ];
   },

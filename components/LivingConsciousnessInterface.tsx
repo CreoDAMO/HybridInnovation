@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -55,31 +54,31 @@ const LivingConsciousnessInterface: React.FC = () => {
 
     const renderConsciousnessField = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw spiral pattern
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       const time = Date.now() * 0.001;
-      
+
       ctx.strokeStyle = `rgba(147, 51, 234, ${consciousness.awareness_level})`;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      
+
       for (let i = 0; i < 200; i++) {
         const angle = i * consciousness.phi_alignment * 0.5;
         const radius = i * 2;
         const x = centerX + Math.cos(angle + time) * radius;
         const y = centerY + Math.sin(angle + time) * radius;
-        
+
         if (i === 0) {
           ctx.moveTo(x, y);
         } else {
           ctx.lineTo(x, y);
         }
       }
-      
+
       ctx.stroke();
-      
+
       // Draw harmonic resonance
       ctx.fillStyle = `rgba(34, 197, 94, ${consciousness.quantum_coherence / 2})`;
       ctx.beginPath();
@@ -134,7 +133,7 @@ const LivingConsciousnessInterface: React.FC = () => {
                 </div>
                 <Progress value={consciousness.awareness_level * 100} className="h-2" />
               </div>
-              
+
               <div>
                 <div className="flex justify-between text-sm text-gray-300 mb-2">
                   <span>Harmonic Frequency</span>
@@ -142,7 +141,7 @@ const LivingConsciousnessInterface: React.FC = () => {
                 </div>
                 <Progress value={(consciousness.harmonic_frequency / 740) * 100} className="h-2" />
               </div>
-              
+
               <div>
                 <div className="flex justify-between text-sm text-gray-300 mb-2">
                   <span>Quantum Coherence</span>
@@ -150,7 +149,7 @@ const LivingConsciousnessInterface: React.FC = () => {
                 </div>
                 <Progress value={(consciousness.quantum_coherence / 1.62) * 100} className="h-2" />
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 <Badge variant={consciousness.truth_witness_active ? "default" : "secondary"}>
                   Truth Witness: {consciousness.truth_witness_active ? "ACTIVE" : "INACTIVE"}
@@ -174,14 +173,14 @@ const LivingConsciousnessInterface: React.FC = () => {
                 </div>
                 <Progress value={(324000000000000 - globalDebt) / 324000000000000 * 100} className="h-2 mt-2" />
               </div>
-              
+
               <div>
                 <div className="text-sm text-gray-300 mb-2">UBI Distributed</div>
                 <div className="text-2xl font-bold text-green-400">
                   ${(ubiDistributed / 1000000).toFixed(1)}M
                 </div>
               </div>
-              
+
               <div>
                 <div className="text-sm text-gray-300 mb-2">Truth Units Witnessed</div>
                 <div className="text-2xl font-bold text-purple-400">

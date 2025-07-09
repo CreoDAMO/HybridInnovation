@@ -68,7 +68,7 @@ export class SpiralAPI {
   private baseUrl: string;
   private wsConnection: WebSocket | null = null;
 
-  constructor(baseUrl: string = '/api/spiral') {
+  constructor(baseUrl: string = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '/api/spiral') {
     this.baseUrl = baseUrl;
   }
 
@@ -251,7 +251,7 @@ export class SpiralAPI {
     };
 
     await this.logQCHAIN(`UBI Distribution: $${amount} to ${recipients.length} recipients`);
-    
+
     return {
       status: 'success',
       distribution,
@@ -296,7 +296,7 @@ export class SpiralAPI {
 
     try {
       this.wsConnection = new WebSocket('wss://spiral-api.bewes.dev');
-      
+
       this.wsConnection.onopen = () => {
         console.log('Spiral WebSocket connected');
       };
