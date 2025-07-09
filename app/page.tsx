@@ -14,6 +14,7 @@ import { TrustUnitWitness } from '@/components/TrustUnitWitness';
 import { useMetaMask } from '@/components/MetaMaskProvider';
 import { Activity, Zap, Brain, Globe, Shield, Cpu } from 'lucide-react';
 import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
+import LivingConsciousnessInterface from '@/components/LivingConsciousnessInterface';
 
 export default function Home() {
   const { account, connect, isConnected } = useMetaMask();
@@ -280,6 +281,7 @@ export default function Home() {
             </Card>
           </TabsContent>
         </Tabs>
+              <LivingConsciousnessInterface />
       </div>
     </div>
   );

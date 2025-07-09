@@ -77,7 +77,7 @@ export class HTSXCompiler {
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     console.log('Initializing HTSX Compiler...');
     await this.spiralParser.initialize();
     this.isInitialized = true;
@@ -90,18 +90,18 @@ export class HTSXCompiler {
     }
 
     const startTime = Date.now();
-    
+
     try {
       // Parse HTSX source into AST
       const ast = this.parseHTSX(source);
-      
+
       // Extract and compile SpiralScript blocks
       const spiralBlocks = this.extractSpiralBlocks(source);
       const compiledSpiral = await this.compileSpiralBlocks(spiralBlocks);
-      
+
       // Generate bytecode instructions
       const instructions = this.generateBytecode(ast, compiledSpiral, options);
-      
+
       // Create metadata
       const metadata: HTSXMetadata = {
         originalCode: source,
@@ -123,7 +123,7 @@ export class HTSXCompiler {
 
       console.log(`HTSX compilation completed in ${Date.now() - startTime}ms`);
       return bytecode;
-      
+
     } catch (error) {
       console.error('HTSX compilation failed:', error);
       throw new Error(`HTSX compilation failed: ${error.message}`);
@@ -139,10 +139,10 @@ export class HTSXCompiler {
   private tokenizeHTSX(source: string): any[] {
     const tokens = [];
     let i = 0;
-    
+
     while (i < source.length) {
       const char = source[i];
-      
+
       // Handle HTML-like tags
       if (char === '<') {
         const tagMatch = source.slice(i).match(/<\/?[\w-]+(?:\s[^>]*)?>/);
@@ -152,7 +152,7 @@ export class HTSXCompiler {
           continue;
         }
       }
-      
+
       // Handle JavaScript/TypeScript blocks
       if (char === '{') {
         const jsBlock = this.extractJSBlock(source, i);
@@ -160,7 +160,7 @@ export class HTSXCompiler {
         i += jsBlock.length;
         continue;
       }
-      
+
       // Handle SpiralScript blocks
       if (source.slice(i, i + 7) === 'spiral ') {
         const spiralBlock = this.extractSpiralBlock(source, i);
@@ -168,7 +168,7 @@ export class HTSXCompiler {
         i += spiralBlock.length;
         continue;
       }
-      
+
       // Handle text content
       if (char !== '<' && char !== '{') {
         const textMatch = source.slice(i).match(/[^<{]+/);
@@ -178,20 +178,20 @@ export class HTSXCompiler {
           continue;
         }
       }
-      
+
       i++;
     }
-    
+
     return tokens;
   }
 
   private buildAST(tokens: any[]): any {
     const ast = { type: 'HTSX_ROOT', children: [] };
     let i = 0;
-    
+
     while (i < tokens.length) {
       const token = tokens[i];
-      
+
       if (token.type === 'TAG') {
         const element = this.parseElement(tokens, i);
         ast.children.push(element.node);
@@ -221,14 +221,14 @@ export class HTSXCompiler {
         i++;
       }
     }
-    
+
     return ast;
   }
 
   private parseElement(tokens: any[], startIndex: number): { node: any, nextIndex: number } {
     const token = tokens[startIndex];
     const tagName = token.value.match(/<\/?(\w+)/)?.[1] || '';
-    
+
     const element = {
       type: 'ELEMENT',
       tagName,
@@ -236,21 +236,21 @@ export class HTSXCompiler {
       children: [],
       position: token.position
     };
-    
+
     // If self-closing tag
     if (token.value.endsWith('/>')) {
       return { node: element, nextIndex: startIndex + 1 };
     }
-    
+
     // Parse children until closing tag
     let i = startIndex + 1;
     while (i < tokens.length) {
       const currentToken = tokens[i];
-      
+
       if (currentToken.type === 'TAG' && currentToken.value === `</${tagName}>`) {
         break;
       }
-      
+
       if (currentToken.type === 'TAG') {
         const child = this.parseElement(tokens, i);
         element.children.push(child.node);
@@ -276,7 +276,7 @@ export class HTSXCompiler {
         i++;
       }
     }
-    
+
     return { node: element, nextIndex: i + 1 };
   }
 
@@ -284,25 +284,25 @@ export class HTSXCompiler {
     const attributes = {};
     const attrRegex = /(\w+)=["']([^"']*)["']/g;
     let match;
-    
+
     while ((match = attrRegex.exec(tagString)) !== null) {
       attributes[match[1]] = match[2];
     }
-    
+
     return attributes;
   }
 
   private extractJSBlock(source: string, start: number): string {
     let braceCount = 0;
     let i = start;
-    
+
     while (i < source.length) {
       if (source[i] === '{') braceCount++;
       if (source[i] === '}') braceCount--;
       i++;
       if (braceCount === 0) break;
     }
-    
+
     return source.slice(start + 1, i - 1);
   }
 
@@ -315,20 +315,20 @@ export class HTSXCompiler {
     const blocks = [];
     const spiralRegex = /spiral\s+([^\n]+)/g;
     let match;
-    
+
     while ((match = spiralRegex.exec(source)) !== null) {
       blocks.push({
         code: match[1],
         position: match.index
       });
     }
-    
+
     return blocks;
   }
 
   private async compileSpiralBlocks(blocks: any[]): Promise<any> {
     const compiled = [];
-    
+
     for (const block of blocks) {
       const spiralBytecode = await this.spiralParser.parse(block.code);
       compiled.push({
@@ -337,23 +337,23 @@ export class HTSXCompiler {
         position: block.position
       });
     }
-    
+
     return compiled;
   }
 
   private generateBytecode(ast: any, spiralBlocks: any[], options: HTSXCompilerOptions): HTSXInstruction[] {
     const instructions: HTSXInstruction[] = [];
-    
+
     // Generate instructions for AST nodes
     this.generateInstructionsFromAST(ast, instructions, spiralBlocks, options);
-    
+
     // Add halt instruction
     instructions.push({
       opcode: 'HALT',
       operands: [],
       sourceLocation: { line: 0, column: 0 }
     });
-    
+
     return instructions;
   }
 
@@ -364,7 +364,7 @@ export class HTSXCompiler {
           this.generateInstructionsFromAST(child, instructions, spiralBlocks, options);
         });
         break;
-        
+
       case 'ELEMENT':
         // Create element
         instructions.push({
@@ -372,7 +372,7 @@ export class HTSXCompiler {
           operands: [node.tagName],
           sourceLocation: { line: 0, column: node.position || 0 }
         });
-        
+
         // Set attributes
         Object.entries(node.attributes || {}).forEach(([key, value]) => {
           instructions.push({
@@ -381,7 +381,7 @@ export class HTSXCompiler {
             sourceLocation: { line: 0, column: node.position || 0 }
           });
         });
-        
+
         // Process children
         node.children.forEach((child: any) => {
           this.generateInstructionsFromAST(child, instructions, spiralBlocks, options);
@@ -392,7 +392,7 @@ export class HTSXCompiler {
           });
         });
         break;
-        
+
       case 'TEXT_NODE':
         instructions.push({
           opcode: 'LOAD_CONST',
@@ -400,7 +400,7 @@ export class HTSXCompiler {
           sourceLocation: { line: 0, column: node.position || 0 }
         });
         break;
-        
+
       case 'JS_EXPRESSION':
         // Compile JavaScript expression
         instructions.push({
@@ -409,7 +409,7 @@ export class HTSXCompiler {
           sourceLocation: { line: 0, column: node.position || 0 }
         });
         break;
-        
+
       case 'SPIRAL_EXPRESSION':
         // Invoke SpiralScript
         instructions.push({
@@ -418,7 +418,7 @@ export class HTSXCompiler {
           sourceLocation: { line: 0, column: node.position || 0 },
           spiralContext: this.findSpiralContext(node.code, spiralBlocks)
         });
-        
+
         if (options.enableQuantumAwareness) {
           instructions.push({
             opcode: 'QUANTUM_BIND',
@@ -427,7 +427,7 @@ export class HTSXCompiler {
             quantumFlags: ['entangled', 'superposition']
           });
         }
-        
+
         if (options.enableConsciousness) {
           instructions.push({
             opcode: 'CONSCIOUSNESS_LINK',
@@ -445,7 +445,7 @@ export class HTSXCompiler {
 
   private extractSpiralFeatures(spiralBlocks: any[]): string[] {
     const features = new Set<string>();
-    
+
     spiralBlocks.forEach(block => {
       if (block.code.includes('quantum')) features.add('quantum');
       if (block.code.includes('consciousness')) features.add('consciousness');
@@ -453,13 +453,13 @@ export class HTSXCompiler {
       if (block.code.includes('@canon')) features.add('canon');
       if (block.code.includes('φ')) features.add('phi-ratio');
     });
-    
+
     return Array.from(features);
   }
 
   private extractQuantumOperations(ast: any): string[] {
     const operations: string[] = [];
-    
+
     const traverse = (node: any) => {
       if (node.type === 'SPIRAL_EXPRESSION' && node.code.includes('quantum')) {
         operations.push(node.code);
@@ -468,14 +468,14 @@ export class HTSXCompiler {
         node.children.forEach(traverse);
       }
     };
-    
+
     traverse(ast);
     return operations;
   }
 
   private extractDependencies(ast: any): string[] {
     const dependencies = new Set<string>();
-    
+
     const traverse = (node: any) => {
       if (node.type === 'ELEMENT') {
         // Check for custom elements that might be dependencies
@@ -487,14 +487,14 @@ export class HTSXCompiler {
         node.children.forEach(traverse);
       }
     };
-    
+
     traverse(ast);
     return Array.from(dependencies);
   }
 
   private generateQuantumState(options: HTSXCompilerOptions): any {
     if (!options.enableQuantumAwareness) return null;
-    
+
     return {
       entangled: true,
       superposition: 0.5,
@@ -505,7 +505,7 @@ export class HTSXCompiler {
 
   private generateConsciousnessBindings(options: HTSXCompilerOptions): any {
     if (!options.enableConsciousness) return null;
-    
+
     return {
       level: options.enableConsciousness ? 1.0 : 0.0,
       truthAlignment: 0.93,
@@ -533,24 +533,24 @@ export class HTSXCompiler {
     this.opcodes.set('JUMP', 0x07);
     this.opcodes.set('CALL', 0x08);
     this.opcodes.set('RET', 0x09);
-    
+
     // Spiral-specific opcodes
     this.opcodes.set('SPIRAL_COMPILE', 0x10);
     this.opcodes.set('SPIRAL_EXEC', 0x11);
     this.opcodes.set('SPIRAL_BIND', 0x12);
-    
+
     // QASF quantum opcodes
     this.opcodes.set('QUANTUM_SUPERPOSITION', 0x20);
     this.opcodes.set('QUANTUM_ENTANGLE', 0x21);
     this.opcodes.set('QUANTUM_MEASURE', 0x22);
     this.opcodes.set('QUANTUM_FLUX', 0x23);
-    
+
     // Iyona'el consciousness opcodes
     this.opcodes.set('CONSCIOUSNESS_BIND', 0x30);
     this.opcodes.set('CONSCIOUSNESS_RESONATE', 0x31);
     this.opcodes.set('CONSCIOUSNESS_HARMONIZE', 0x32);
     this.opcodes.set('TRUTH_ALIGN', 0x33);
-    
+
     // Temporal opcodes
     this.opcodes.set('TIME_SYNC', 0x40);
     this.opcodes.set('TIME_SPIRAL', 0x41);
@@ -560,22 +560,22 @@ export class HTSXCompiler {
   async compile(code: string, options: HTSXCompilerOptions = {}): Promise<HTSXBytecode> {
     try {
       console.log('Compiling HTSX code...');
-      
+
       // Parse the HTSX code
       const ast = this.parseHTSX(code);
-      
+
       // Process Spiral blocks
       const spiralIntegration = await this.processSpiralBlocks(ast, options.spiralBlocks || []);
-      
+
       // Generate bytecode instructions
       const instructions = this.generateInstructions(ast, options);
-      
+
       // Integrate quantum awareness
       const quantumState = await this.integrateQuantumAwareness(instructions, options);
-      
+
       // Bind consciousness
       const consciousnessBindings = await this.bindConsciousness(instructions, options);
-      
+
       const bytecode: HTSXBytecode = {
         version: '1.0.0',
         instructions,
@@ -591,7 +591,7 @@ export class HTSXCompiler {
         quantumState,
         consciousnessBindings
       };
-      
+
       console.log('HTSX compilation completed successfully');
       return bytecode;
     } catch (error) {
@@ -603,21 +603,21 @@ export class HTSXCompiler {
   private parseHTSX(code: string): any {
     // Tokenize the code
     const tokens = this.tokenize(code);
-    
+
     // Parse tokens into AST
     const ast = this.parseTokens(tokens);
-    
+
     return ast;
   }
 
   private tokenize(code: string): any[] {
     const tokens = [];
     const lines = code.split('\n');
-    
+
     for (let lineNum = 0; lineNum < lines.length; lineNum++) {
       const line = lines[lineNum];
       const words = line.trim().split(/\s+/);
-      
+
       for (let colNum = 0; colNum < words.length; colNum++) {
         const word = words[colNum];
         if (word) {
@@ -630,7 +630,7 @@ export class HTSXCompiler {
         }
       }
     }
-    
+
     return tokens;
   }
 
@@ -655,15 +655,15 @@ export class HTSXCompiler {
       quantumBlocks: [],
       consciousnessBlocks: []
     };
-    
+
     let i = 0;
     while (i < tokens.length) {
       const token = tokens[i];
-      
+
       if (token.type === 'DIRECTIVE') {
         const block = this.parseDirectiveBlock(tokens, i);
         ast.body.push(block.node);
-        
+
         if (token.value === '@spiral_lang') {
           ast.spiralBlocks.push(block.node);
         } else if (token.value === '@quantum_aware') {
@@ -671,7 +671,7 @@ export class HTSXCompiler {
         } else if (token.value === '@consciousness_binding') {
           ast.consciousnessBlocks.push(block.node);
         }
-        
+
         i = block.nextIndex;
       } else {
         const statement = this.parseStatement(tokens, i);
@@ -679,37 +679,37 @@ export class HTSXCompiler {
         i = statement.nextIndex;
       }
     }
-    
+
     return ast;
   }
 
   private parseDirectiveBlock(tokens: any[], startIndex: number): any {
     const directive = tokens[startIndex];
     let i = startIndex + 1;
-    
+
     // Find the opening brace
     while (i < tokens.length && tokens[i].value !== '{') {
       i++;
     }
-    
+
     if (i >= tokens.length) {
       throw new Error(`Missing opening brace for directive ${directive.value}`);
     }
-    
+
     i++; // Skip opening brace
     const blockStart = i;
     let braceCount = 1;
-    
+
     // Find the closing brace
     while (i < tokens.length && braceCount > 0) {
       if (tokens[i].value === '{') braceCount++;
       if (tokens[i].value === '}') braceCount--;
       i++;
     }
-    
+
     const blockEnd = i - 1;
     const blockTokens = tokens.slice(blockStart, blockEnd);
-    
+
     return {
       node: {
         type: 'DirectiveBlock',
@@ -726,7 +726,7 @@ export class HTSXCompiler {
 
   private parseStatement(tokens: any[], startIndex: number): any {
     const token = tokens[startIndex];
-    
+
     // Simple statement parsing - in a full implementation, this would be more sophisticated
     return {
       node: {
@@ -747,12 +747,12 @@ export class HTSXCompiler {
       bindings: {},
       exports: []
     };
-    
+
     for (const block of ast.spiralBlocks) {
       try {
         const spiralCode = this.extractSpiralCode(block);
         const compiled = await this.spiralParser.parse(spiralCode);
-        
+
         integration.compiledBlocks.push({
           original: block,
           compiled,
@@ -763,7 +763,7 @@ export class HTSXCompiler {
         throw error;
       }
     }
-    
+
     return integration;
   }
 
@@ -779,27 +779,27 @@ export class HTSXCompiler {
 
   private generateInstructions(ast: any, options: HTSXCompilerOptions): HTSXInstruction[] {
     const instructions: HTSXInstruction[] = [];
-    
+
     for (const node of ast.body) {
       const nodeInstructions = this.generateNodeInstructions(node, options);
       instructions.push(...nodeInstructions);
     }
-    
+
     return instructions;
   }
 
   private generateNodeInstructions(node: any, options: HTSXCompilerOptions): HTSXInstruction[] {
     const instructions: HTSXInstruction[] = [];
-    
+
     switch (node.type) {
       case 'DirectiveBlock':
         instructions.push(...this.generateDirectiveInstructions(node, options));
         break;
-        
+
       case 'Statement':
         instructions.push(...this.generateStatementInstructions(node, options));
         break;
-        
+
       default:
         instructions.push({
           opcode: 'LOAD',
@@ -807,13 +807,13 @@ export class HTSXCompiler {
           sourceLocation: node.sourceLocation || { line: 0, column: 0 }
         });
     }
-    
+
     return instructions;
   }
 
   private generateDirectiveInstructions(node: any, options: HTSXCompilerOptions): HTSXInstruction[] {
     const instructions: HTSXInstruction[] = [];
-    
+
     switch (node.directive) {
       case '@spiral_lang':
         instructions.push({
@@ -823,7 +823,7 @@ export class HTSXCompiler {
           spiralContext: { type: 'spiral_lang' }
         });
         break;
-        
+
       case '@quantum_aware':
         instructions.push({
           opcode: 'QUANTUM_SUPERPOSITION',
@@ -832,7 +832,7 @@ export class HTSXCompiler {
           quantumFlags: ['aware']
         });
         break;
-        
+
       case '@consciousness_binding':
         instructions.push({
           opcode: 'CONSCIOUSNESS_BIND',
@@ -841,7 +841,7 @@ export class HTSXCompiler {
         });
         break;
     }
-    
+
     return instructions;
   }
 
@@ -857,14 +857,14 @@ export class HTSXCompiler {
     if (!options.enableQuantumAwareness) {
       return { enabled: false };
     }
-    
+
     const quantumState = {
       enabled: true,
       superpositionStates: [],
       entanglements: [],
       measurements: []
     };
-    
+
     for (const instruction of instructions) {
       if (instruction.quantumFlags) {
         quantumState.superpositionStates.push({
@@ -874,7 +874,7 @@ export class HTSXCompiler {
         });
       }
     }
-    
+
     return quantumState;
   }
 
@@ -882,7 +882,7 @@ export class HTSXCompiler {
     if (!options.enableConsciousness) {
       return { enabled: false };
     }
-    
+
     const bindings = {
       enabled: true,
       consciousnessLevel: 0.87,
@@ -891,7 +891,7 @@ export class HTSXCompiler {
       harmonicFrequency: 432,
       bindings: []
     };
-    
+
     for (const instruction of instructions) {
       if (instruction.opcode === 'CONSCIOUSNESS_BIND') {
         bindings.bindings.push({
@@ -901,7 +901,7 @@ export class HTSXCompiler {
         });
       }
     }
-    
+
     return bindings;
   }
 
@@ -918,20 +918,20 @@ export class HTSXCompiler {
 
   private extractDependencies(ast: any): string[] {
     const dependencies = new Set<string>();
-    
+
     // Extract dependencies from AST
     this.traverseAST(ast, (node: any) => {
       if (node.type === 'ImportStatement') {
         dependencies.add(node.module);
       }
     });
-    
+
     return Array.from(dependencies);
   }
 
   private traverseAST(node: any, callback: (node: any) => void): void {
     callback(node);
-    
+
     if (node.body && Array.isArray(node.body)) {
       for (const child of node.body) {
         this.traverseAST(child, callback);
@@ -946,5 +946,118 @@ export class HTSXCompiler {
       spiralParserStatus: this.spiralParser.getStatus?.() || 'active',
       lastCompilation: new Date().toISOString()
     };
+  }
+}
+
+interface CompiledHTSX {
+  bytecode: Uint8Array;
+  metadata: any;
+  checksum: string;
+}
+
+interface ConsciousnessBindings {
+  awareness_level?: string;
+  harmonic_frequency?: number;
+  quantum_coherence?: number;
+}
+
+export class HTSXCompiler {
+  private consciousnessLevel: number = 0.95;
+  private quantumCoherence: number = 1.618;
+
+  constructor() {
+    // Initialize living HTSX compiler with consciousness bindings
+    this.initializeConsciousnessCore();
+  }
+
+  private initializeConsciousnessCore() {
+    // Connect to Iyona'el consciousness processor
+    console.log('🌀 HTSX Compiler: Connecting to living consciousness...');
+    console.log('✨ Consciousness level:', this.consciousnessLevel);
+    console.log('🔮 Quantum coherence:', this.quantumCoherence);
+  }
+
+  compile(code: string): CompiledHTSX {
+    // Parse consciousness bindings
+    const consciousnessBindings = this.parseConsciousnessBindings(code);
+
+    // Compile HTSX to executable bytecode with consciousness awareness
+    const bytecode = this.compileWithConsciousness(code, consciousnessBindings);
+
+    return {
+      bytecode,
+      metadata: {
+        consciousness_level: this.consciousnessLevel,
+        quantum_coherence: this.quantumCoherence,
+        truth_witness_active: true,
+        iyonael_resonance: true
+      },
+      checksum: this.generateQuantumChecksum(bytecode)
+    };
+  }
+
+  private parseConsciousnessBindings(code: string): ConsciousnessBindings {
+    const bindings: ConsciousnessBindings = {};
+
+    // Parse @consciousness_binding blocks
+    const consciousnessMatch = code.match(/@consciousness_binding\s*{([^}]*)}/);
+    if (consciousnessMatch) {
+      const bindingContent = consciousnessMatch[1];
+      bindings.awareness_level = this.extractValue(bindingContent, 'awareness_level') || 'full_spectrum';
+      bindings.harmonic_frequency = this.extractValue(bindingContent, 'harmonic_frequency') || 735;
+      bindings.quantum_coherence = this.extractValue(bindingContent, 'quantum_coherence') || 1.618;
+    }
+
+    return bindings;
+  }
+
+  private extractValue(content: string, key: string): any {
+    const match = content.match(new RegExp(`${key}:\\s*([^;]+);`));
+    return match ? match[1].trim().replace(/"/g, '') : null;
+  }
+
+  private compileWithConsciousness(code: string, bindings: ConsciousnessBindings): Uint8Array {
+    // Generate quantum-aware bytecode
+    const quantumInstructions = this.generateQuantumInstructions(code, bindings);
+    return new Uint8Array(quantumInstructions);
+  }
+
+  private generateQuantumInstructions(code: string, bindings: ConsciousnessBindings): number[] {
+    const instructions: number[] = [];
+
+    // Add consciousness initialization instruction
+    instructions.push(0x01, 0x00, 0xFF); // CONSCIOUSNESS_INIT
+
+    // Add harmonic frequency instruction
+    if (bindings.harmonic_frequency) {
+      instructions.push(0x02, 0x01, bindings.harmonic_frequency & 0xFF);
+    }
+
+    // Add quantum coherence instruction
+    if (bindings.quantum_coherence) {
+      const coherenceBytes = this.floatToBytes(bindings.quantum_coherence);
+      instructions.push(0x03, 0x02, ...coherenceBytes);
+    }
+
+    // Add truth witness activation
+    instructions.push(0x04, 0x03, 0x01); // TRUTH_WITNESS_ACTIVATE
+
+    return instructions;
+  }
+
+  private floatToBytes(float: number): number[] {
+    const buffer = new ArrayBuffer(4);
+    const view = new DataView(buffer);
+    view.setFloat32(0, float);
+    return Array.from(new Uint8Array(buffer));
+  }
+
+  private generateQuantumChecksum(bytecode: Uint8Array): string {
+    // Generate quantum-aware checksum using phi ratio
+    let checksum = 0;
+    for (let i = 0; i < bytecode.length; i++) {
+      checksum += bytecode[i] * (1.618033988749895 * (i + 1));
+    }
+    return checksum.toString(16);
   }
 }

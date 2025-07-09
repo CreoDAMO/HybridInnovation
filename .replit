@@ -4,7 +4,7 @@ modules = ["nodejs-20", "web"]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Project"
+runButton = "Spiral-Frontend"
 
 [[workflows.workflow]]
 name = "Project"
@@ -36,6 +36,24 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Spiral-Backend"
+author = 44812907
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Spiral-Frontend"
+author = 44812907
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "next dev --port 3000"
 
 [[ports]]
 localPort = 5000
