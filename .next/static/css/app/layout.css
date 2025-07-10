@@ -72,6 +72,9 @@
   \*************************************************************************************************************************************************************************************************************************************************************/
 /*! tailwindcss v4.1.11 | MIT License | https://tailwindcss.com */
 @layer properties;
+.pointer-events-none {
+  pointer-events: none;
+}
 .collapse {
   visibility: collapse;
 }
@@ -314,8 +317,27 @@
 .underline-offset-4 {
   text-underline-offset: 4px;
 }
+.opacity-30 {
+  opacity: 30%;
+}
 .opacity-50 {
   opacity: 50%;
+}
+.opacity-60 {
+  opacity: 60%;
+}
+.opacity-70 {
+  opacity: 70%;
+}
+.opacity-80 {
+  opacity: 80%;
+}
+.opacity-90 {
+  opacity: 90%;
+}
+.shadow-\[inset_0_2px_10px_rgba\(0\,0\,0\,0\.5\)\,0_10px_30px_rgba\(0\,0\,0\,0\.3\)\] {
+  --tw-shadow: inset 0 2px 10px var(--tw-shadow-color, rgba(0,0,0,0.5)), 0 10px 30px var(--tw-shadow-color, rgba(0,0,0,0.3));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
 .ring {
   --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -338,6 +360,10 @@
   transition-timing-function: var(--tw-ease, ease);
   transition-duration: var(--tw-duration, 0s);
 }
+.duration-200 {
+  --tw-duration: 200ms;
+  transition-duration: 200ms;
+}
 .duration-300 {
   --tw-duration: 300ms;
   transition-duration: 300ms;
@@ -345,6 +371,10 @@
 .duration-500 {
   --tw-duration: 500ms;
   transition-duration: 500ms;
+}
+.duration-1000 {
+  --tw-duration: 1000ms;
+  transition-duration: 1000ms;
 }
 .file\:border-0 {
   &::file-selector-button {
@@ -367,10 +397,25 @@
     }
   }
 }
+.hover\:scale-\[1\.02\] {
+  &:hover {
+    @media (hover: hover) {
+      scale: 1.02;
+    }
+  }
+}
 .hover\:underline {
   &:hover {
     @media (hover: hover) {
       text-decoration-line: underline;
+    }
+  }
+}
+.hover\:shadow-\[inset_0_2px_10px_rgba\(0\,0\,0\,0\.7\)\,0_15px_40px_rgba\(0\,0\,0\,0\.4\)\] {
+  &:hover {
+    @media (hover: hover) {
+      --tw-shadow: inset 0 2px 10px var(--tw-shadow-color, rgba(0,0,0,0.7)), 0 15px 40px var(--tw-shadow-color, rgba(0,0,0,0.4));
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
 }
@@ -502,6 +547,182 @@
 @keyframes quantum-flux {
   0%, 100% {
     opacity: 0.7;
+    .glassmorphism-panel {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .neumorphism-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5),
+    0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    .neumorphism-card:hover {
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7),
+    0 15px 40px rgba(0, 0, 0, 0.4);
+      transform: translateY(-2px);
+    }
+    @keyframes quantumFloat {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-10px) rotate(90deg);
+      }
+      50% {
+        transform: translateY(-5px) rotate(180deg);
+      }
+      75% {
+        transform: translateY(-15px) rotate(270deg);
+      }
+    }
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+    .holographic-cube {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s infinite linear;
+    }
+    .cube-face {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      opacity: 0.7;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .cube-face.front {
+      transform: rotateY(0deg) translateZ(40px);
+    }
+    .cube-face.back {
+      transform: rotateY(180deg) translateZ(40px);
+    }
+    .cube-face.right {
+      transform: rotateY(90deg) translateZ(40px);
+    }
+    .cube-face.left {
+      transform: rotateY(-90deg) translateZ(40px);
+    }
+    .cube-face.top {
+      transform: rotateX(90deg) translateZ(40px);
+    }
+    .cube-face.bottom {
+      transform: rotateX(-90deg) translateZ(40px);
+    }
+    @keyframes rotateCube {
+      0% {
+        transform: rotateX(0deg) rotateY(0deg);
+      }
+      100% {
+        transform: rotateX(360deg) rotateY(360deg);
+      }
+    }
+    .metric-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .metric-card:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .quantum-particle-field {
+      position: relative;
+      overflow: hidden;
+    }
+    .quantum-core {
+      animation: quantumPulse 3s ease-in-out infinite;
+    }
+    @keyframes quantumPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.9;
+      }
+    }
+    .advanced-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+    @media (max-width: 768px) {
+      .glassmorphism-panel {
+        padding: 1rem;
+      }
+      .neumorphism-card {
+        padding: 1rem;
+      }
+      .holographic-cube {
+        width: 60px;
+        height: 60px;
+      }
+      .cube-face {
+        width: 60px;
+        height: 60px;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #06b6d4, #8b5cf6);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #0891b2, #7c3aed);
+    }
+    .loading-shimmer {
+      background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.1) 100%
+  );
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+    .focus-glow:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    }
+    .micro-bounce {
+      transition: transform 0.1s ease;
+    }
+    .micro-bounce:active {
+      transform: scale(0.95);
+    }
+    .elevated-shadow {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+    .floating-shadow {
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+    0 10px 10px rgba(0, 0, 0, 0.22);
+    }
     transform: translateY(0px);
   }
   50% {
