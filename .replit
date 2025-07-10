@@ -172,7 +172,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npx next dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
