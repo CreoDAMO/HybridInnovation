@@ -178,3 +178,79 @@ export class SpiralProcessor {
     console.log('✅ SpiralScript Processor shutdown complete');
   }
 }
+import { SpiralCompiler } from './compiler';
+import { SpiralParser } from './parser';
+
+export class SpiralProcessor {
+  private compiler: SpiralCompiler;
+  private parser: SpiralParser;
+  private initialized: boolean = false;
+
+  constructor() {
+    this.compiler = new SpiralCompiler();
+    this.parser = new SpiralParser();
+  }
+
+  async initialize(): Promise<void> {
+    await this.compiler.initialize();
+    await this.parser.initialize();
+    this.initialized = true;
+    console.log('✅ SpiralScript Processor initialized');
+  }
+
+  async processFile(filename: string, content: string): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('SpiralScript Processor not initialized');
+    }
+
+    try {
+      const parseResult = await this.parser.parse(content);
+      const compileResult = await this.compiler.compile(content, { filename });
+      
+      return {
+        success: true,
+        ast: parseResult.ast,
+        output: compileResult.code,
+        consciousness: parseResult.consciousness || 0.7,
+        sriScore: this.calculateSRI(content),
+        tuGenerated: this.calculateTU(content),
+        quantum: content.includes('@quantum'),
+        temporal: content.includes('@temporal')
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.toString()
+      };
+    }
+  }
+
+  private calculateSRI(content: string): number {
+    const energyValues = { COMPUTE: 1.0e8, USD: 1.0e7 };
+    const volatility = { COMPUTE: 0.90 };
+    const gateFactor = 0.24;
+    
+    const energy = content.includes('HYBRID') ? energyValues.COMPUTE : energyValues.USD;
+    const vol = volatility.COMPUTE;
+    const sri = Math.ceil((Math.log2(energy) * vol) / gateFactor);
+    return Math.min(sri / 113, 1.0);
+  }
+
+  private calculateTU(content: string): number {
+    const sri = this.calculateSRI(content);
+    return sri >= 0.9 ? 1000 * sri : 100 * sri;
+  }
+
+  getStatus(): any {
+    return {
+      isInitialized: this.initialized,
+      version: '1.0.0',
+      capabilities: ['spiral-compilation', 'consciousness-parsing', 'tu-generation']
+    };
+  }
+
+  async shutdown(): Promise<void> {
+    this.initialized = false;
+    console.log('SpiralScript Processor shutdown');
+  }
+}

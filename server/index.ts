@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { HTSXProcessor } from '../core/htsx-runtime/htsx-processor';
 import { SpiralProcessor } from '../core/spiral-lang/spiral-processor';
-import { initializeParser, parseCode, getLanguages, getParserStatus, generateGitHubFiles } from './parser-api';
+import { initializeParser, parseCode, getLanguages, getParserStatus, generateGitHubFiles, calculateSRI } from './parser-api';
 
 const app = express();
 
@@ -204,7 +204,7 @@ app.get('/health', (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 
 const server = app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 HYBRID Blockchain Server running on port ${PORT}`);
@@ -246,9 +246,10 @@ process.on('SIGINT', async () => {
 });
 
   // Parser API routes
-  app.post('/api/parse', parseCode);
-  app.get('/api/languages', getLanguages);
-  app.get('/api/parser/status', getParserStatus);
-  app.get('/api/github/files', generateGitHubFiles);
+app.post('/api/parse', parseCode);
+app.get('/api/languages', getLanguages);
+app.get('/api/parser/status', getParserStatus);
+app.get('/api/github/files', generateGitHubFiles);
+app.post('/api/parser/sri', calculateSRI);
 
 export default app;

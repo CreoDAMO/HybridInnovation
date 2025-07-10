@@ -6,30 +6,34 @@ import { SpiralParser } from '../core/spiral-lang/parser';
 const parserStack = new UltimateParserStack();
 const spiralParser = new SpiralParser();
 
-// Initialize parsers
-(async () => {
-  await parserStack.initialize();
-  await spiralParser.initialize();
-})();
+let initialized = false;
 
-export const parseFile = async (req: Request, res: Response) => {
+export const initializeParser = async (): Promise<void> => {
+  if (!initialized) {
+    await parserStack.initialize();
+    await spiralParser.initialize();
+    initialized = true;
+    console.log('✅ Parser stack initialized');
+  }
+};
+
+export const parseCode = async (req: Request, res: Response) => {
   try {
     const { filename, content, language } = req.body;
 
-    if (!filename || !content) {
+    if (!content) {
       return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['filename', 'content']
+        error: 'Missing required field: content'
       });
     }
 
-    console.log(`Parsing file: ${filename}, language: ${language}`);
+    console.log(`Parsing content, language: ${language || 'auto-detect'}`);
 
     let result;
-    if (language === 'spiral' || filename.endsWith('.spiral')) {
+    if (language === 'spiral' || (filename && filename.endsWith('.spiral'))) {
       result = await spiralParser.parse(content);
     } else {
-      result = await parserStack.parseFile(filename, content);
+      result = await parserStack.parseFile(filename || 'inline.txt', content);
     }
 
     res.json({
@@ -37,13 +41,15 @@ export const parseFile = async (req: Request, res: Response) => {
       result
     });
   } catch (error) {
-    console.error('Error parsing file:', error);
+    console.error('Error parsing content:', error);
     res.status(500).json({
       error: 'Internal server error',
       details: error.toString()
     });
   }
 };
+
+export const parseFile = parseCode; // Alias for compatibility
 
 export const getLanguages = async (req: Request, res: Response) => {
   try {

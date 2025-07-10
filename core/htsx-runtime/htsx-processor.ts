@@ -154,3 +154,54 @@ export class HTSXProcessor {
     console.log('✅ HTSX Processor shutdown complete');
   }
 }
+import { HTSXCompiler } from './compiler';
+
+export class HTSXProcessor {
+  private compiler: HTSXCompiler;
+  private initialized: boolean = false;
+
+  constructor() {
+    this.compiler = new HTSXCompiler();
+  }
+
+  async initialize(): Promise<void> {
+    await this.compiler.initialize();
+    this.initialized = true;
+    console.log('✅ HTSX Processor initialized');
+  }
+
+  async processFile(filename: string, content: string): Promise<any> {
+    if (!this.initialized) {
+      throw new Error('HTSX Processor not initialized');
+    }
+
+    try {
+      const result = await this.compiler.compile(content, { filename });
+      return {
+        success: true,
+        output: result.code,
+        consciousness: 0.85,
+        quantum: content.includes('@quantum'),
+        temporal: content.includes('@temporal')
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.toString()
+      };
+    }
+  }
+
+  getStatus(): any {
+    return {
+      isInitialized: this.initialized,
+      version: '1.0.0',
+      capabilities: ['htsx-compilation', 'consciousness-binding', 'quantum-aware']
+    };
+  }
+
+  async shutdown(): Promise<void> {
+    this.initialized = false;
+    console.log('HTSX Processor shutdown');
+  }
+}
