@@ -109,3 +109,132 @@ export function MetaMaskProvider({ children }: { children: React.ReactNode }) {
     </MetaMaskContext.Provider>
   );
 }
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { MetaMaskSDK } from '@metamask/sdk';
+
+interface MetaMaskContextType {
+  sdk: MetaMaskSDK | null;
+  account: string | null;
+  isConnected: boolean;
+  isConnecting: boolean;
+  connect: () => Promise<void>;
+  disconnect: () => void;
+  chainId: string | null;
+}
+
+const MetaMaskContext = createContext<MetaMaskContextType | undefined>(undefined);
+
+interface MetaMaskProviderProps {
+  children: ReactNode;
+}
+
+export function MetaMaskProvider({ children }: MetaMaskProviderProps) {
+  const [sdk, setSdk] = useState<MetaMaskSDK | null>(null);
+  const [account, setAccount] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [chainId, setChainId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initSDK = async () => {
+      try {
+        const MMSDK = new MetaMaskSDK({
+          dappMetadata: {
+            name: "HYBRID Blockchain",
+            url: window.location.host,
+          },
+          preferDesktop: false,
+          logging: {
+            developerMode: false,
+          },
+        });
+
+        setSdk(MMSDK);
+
+        const provider = MMSDK.getProvider();
+        if (provider) {
+          // Check if already connected
+          const accounts = await provider.request({ method: 'eth_accounts' });
+          if (accounts && accounts.length > 0) {
+            setAccount(accounts[0]);
+            setIsConnected(true);
+          }
+
+          // Get chain ID
+          const currentChainId = await provider.request({ method: 'eth_chainId' });
+          setChainId(currentChainId);
+
+          // Set up event listeners
+          provider.on('accountsChanged', (accounts: string[]) => {
+            if (accounts.length > 0) {
+              setAccount(accounts[0]);
+              setIsConnected(true);
+            } else {
+              setAccount(null);
+              setIsConnected(false);
+            }
+          });
+
+          provider.on('chainChanged', (chainId: string) => {
+            setChainId(chainId);
+          });
+        }
+      } catch (error) {
+        console.error('Failed to initialize MetaMask SDK:', error);
+      }
+    };
+
+    initSDK();
+  }, []);
+
+  const connect = async () => {
+    if (!sdk) return;
+    
+    setIsConnecting(true);
+    try {
+      const provider = sdk.getProvider();
+      if (provider) {
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        if (accounts && accounts.length > 0) {
+          setAccount(accounts[0]);
+          setIsConnected(true);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to connect to MetaMask:', error);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnect = () => {
+    setAccount(null);
+    setIsConnected(false);
+  };
+
+  const value: MetaMaskContextType = {
+    sdk,
+    account,
+    isConnected,
+    isConnecting,
+    connect,
+    disconnect,
+    chainId,
+  };
+
+  return (
+    <MetaMaskContext.Provider value={value}>
+      {children}
+    </MetaMaskContext.Provider>
+  );
+}
+
+export function useMetaMask() {
+  const context = useContext(MetaMaskContext);
+  if (context === undefined) {
+    throw new Error('useMetaMask must be used within a MetaMaskProvider');
+  }
+  return context;
+}
