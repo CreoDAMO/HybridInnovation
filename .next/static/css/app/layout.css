@@ -242,6 +242,10 @@
   border-style: var(--tw-border-style);
   border-width: 2px;
 }
+.border-t {
+  border-top-style: var(--tw-border-style);
+  border-top-width: 1px;
+}
 .border-b {
   border-bottom-style: var(--tw-border-style);
   border-bottom-width: 1px;
@@ -249,6 +253,9 @@
 .border-b-2 {
   border-bottom-style: var(--tw-border-style);
   border-bottom-width: 2px;
+}
+.border-current {
+  border-color: currentcolor;
 }
 .border-transparent {
   border-color: transparent;
@@ -334,6 +341,10 @@
 .duration-300 {
   --tw-duration: 300ms;
   transition-duration: 300ms;
+}
+.duration-500 {
+  --tw-duration: 500ms;
+  transition-duration: 500ms;
 }
 .file\:border-0 {
   &::file-selector-button {
