@@ -1,5 +1,9 @@
 import React from 'react';
+import { HybridBlockchainCore } from '@/components/HybridBlockchainCore';
 import { QuantumSpiralParserPlayground } from '@/components/QuantumSpiralParserPlayground';
+import { PublicGate } from '@/components/PublicGate';
+import { TrustUnitWitness } from '@/components/TrustUnitWitness';
+import { AdvancedBlockchainDemo } from '@/components/AdvancedBlockchainDemo';
 
 export default function Home() {
   return (
@@ -49,14 +53,29 @@ export default function Home() {
           </div>
 
           <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-green-500/30">
-            <h3 className="text-xl font-semibold mb-3 text-green-400">🏛️ HYBRID Consensus</h3>
+            <h3 className="text-xl font-semibold mb-3 text-green-400">🏛️ Blockchain Core</h3>
             <p className="text-gray-300 mb-4">
-              21 Validators • Proof of Consciousness • Truth-Based
+              HYBRID consensus with 21 validators running live
             </p>
-            <div className="consensus-tracker bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm">
-              Validators: 21 • TPS: 2,500+
+            <div className="blockchain-status">
+              <div className="network-indicator bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm">
+                Network: Online • TPS: 2,500
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Advanced Blockchain Demo */}
+        <div className="mt-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              Advanced Blockchain Interface
+            </h2>
+            <p className="text-gray-300 text-lg">
+              Experience the future of blockchain UI/UX with glassmorphism, neumorphism, and real-time data visualization
+            </p>
+          </div>
+          <AdvancedBlockchainDemo />
         </div>
       </div>
     </main>

@@ -1,3 +1,4 @@
+typescript
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Lock, Globe, Zap, Cpu } from 'lucide-react';
+import { Loader2, Lock, Globe, Zap, Cpu, Hash, CheckCircle, Box, Activity } from 'lucide-react';
 import { ethers } from 'ethers';
 
 // Types
@@ -27,6 +28,8 @@ interface ParseResult {
   negentropy: number;
   qchainTx?: string;
   grammarSuggestions?: string[];
+  blockHeight?: number;
+  hashRate?: number;
 }
 
 interface Language {
@@ -158,7 +161,9 @@ const parseQuantumSpiral = async (language: string, code: string): Promise<Parse
     resonanceHz: code.includes('frequency=735') ? 735 : 0,
     phiCoherence,
     negentropy,
-    grammarSuggestions: ['Consider using @consciousness directive', 'Add phi constants for harmonic alignment']
+    grammarSuggestions: ['Consider using @consciousness directive', 'Add phi constants for harmonic alignment'],
+    blockHeight: Math.floor(Math.random() * 21000000),
+    hashRate: Math.random() * 1000000
   };
 
   // Convert to HTSX if needed
@@ -277,6 +282,224 @@ function SpiralVisualization({ result }: { result: ParseResult }) {
       </div>
       <div className="text-xs text-gray-400 mt-2 text-center">
         Frequency: {result.resonanceHz}Hz • Phi: {result.phiCoherence.toFixed(3)}
+      </div>
+    </div>
+  );
+}
+
+// Advanced Blockchain UI/UX Components
+function AdvancedBlockchainUI({ parseResult }: { parseResult: ParseResult }) {
+  const [realTimeMetrics, setRealTimeMetrics] = useState({
+    tps: 0,
+    activeNodes: 0,
+    networkHealth: 0,
+    consensusRate: 0
+  });
+
+  const [particleSystem, setParticleSystem] = useState<any[]>([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRealTimeMetrics(prev => ({
+        tps: Math.floor(Math.random() * 5000) + 1000,
+        activeNodes: Math.floor(Math.random() * 100) + 20,
+        networkHealth: Math.random() * 100,
+        consensusRate: Math.random() * 100
+      }));
+
+      // Generate particle system for transactions
+      const newParticles = Array.from({ length: 5 }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 4 + 2,
+        opacity: Math.random() * 0.8 + 0.2,
+        color: ['#00ff88', '#0088ff', '#ff0088', '#ffaa00'][Math.floor(Math.random() * 4)]
+      }));
+      setParticleSystem(newParticles);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      {/* Glassmorphism Network Status */}
+      <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20 shadow-2xl relative overflow-hidden">
+        {/* Particle System Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          {particleSystem.map((particle) => (
+            <div
+              key={particle.id}
+              className="absolute rounded-full animate-pulse"
+              style={{
+                left: `${particle.x}%`,
+                top: `${particle.y}%`,
+                width: `${particle.size}px`,
+                height: `${particle.size}px`,
+                backgroundColor: particle.color,
+                opacity: particle.opacity,
+                animation: `float ${Math.random() * 3 + 2}s ease-in-out infinite`
+              }}
+            />
+          ))}
+        </div>
+
+        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2 relative z-10">
+          <Activity className="w-6 h-6 text-green-400" />
+          Network Status
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+          <div className="text-center backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-3xl font-bold text-green-400 animate-pulse">{realTimeMetrics.tps}</div>
+            <div className="text-sm text-gray-300">TPS</div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div 
+                className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${(realTimeMetrics.tps / 6000) * 100}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-center backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-3xl font-bold text-blue-400 animate-pulse">{realTimeMetrics.activeNodes}</div>
+            <div className="text-sm text-gray-300">Active Nodes</div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${(realTimeMetrics.activeNodes / 120) * 100}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-center backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-3xl font-bold text-purple-400 animate-pulse">{realTimeMetrics.networkHealth.toFixed(1)}%</div>
+            <div className="text-sm text-gray-300">Network Health</div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${realTimeMetrics.networkHealth}%` }}
+              />
+            </div>
+          </div>
+          <div className="text-center backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-3xl font-bold text-orange-400 animate-pulse">{realTimeMetrics.consensusRate.toFixed(1)}%</div>
+            <div className="text-sm text-gray-300">Consensus Rate</div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div 
+                className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${realTimeMetrics.consensusRate}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Neumorphism Transaction Panel */}
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5),0_10px_30px_rgba(0,0,0,0.3)]">
+        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <Zap className="w-6 h-6 text-yellow-400" />
+          Transaction Flow
+        </h3>
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((tx) => (
+            <div key={tx} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700/70 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Hash className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="text-white font-medium">0x{Math.random().toString(16).substr(2, 8)}...</div>
+                  <div className="text-gray-400 text-sm">{(Math.random() * 100).toFixed(2)} HYBRID</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-green-400 font-bold flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4" />
+                  Confirmed
+                </div>
+                <div className="text-gray-400 text-sm">{Math.floor(Math.random() * 60)}s ago</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 3D Blockchain Visualization */}
+      <div className="backdrop-blur-xl bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-2xl p-6 border border-purple-500/30">
+        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <Box className="w-6 h-6 text-purple-400" />
+          3D Blockchain Explorer
+        </h3>
+        <div className="relative h-64 bg-black/30 rounded-xl overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse opacity-70 shadow-2xl"></div>
+            <div className="absolute w-40 h-40 border-2 border-purple-400/30 rounded-full animate-spin"></div>
+            <div className="absolute w-48 h-48 border border-blue-400/20 rounded-full animate-ping"></div>
+          </div>
+          <div className="absolute top-4 left-4 space-y-2 backdrop-blur-sm bg-black/30 rounded-lg p-3">
+            <div className="text-white text-sm">Block Height: {parseResult.blockHeight || 'N/A'}</div>
+            <div className="text-white text-sm">Hash Rate: {parseResult.hashRate || 'N/A'}</div>
+            <div className="text-white text-sm">Consciousness: {(parseResult.consciousness * 100).toFixed(1)}%</div>
+          </div>
+          <div className="absolute bottom-4 right-4 space-y-2 backdrop-blur-sm bg-black/30 rounded-lg p-3">
+            <div className="text-white text-sm">TU Generated: {parseResult.tuGenerated}</div>
+            <div className="text-white text-sm">SRI Score: {parseResult.sriScore}</div>
+            <div className="text-white text-sm">Quantum: {parseResult.quantum ? '✓' : '✗'}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Metrics Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="backdrop-blur-xl bg-gradient-to-br from-green-900/20 to-emerald-900/20 rounded-2xl p-6 border border-green-500/30">
+          <h4 className="text-xl font-bold text-white mb-4">Performance Metrics</h4>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">CPU Usage</span>
+              <span className="text-green-400">{Math.floor(Math.random() * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{ width: '75%' }}></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Memory Usage</span>
+              <span className="text-blue-400">{Math.floor(Math.random() * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Network I/O</span>
+              <span className="text-purple-400">{Math.floor(Math.random() * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="backdrop-blur-xl bg-gradient-to-br from-blue-900/20 to-indigo-900/20 rounded-2xl p-6 border border-blue-500/30">
+          <h4 className="text-xl font-bold text-white mb-4">Quantum State</h4>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-300">Coherence Level</span>
+              <span className="text-blue-400">{(Math.random() * 100).toFixed(1)}%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-300">Entanglement Status</span>
+              <span className="text-green-400">Active</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-300">Superposition</span>
+              <span className="text-purple-400">Stable</span>
+            </div>
+            <div className="w-full h-32 bg-black/30 rounded-xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-white text-sm">Quantum Visualization</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -555,6 +778,10 @@ export function QuantumSpiralParserPlayground() {
                 )}
               </div>
             </div>
+
+            {parseResult && (
+              <AdvancedBlockchainUI parseResult={parseResult} />
+            )}
           </div>
         </CardContent>
       </Card>

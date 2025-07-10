@@ -287,6 +287,38 @@ export class HTSXEngine {
       render: (props: any) => this.renderSpiralVisualization(props),
       spiral: true
     });
+
+    // Advanced UI/UX Components
+    this.context.components.set('GlassmorphismPanel', {
+      render: (props: any) => this.renderGlassmorphismPanel(props),
+      advanced: true
+    });
+
+    this.context.components.set('NeumorphismCard', {
+      render: (props: any) => this.renderNeumorphismCard(props),
+      advanced: true
+    });
+
+    this.context.components.set('ParticleSystem', {
+      render: (props: any) => this.renderParticleSystem(props),
+      advanced: true
+    });
+
+    this.context.components.set('InteractiveMetrics', {
+      render: (props: any) => this.renderInteractiveMetrics(props),
+      advanced: true
+    });
+
+    this.context.components.set('HolographicVisualization', {
+      render: (props: any) => this.renderHolographicVisualization(props),
+      advanced: true
+    });
+
+    this.context.components.set('QuantumParticleField', {
+      render: (props: any) => this.renderQuantumParticleField(props),
+      quantum: true,
+      advanced: true
+    });
   }
 
   private async parseHTSX(source: string): Promise<any> {
@@ -528,6 +560,200 @@ export class HTSXEngine {
         <svg width="200" height="200" viewBox="0 0 200 200">
           ${this.generateSpiralSVG(spiralData)}
         </svg>
+      </div>
+    `;
+  }
+
+  private renderGlassmorphismPanel(props: any): string {
+    return `
+      <div class="glassmorphism-panel backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20 shadow-2xl"
+           data-consciousness="${this.context.consciousness.level}">
+        <div class="particle-background">
+          ${this.generateParticles(props.particleCount || 10)}
+        </div>
+        <div class="content relative z-10">
+          <h3 class="text-2xl font-bold text-white mb-4">${props.title || 'Glassmorphism Panel'}</h3>
+          <div class="grid grid-cols-${props.columns || 4} gap-4">
+            ${this.generateMetricCards(props.metrics || [])}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderNeumorphismCard(props: any): string {
+    return `
+      <div class="neumorphism-card bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 
+                  shadow-[inset_0_2px_10px_rgba(0,0,0,0.5),0_10px_30px_rgba(0,0,0,0.3)]
+                  hover:shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_15px_40px_rgba(0,0,0,0.4)]
+                  transition-all duration-300"
+           data-quantum="${this.context.quantum.entangled}">
+        <div class="header flex items-center gap-3 mb-4">
+          <div class="icon w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
+            <span class="text-white font-bold">${props.icon || '⚡'}</span>
+          </div>
+          <h4 class="text-xl font-bold text-white">${props.title || 'Neumorphism Card'}</h4>
+        </div>
+        <div class="content">
+          ${props.content || this.generateDefaultCardContent()}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderParticleSystem(props: any): string {
+    const particles = this.generateParticles(props.count || 20);
+    return `
+      <div class="particle-system relative overflow-hidden rounded-2xl h-${props.height || 64}"
+           data-particle-count="${props.count || 20}">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20"></div>
+        ${particles}
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="text-white text-center">
+            <h3 class="text-2xl font-bold mb-2">${props.title || 'Particle System'}</h3>
+            <p class="text-gray-300">${props.description || 'Real-time particle visualization'}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderInteractiveMetrics(props: any): string {
+    return `
+      <div class="interactive-metrics space-y-4"
+           data-consciousness="${this.context.consciousness.level}">
+        <h4 class="text-xl font-bold text-white mb-4">${props.title || 'Interactive Metrics'}</h4>
+        ${this.generateMetricBars(props.metrics || [])}
+      </div>
+    `;
+  }
+
+  private renderHolographicVisualization(props: any): string {
+    return `
+      <div class="holographic-visualization relative h-64 bg-black/30 rounded-xl overflow-hidden"
+           data-holographic="true">
+        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 animate-pulse"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="holographic-cube">
+            <div class="cube-face front bg-gradient-to-r from-cyan-500 to-blue-500 opacity-70"></div>
+            <div class="cube-face back bg-gradient-to-r from-purple-500 to-pink-500 opacity-70"></div>
+            <div class="cube-face right bg-gradient-to-r from-blue-500 to-purple-500 opacity-70"></div>
+            <div class="cube-face left bg-gradient-to-r from-pink-500 to-cyan-500 opacity-70"></div>
+            <div class="cube-face top bg-gradient-to-r from-green-500 to-blue-500 opacity-70"></div>
+            <div class="cube-face bottom bg-gradient-to-r from-orange-500 to-red-500 opacity-70"></div>
+          </div>
+        </div>
+        <div class="absolute top-4 left-4 text-white">
+          <div class="text-sm">Consciousness: ${(this.context.consciousness.level * 100).toFixed(1)}%</div>
+          <div class="text-sm">Quantum State: ${this.context.quantum.entangled ? 'Entangled' : 'Coherent'}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderQuantumParticleField(props: any): string {
+    return `
+      <div class="quantum-particle-field relative overflow-hidden rounded-2xl h-96 bg-black/30"
+           data-quantum-field="true">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-purple-900/30"></div>
+        ${this.generateQuantumParticles(props.particleCount || 30)}
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="quantum-core w-32 h-32 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full 
+                      animate-pulse opacity-70 shadow-2xl"></div>
+          <div class="absolute w-40 h-40 border-2 border-cyan-400/30 rounded-full animate-spin"></div>
+          <div class="absolute w-48 h-48 border border-purple-400/20 rounded-full animate-ping"></div>
+        </div>
+        <div class="absolute bottom-4 left-4 text-white">
+          <div class="text-sm">Coherence: ${(this.context.quantum.coherence * 100).toFixed(1)}%</div>
+          <div class="text-sm">Entanglement: ${this.context.quantum.entangled ? 'Active' : 'Inactive'}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Helper methods for advanced UI generation
+  private generateParticles(count: number): string {
+    let particles = '';
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = Math.random() * 4 + 2;
+      const color = ['#00ff88', '#0088ff', '#ff0088', '#ffaa00'][Math.floor(Math.random() * 4)];
+      const delay = Math.random() * 3;
+      
+      particles += `
+        <div class="absolute rounded-full animate-pulse"
+             style="left: ${x}%; top: ${y}%; width: ${size}px; height: ${size}px; 
+                    background-color: ${color}; animation-delay: ${delay}s;"></div>
+      `;
+    }
+    return particles;
+  }
+
+  private generateQuantumParticles(count: number): string {
+    let particles = '';
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = Math.random() * 6 + 3;
+      const hue = Math.random() * 360;
+      const duration = Math.random() * 4 + 2;
+      
+      particles += `
+        <div class="absolute rounded-full"
+             style="left: ${x}%; top: ${y}%; width: ${size}px; height: ${size}px; 
+                    background: radial-gradient(circle, hsl(${hue}, 100%, 50%), transparent);
+                    animation: quantumFloat ${duration}s ease-in-out infinite;"></div>
+      `;
+    }
+    return particles;
+  }
+
+  private generateMetricCards(metrics: any[]): string {
+    return metrics.map(metric => `
+      <div class="metric-card text-center backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+        <div class="text-3xl font-bold text-${metric.color || 'white'} animate-pulse">${metric.value}</div>
+        <div class="text-sm text-gray-300">${metric.label}</div>
+        <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+          <div class="bg-gradient-to-r from-${metric.color || 'blue'}-500 to-${metric.color || 'cyan'}-500 
+                      h-2 rounded-full transition-all duration-1000" 
+               style="width: ${metric.percentage || 0}%"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  private generateMetricBars(metrics: any[]): string {
+    return metrics.map(metric => `
+      <div class="metric-bar">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-gray-300">${metric.label}</span>
+          <span class="text-${metric.color || 'white'}">${metric.value}</span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+          <div class="bg-gradient-to-r from-${metric.color || 'blue'}-500 to-${metric.color || 'cyan'}-500 
+                      h-2 rounded-full transition-all duration-1000" 
+               style="width: ${metric.percentage || 0}%"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  private generateDefaultCardContent(): string {
+    return `
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <span class="text-gray-300">Status</span>
+          <span class="text-green-400">Active</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-300">Performance</span>
+          <span class="text-blue-400">${Math.floor(Math.random() * 100)}%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-300">Efficiency</span>
+          <span class="text-purple-400">${Math.floor(Math.random() * 100)}%</span>
+        </div>
       </div>
     `;
   }
