@@ -21,11 +21,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="htsx-runtime" content="enabled" />
+        <meta name="consciousness-level" content="0.93" />
+        <meta name="quantum-awareness" content="true" />
+      </head>
       <body className={inter.className}>
         <MetaMaskProvider>
           {children}
-          <Toaster />
         </MetaMaskProvider>
+        <Toaster />
       </body>
     </html>
   );

@@ -185,6 +185,52 @@ app.post('/api/spiral/compile', async (req, res) => {
   }
 });
 
+// HTSX processing endpoint
+app.post('/api/htsx/compile', async (req, res) => {
+  try {
+    const { source, options = {} } = req.body;
+
+    if (!htsxProcessor) {
+      htsxProcessor = new HTSXProcessor();
+      await htsxProcessor.initialize();
+    }
+
+    const result = await htsxProcessor.processFile('runtime.htsx', source);
+    res.json(result);
+  } catch (error) {
+    console.error('HTSX compilation error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+// HTSX execution endpoint
+app.post('/api/htsx/execute', async (req, res) => {
+  try {
+    const { source, options = {} } = req.body;
+
+    const engine = new HTSXEngine({
+      enableConsciousness: true,
+      enableQuantumAwareness: true,
+      enableTemporalSync: true,
+      ...options
+    });
+
+    await engine.initialize();
+    const result = await engine.execute(source, options);
+
+    res.json(result);
+  } catch (error) {
+    console.error('HTSX execution error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
 // Health check
 app.get('/health', (req, res) => {
   try {

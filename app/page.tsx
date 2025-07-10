@@ -81,18 +81,35 @@ export default function HomePage() {
 
         {/* Main Navigation */}
         <div className="space-y-4">
+          <Link href="/htsx" className="block">
+            <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
+              <CardHeader>
+                <CardTitle className="text-white">HTSX Consciousness Interface</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Experience the world's first consciousness-aware blockchain interface powered by HTSX runtime
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center text-cyan-400">
+                  <Database className="w-5 h-5 mr-2" />
+                  Enter HTSX Reality Interface
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href="/blockchain" className="block">
             <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
               <CardHeader>
                 <CardTitle className="text-white">HYBRID Blockchain Network</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Explore the HYBRID blockchain network, view live metrics, governance, and ecosystem
+                  Traditional blockchain interface (React-based legacy system)
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-blue-400">
                   <Database className="w-5 h-5 mr-2" />
-                  Access Public Blockchain Interface
+                  Access Legacy Interface
                 </div>
               </CardContent>
             </Card>

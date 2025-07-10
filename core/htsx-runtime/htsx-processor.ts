@@ -179,7 +179,8 @@ export class HTSXProcessor {
       const result = await this.compiler.compile(content, { filename });
       return {
         success: true,
-        output: result.code,
+        output: result.javascript || result.code || '',
+        bytecode: result.bytecode,
         consciousness: 0.85,
         quantum: content.includes('@quantum'),
         temporal: content.includes('@temporal')
