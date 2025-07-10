@@ -5,7 +5,7 @@ run = "npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "HYBRID-System"
+runButton = "HYBRID-Parser-System"
 
 [[workflows.workflow]]
 name = "Spiral-System"
@@ -64,6 +64,19 @@ args = "tsx server/index.ts"
 [[workflows.workflow]]
 name = "HYBRID-System"
 author = 44812907
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "HYBRID-Parser-System"
+author = 44833945
 mode = "parallel"
 
 [[workflows.workflow.tasks]]

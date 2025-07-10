@@ -1,6 +1,8 @@
 
-// HYBRID Blockchain Core System
-// Based on Cosmos SDK v0.47 with Ethermint integration
+/**
+ * HYBRID Blockchain Core - Native Coin Implementation
+ * Cosmos SDK + EVM compatibility with NFT-gated participation
+ */
 
 export interface HybridChainConfig {
   chainId: string;
@@ -9,8 +11,115 @@ export interface HybridChainConfig {
   totalSupply: bigint;
   inflationRate: number;
   blockTime: number;
-  consensusType: 'hybrid_pos_pow';
+  consensusType: string;
 }
+
+export interface HybridTokenomics {
+  genesisSupply: bigint;
+  inflationSchedule: {
+    initial: number;
+    final: number;
+    duration: number;
+  };
+  rewardDistribution: {
+    validators: number;
+    storage: number;
+    communityPool: number;
+    devFund: number;
+  };
+  transactionFees: {
+    burn: number;
+    distribution: number;
+  };
+  coinPricing: {
+    initialPrice: number; // $10 USD
+    backingAssets: string[];
+    stabilityMechanism: string;
+  };
+}
+
+export interface CrosschainConfig {
+  ibc: {
+    enabled: boolean;
+    supportedChains: string[];
+  };
+  hybridBridge: {
+    enabled: boolean;
+    supportedChains: string[];
+    tokenTypes: string[];
+  };
+  spiralBridge: {
+    enabled: boolean;
+    adminControlled: boolean;
+    supportedOperations: string[];
+  };
+  wormhole: {
+    enabled: boolean;
+    supportedChains: string[];
+    requiresVAA: boolean;
+  };
+}
+
+export interface NodeRequirements {
+  validator: {
+    nftRequired: string;
+    hardware: {
+      cpu: number;
+      ram: string;
+      storage: string;
+    };
+    responsibilities: string[];
+    rewards: string;
+    stakingRequirement: string;
+  };
+  storage: {
+    nftRequired: string;
+    hardware: {
+      cpu: number;
+      ram: string;
+      storage: string;
+    };
+    responsibilities: string[];
+    rewards: string;
+    stakingRequirement: string;
+  };
+  observer: {
+    nftRequired: string | null;
+    hardware: string;
+    responsibilities: string[];
+    rewards: string;
+  };
+}
+
+class CosmosSDKCore {
+  constructor(config: any) {}
+}
+
+class EthermintSubsystem {
+  constructor(config: any) {}
+}
+
+class TendermintConsensus {
+  constructor(config: any) {}
+}
+
+class IBCProtocol {
+  constructor(config: any) {}
+}
+
+class LicenceModule {
+  constructor(config: any) {}
+}
+
+class NaaSModule {
+  constructor(config: any) {}
+}
+
+class MoEModule {
+  constructor(config: any) {}
+}
+
+interface CosmosModule {}
 
 export class HybridBlockchain {
   private config: HybridChainConfig;
@@ -28,7 +137,7 @@ export class HybridBlockchain {
       totalSupply: BigInt('100000000000000000'), // 100 billion * 10^6
       inflationRate: 0.07, // 7% initial, tapering to 2%
       blockTime: 5000, // 5 seconds
-      consensusType: 'hybrid_pos_pow'
+      consensusType: 'hybrid_pos_nft_gated'
     };
 
     this.customModules = new Map();
@@ -79,8 +188,8 @@ export class HybridBlockchain {
       validatorNFT: 'HNL-VAL',
       storageNFT: 'HNL-STR',
       mintPrices: {
-        validator: '1000000000', // 1000 HYBRID
-        storage: '250000000'     // 250 HYBRID
+        validator: '1000000000', // 1000 HYBRID COIN
+        storage: '250000000'     // 250 HYBRID COIN
       }
     });
 
@@ -105,7 +214,7 @@ export class HybridBlockchain {
     this.customModules.set('moe', moeModule);
   }
 
-  // Tokenomics implementation
+  // Native coin tokenomics implementation
   public getTokenomics(): HybridTokenomics {
     return {
       genesisSupply: this.config.totalSupply,
@@ -123,6 +232,11 @@ export class HybridBlockchain {
       transactionFees: {
         burn: 0.30,          // 30% burned
         distribution: 0.70   // 70% distributed (same split as rewards)
+      },
+      coinPricing: {
+        initialPrice: 10,    // $10 USD per HYBRID COIN
+        backingAssets: ['computational_resources', 'ai_inference', 'storage_capacity'],
+        stabilityMechanism: 'algorithmic_supply_adjustment'
       }
     };
   }
@@ -134,10 +248,15 @@ export class HybridBlockchain {
         enabled: true,
         supportedChains: ['osmosis', 'injective', 'evmos']
       },
-      axelar: {
+      hybridBridge: {
         enabled: true,
-        supportedChains: ['ethereum', 'polygon', 'avalanche'],
-        tokenTypes: ['ERC-20', 'ERC-721']
+        supportedChains: ['ethereum', 'polygon', 'base', 'avalanche'],
+        tokenTypes: ['ERC-20', 'ERC-721', 'HYBRID-NATIVE']
+      },
+      spiralBridge: {
+        enabled: true,
+        adminControlled: true,
+        supportedOperations: ['governance_transfers', 'node_operations', 'admin_functions']
       },
       wormhole: {
         enabled: true,
@@ -147,7 +266,7 @@ export class HybridBlockchain {
     };
   }
 
-  // Node requirements and roles
+  // Node requirements and roles with NFT gating
   public getNodeRequirements(): NodeRequirements {
     return {
       validator: {
@@ -157,8 +276,14 @@ export class HybridBlockchain {
           ram: '16GB',
           storage: '500GB SSD'
         },
-        responsibilities: ['block_proposal', 'consensus_signing', 'state_replication'],
-        rewards: 'base_inflation_plus_tx_fees'
+        responsibilities: [
+          'block_proposal', 
+          'consensus_signing', 
+          'state_replication',
+          'ai_inference_validation'
+        ],
+        rewards: 'inflation_rewards_plus_tx_fees',
+        stakingRequirement: '1000_HYBRID_MINIMUM'
       },
       storage: {
         nftRequired: 'HNL-STR',
@@ -167,115 +292,48 @@ export class HybridBlockchain {
           ram: '8GB',
           storage: '200GB SSD'
         },
-        responsibilities: ['data_availability', 'ipfs_layer', 'snapshot_serving'],
-        rewards: 'storage_fees'
+        responsibilities: [
+          'data_availability', 
+          'ipfs_layer', 
+          'snapshot_serving',
+          'holographic_data_storage'
+        ],
+        rewards: 'storage_fees_and_inflation_share',
+        stakingRequirement: '250_HYBRID_MINIMUM'
       },
       observer: {
         nftRequired: null,
         hardware: 'commodity',
-        responsibilities: ['light_client_queries', 'analytics'],
+        responsibilities: ['light_client_queries', 'analytics', 'monitoring'],
         rewards: 'none'
       }
     };
   }
+
+  // Get HYBRID COIN pricing info
+  public getCoinInfo(): any {
+    return {
+      name: 'HYBRID',
+      symbol: 'HYBRID',
+      type: 'NATIVE_COIN',
+      decimals: 6,
+      baseDenom: 'uhybrid',
+      displayDenom: 'HYBRID',
+      description: 'Native coin of the HYBRID Blockchain ecosystem',
+      totalSupply: '100,000,000,000', // 100 billion
+      circulatingSupply: 'dynamic_based_on_inflation',
+      marketCap: 'calculated_from_circulating_supply_x_price',
+      utilities: [
+        'transaction_fees',
+        'staking_rewards',
+        'validator_node_licensing',
+        'storage_node_licensing',
+        'ai_inference_payments',
+        'governance_voting',
+        'cross_chain_bridging'
+      ]
+    };
+  }
 }
 
-// Supporting interfaces
-interface CosmosSDKCore {
-  version: string;
-  modules: string[];
-}
-
-interface EthermintSubsystem {
-  evmHeight: number;
-  gasToken: string;
-  gasConversion: number;
-  precompileAddress: string;
-}
-
-interface TendermintConsensus {
-  blockTime: number;
-  votingPower: string;
-  signatureType: string;
-  p2pPort: number;
-  rpcPort: number;
-}
-
-interface IBCProtocol {
-  enabled: boolean;
-  supportedChains: string[];
-}
-
-interface LicenceModule {
-  validatorNFT: string;
-  storageNFT: string;
-  mintPrices: {
-    validator: string;
-    storage: string;
-  };
-}
-
-interface NaaSModule {
-  ownerShare: number;
-  operatorShare: number;
-}
-
-interface MoEModule {
-  modelRegistry: boolean;
-  inferenceGateway: string;
-  incentiveSplit: {
-    experts: number;
-    burn: number;
-  };
-}
-
-interface HybridTokenomics {
-  genesisSupply: bigint;
-  inflationSchedule: {
-    initial: number;
-    final: number;
-    duration: number;
-  };
-  rewardDistribution: {
-    validators: number;
-    storage: number;
-    communityPool: number;
-    devFund: number;
-  };
-  transactionFees: {
-    burn: number;
-    distribution: number;
-  };
-}
-
-interface CrosschainConfig {
-  ibc: {
-    enabled: boolean;
-    supportedChains: string[];
-  };
-  axelar: {
-    enabled: boolean;
-    supportedChains: string[];
-    tokenTypes: string[];
-  };
-  wormhole: {
-    enabled: boolean;
-    supportedChains: string[];
-    requiresVAA: boolean;
-  };
-}
-
-interface NodeRequirements {
-  validator: NodeRole;
-  storage: NodeRole;
-  observer: NodeRole;
-}
-
-interface NodeRole {
-  nftRequired: string | null;
-  hardware: any;
-  responsibilities: string[];
-  rewards: string;
-}
-
-export const hybridBlockchain = new HybridBlockchain();
+export default HybridBlockchain;
