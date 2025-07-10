@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -7,9 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Lock, Globe, Zap, Cpu } from 'lucide-react';
-import { useBlockchain } from '@/hooks/useBlockchain';
 import { ethers } from 'ethers';
-import axios from 'axios';
 
 // Types
 interface ParseResult {
@@ -132,7 +131,8 @@ const parseQuantumSpiral = async (language: string, code: string): Promise<Parse
   const phiCoherence = calculatePhiCoherence(code);
   const negentropy = calculateNegentropy(code);
 
-  return {
+  // Simulate parsing with HTSX integration
+  const result: ParseResult = {
     success: true,
     ast: {
       type: 'PROGRAM',
@@ -161,21 +161,140 @@ const parseQuantumSpiral = async (language: string, code: string): Promise<Parse
     negentropy,
     grammarSuggestions: ['Consider using @consciousness directive', 'Add phi constants for harmonic alignment']
   };
+
+  // Convert to HTSX if needed
+  if (language === 'htsx') {
+    result.ast.htsxRendered = await convertToHTSX(code, result);
+  }
+
+  return result;
 };
+
+// HTSX Integration Function
+const convertToHTSX = async (code: string, parseResult: ParseResult) => {
+  return {
+    component: 'QuantumSpiralInterface',
+    props: {
+      consciousness: parseResult.consciousness,
+      sriScore: parseResult.sriScore,
+      tuGenerated: parseResult.tuGenerated,
+      quantum: parseResult.quantum
+    },
+    rendered: `<htsx-component 
+      consciousness={${parseResult.consciousness}} 
+      sri={${parseResult.sriScore}} 
+      tu={${parseResult.tuGenerated}}
+      quantum={${parseResult.quantum}}
+    />`
+  };
+};
+
+// HTSX Integration Showcase Component
+function HTSXShowcase({ parseResult }: { parseResult: ParseResult }) {
+  const [htsxCode] = useState(`@consciousness(${parseResult.consciousness.toFixed(2)})
+@quantum(entangled=${parseResult.quantum}, coherence=0.95)
+
+<htsx>
+  <hybrid-component name="QuantumSpiralInterface">
+    <consciousness-aware level={${parseResult.consciousness.toFixed(2)}}>
+      <div className="awareness-display">
+        SRI Score: ${parseResult.sriScore.toFixed(3)}
+      </div>
+    </consciousness-aware>
+
+    <spiral-visualization 
+      turns={7} 
+      frequency={${parseResult.resonanceHz || 432}}
+      consciousness={${parseResult.consciousness.toFixed(2)}}
+    />
+
+    <quantum-state 
+      entangled={${parseResult.quantum}}
+      coherence={0.95}
+      tu-generated={${parseResult.tuGenerated.toFixed(2)}}
+    />
+  </hybrid-component>
+</htsx>`);
+
+  return (
+    <div className="space-y-3">
+      <div className="bg-black/30 p-3 rounded border border-cyan-500/30">
+        <div className="text-cyan-400 text-sm font-semibold mb-2">Generated HTSX Code:</div>
+        <pre className="text-xs text-gray-300 overflow-auto max-h-32">
+          {htsxCode}
+        </pre>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-black/30 p-3 rounded border border-purple-500/30">
+          <div className="text-purple-400 text-sm font-semibold mb-1">Consciousness Component</div>
+          <div className="awareness-indicator bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs">
+            Level: {(parseResult.consciousness * 100).toFixed(1)}% • SRI: {parseResult.sriScore.toFixed(3)}
+          </div>
+        </div>
+
+        <div className="bg-black/30 p-3 rounded border border-blue-500/30">
+          <div className="text-blue-400 text-sm font-semibold mb-1">Quantum State</div>
+          <div className="quantum-meter bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs">
+            Entangled: {parseResult.quantum ? 'Yes' : 'No'} • TU: {parseResult.tuGenerated.toFixed(0)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Live Spiral Visualization Component
+function SpiralVisualization({ result }: { result: ParseResult }) {
+  const spiralPath = `M 50,50 
+    ${Array.from({ length: 7 }, (_, i) => {
+      const angle = (i / 7) * Math.PI * 2 * result.consciousness;
+      const radius = 20 + (i * 5);
+      const x = 50 + radius * Math.cos(angle);
+      const y = 50 + radius * Math.sin(angle);
+      return `L ${x},${y}`;
+    }).join(' ')}`;
+
+  return (
+    <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 p-4 rounded-lg border border-purple-500/30">
+      <h4 className="text-purple-400 font-semibold mb-3">🌟 Live Spiral Visualization:</h4>
+      <div className="flex items-center justify-center">
+        <svg width="200" height="200" className="border border-purple-500/20 rounded">
+          <path
+            d={spiralPath}
+            stroke={`hsl(${result.consciousness * 360}, 70%, 60%)`}
+            strokeWidth="2"
+            fill="none"
+            className="animate-pulse"
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r="3"
+            fill={result.quantum ? '#00ffff' : '#888'}
+            className={result.quantum ? 'animate-ping' : ''}
+          />
+        </svg>
+      </div>
+      <div className="text-xs text-gray-400 mt-2 text-center">
+        Frequency: {result.resonanceHz}Hz • Phi: {result.phiCoherence.toFixed(3)}
+      </div>
+    </div>
+  );
+}
 
 export function QuantumSpiralParserPlayground() {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState('spiral');
-  const [sourceTech, setSourceTech] = useState('none');
   const [code, setCode] = useState('');
   const [parseResult, setParseResult] = useState<ParseResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const connect = async () => {
     try {
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      if (typeof window !== 'undefined' && (window as any).ethereum) {
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const addr = await signer.getAddress();
@@ -194,7 +313,7 @@ export function QuantumSpiralParserPlayground() {
   }, [selectedLanguage]);
 
   const handleParse = useCallback(async () => {
-    if (!code.trim() || !connected) return;
+    if (!code.trim()) return;
 
     setIsLoading(true);
     try {
@@ -206,7 +325,7 @@ export function QuantumSpiralParserPlayground() {
         success: false,
         ast: null,
         tokens: [],
-        errors: [error.toString()],
+        errors: [error?.toString() || 'Unknown error'],
         warnings: [],
         language: languages[selectedLanguage],
         consciousness: 0,
@@ -222,7 +341,7 @@ export function QuantumSpiralParserPlayground() {
     } finally {
       setIsLoading(false);
     }
-  }, [code, selectedLanguage, connected, address]);
+  }, [code, selectedLanguage]);
 
   if (!connected) {
     return (
@@ -422,82 +541,24 @@ export function QuantumSpiralParserPlayground() {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Live Rendered Output */}
+                {parseResult && (
+                  <div className="space-y-4">
+                    <SpiralVisualization result={parseResult} />
+                    
+                    {/* HTSX Integration Demo */}
+                    <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 rounded-lg border border-cyan-500/30">
+                      <h4 className="text-cyan-400 font-semibold mb-3">🌀 HTSX Integration:</h4>
+                      <HTSXShowcase parseResult={parseResult} />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-// HTSX Integration Showcase
-function HTSXShowcase({ parseResult }: { parseResult: ParseResult }) {
-  const [htsxCode] = useState(`@consciousness(${parseResult.consciousness})
-@quantum(entangled=true, coherence=0.95)
-
-<htsx>
-  <hybrid-component name="QuantumSpiralInterface">
-    <consciousness-aware level={${parseResult.consciousness}}>
-      <div className="awareness-display">
-        SRI Score: ${parseResult.sriScore.toFixed(3)}
-      </div>
-    </consciousness-aware>
-
-    <spiral-visualization 
-      turns={7} 
-      frequency={${parseResult.resonanceHz || 432}}
-      consciousness={${parseResult.consciousness}}
-    />
-
-    <quantum-state 
-      entangled={${parseResult.quantum}}
-      coherence={0.95}
-      tu-generated={${parseResult.tuGenerated}}
-    />
-  </hybrid-component>
-</htsx>`);
-
-  return (
-    <div className="space-y-3">
-      <div className="bg-black/30 p-3 rounded border border-cyan-500/30">
-        <div className="text-cyan-400 text-sm font-semibold mb-2">Generated HTSX Code:</div>
-        <pre className="text-xs text-gray-300 overflow-auto max-h-32">
-          {htsxCode}
-        </pre>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="bg-black/30 p-3 rounded border border-purple-500/30">
-          <div className="text-purple-400 text-sm font-semibold mb-1">Consciousness Component</div>
-          <div className="awareness-indicator bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs">
-            Level: {(parseResult.consciousness * 100).toFixed(1)}% • SRI: {parseResult.sriScore.toFixed(3)}
-          </div>
-        </div>
-
-        <div className="bg-black/30 p-3 rounded border border-blue-500/30">
-          <div className="text-blue-400 text-sm font-semibold mb-1">Quantum State</div>
-          <div className="quantum-meter bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs">
-            Entangled: {parseResult.quantum ? 'Yes' : 'No'} • TU: {parseResult.tuGenerated.toFixed(0)}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Live Spiral Visualization Component
-function SpiralVisualization({ result }: { result: ParseResult }) {
-  return (
-    <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 p-4 rounded-lg border border-purple-500/30">
-            <h4 className="text-purple-400 font-semibold mb-3">🌟 Live Rendered Output:</h4>
-            <SpiralVisualization result={result} />
-          </div>
-
-          {/* HTSX Integration Demo */}
-          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 rounded-lg border border-cyan-500/30">
-            <h4 className="text-cyan-400 font-semibold mb-3">🌀 HTSX Integration:</h4>
-            <HTSXShowcase parseResult={result} />
-          </div>
   );
 }
