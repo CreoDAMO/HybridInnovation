@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area } from 'recharts';
@@ -79,7 +78,56 @@ interface HolographicConfig {
 const HybridDeveloperDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isRendering, setIsRendering] = useState(false);
-  const [nvidiaServices, setNvidiaServices] = useState<NvidiaCloudService[]>([]);
+  const [nvidiaServices, setNvidiaServices] = useState([
+    {
+      name: 'DGX Cloud Enterprise',
+      status: 'connected',
+      usage: 87,
+      instances: 12,
+      gpuType: 'H100',
+      revenue: '156.7 HYBRID/hour',
+      costOptimization: 94
+    },
+    {
+      name: 'RAPIDS Analytics',
+      status: 'active',
+      usage: 92,
+      dataProcessed: '847 TB/day',
+      revenue: '89.4 HYBRID/hour',
+      accuracy: 99.7
+    },
+    {
+      name: 'Triton Inference',
+      status: 'active',
+      usage: 78,
+      modelsDeployed: 156,
+      inferenceLatency: '2.3ms',
+      revenue: '234.1 HYBRID/hour'
+    },
+    {
+      name: 'NeMo Framework',
+      status: 'active',
+      usage: 85,
+      agentsDeployed: 2456,
+      conversationsDaily: '50K+',
+      revenue: '67.8 HYBRID/hour'
+    },
+    {
+      name: 'GeForce NOW',
+      status: 'connected',
+      usage: 68,
+      sessions: 8947,
+      consumerRevenue: '45.2 HYBRID/hour'
+    },
+    {
+      name: 'Omniverse Collab',
+      status: 'active',
+      usage: 74,
+      collaborators: 234,
+      projectsActive: 67,
+      revenue: '23.6 HYBRID/hour'
+    }
+  ]);
   const [streamlitApps, setStreamlitApps] = useState<StreamlitApp[]>([]);
   const [holographicConfig, setHolographicConfig] = useState<HolographicConfig>({
     displayType: 'Ultra-thin VR Glasses',
@@ -171,10 +219,10 @@ const HybridDeveloperDashboard: React.FC = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 800/600, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true });
-    
+
     renderer.setSize(800, 600);
     renderer.setClearColor(0x000000, 0);
-    
+
     // Create holographic spiral
     const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
     const material = new THREE.MeshBasicMaterial({ 
@@ -214,14 +262,14 @@ const HybridDeveloperDashboard: React.FC = () => {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      
+
       torusKnot.rotation.x += 0.01;
       torusKnot.rotation.y += 0.01;
       particlesMesh.rotation.y += 0.001;
-      
+
       renderer.render(scene, camera);
     };
-    
+
     animate();
 
     return () => {
@@ -236,7 +284,7 @@ const HybridDeveloperDashboard: React.FC = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: omniverseRef.current });
-    
+
     renderer.setSize(600, 400);
     renderer.setClearColor(0x1a1a2e);
 
@@ -271,7 +319,7 @@ const HybridDeveloperDashboard: React.FC = () => {
       });
       renderer.render(scene, camera);
     };
-    
+
     animate();
   }, []);
 
@@ -686,7 +734,7 @@ const HybridDeveloperDashboard: React.FC = () => {
                 <Line type="monotone" dataKey="unity" stroke="#667eea" strokeWidth={2} />
                 <Line type="monotone" dataKey="unreal" stroke="#f093fb" strokeWidth={2} />
               </LineChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer>```text
           </CardContent>
         </Card>
       </div>
