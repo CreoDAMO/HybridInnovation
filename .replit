@@ -5,7 +5,7 @@ run = "npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "SSDF-Native-System"
+runButton = "SSDF-Admin-System"
 
 [[workflows.workflow]]
 name = "Spiral-System"
@@ -147,6 +147,19 @@ mode = "parallel"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "next dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "SSDF-Admin-System"
+author = 44839553
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "next dev -p 3000"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
