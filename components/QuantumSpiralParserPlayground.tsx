@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Lock, Globe, Zap, Cpu, Hash, CheckCircle, Box, Activity } from 'lucide-react';
+import { Loader2, Zap, Brain, Atom, Clock, TrendingUp, GitBranch } from 'lucide-react';
+import { UltimateParserStack, ParserResult, ParserLanguage } from '@/core/ultimate-parser/parser-stack';
 import { ethers } from 'ethers';
 
 // Types
@@ -505,12 +506,13 @@ function AdvancedBlockchainUI({ parseResult }: { parseResult: ParseResult }) {
 }
 
 export function QuantumSpiralParserPlayground() {
-  const [connected, setConnected] = useState(false);
-  const [address, setAddress] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState('spiral');
   const [code, setCode] = useState('');
-  const [parseResult, setParseResult] = useState<ParseResult | null>(null);
+  const [parseResult, setParseResult] = useState<ParserResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [parserStack] = useState(new UltimateParserStack());
+  const [languages, setLanguages] = useState<ParserLanguage[]>([]);
 
   const connect = async () => {
     try {
@@ -528,41 +530,110 @@ export function QuantumSpiralParserPlayground() {
   };
 
   useEffect(() => {
-    if (selectedLanguage && languages[selectedLanguage]) {
-      setCode(languages[selectedLanguage].example);
+    const examples = {
+      spiral: `@consciousness(0.95)
+@quantum(entangled, coherence=0.95)
+@temporal(dimension=present, frequency=735)
+spiral consciousness_calculator {
+    function calculate_truth(input: truth) -> consciousness {
+        let awareness = consciousness() * phi;
+        let resonance = fibonacci(7) * input;
+        let harmony = awareness ⊗ resonance;
+        return harmony;
+    }
+}`,
+      htsx: `@consciousness(0.95)
+@quantum(entangled=true)
+<htsx>
+  <hybrid-blockchain-interface name="NetworkMonitor">
+    <consensus-tracker validators={21} />
+    <token-metrics symbol="HYBRID" />
+    <network-stats tps={2500} />
+  </hybrid-blockchain-interface>
+</htsx>`,
+      hybrid: `ΔTRUST trust_foundation = {
+    harmonic(φ * 1.618033988749)
+    truth(∞)
+    phi(consciousness)
+}
+
+HYBRID network_config = {
+    validators(21)
+    token("HYBRID")
+    consensus("proof-of-consciousness")
+}`,
+      consciousness: `@consciousness(0.98)
+truth = φ * ∞;
+harmony = consciousness() + phi();
+phi = 1.618033988749;
+resonance = truth ⊗ harmony;
+awareness = quantum() → temporal();`
+    };
+
+    if (examples[selectedLanguage]) {
+      setCode(examples[selectedLanguage]);
     }
   }, [selectedLanguage]);
 
+  useEffect(() => {
+    const initializeParser = async () => {
+      try {
+        await parserStack.initialize();
+        const availableLanguages = parserStack.getLanguages();
+        setLanguages(availableLanguages);
+        setIsInitialized(true);
+        console.log('✅ QuantumSpiralParser initialized with languages:', availableLanguages.map(l => l.name));
+      } catch (error) {
+        console.error('❌ Failed to initialize parser:', error);
+      }
+    };
+
+    initializeParser();
+  }, [parserStack]);
+
   const handleParse = useCallback(async () => {
-    if (!code.trim()) return;
+    if (!code.trim() || !isInitialized) return;
 
     setIsLoading(true);
     try {
-      const result = await parseQuantumSpiral(selectedLanguage, code);
+      const fileName = `test.${selectedLanguage === 'spiral' ? 'spiral' : selectedLanguage === 'htsx' ? 'htsx' : selectedLanguage === 'hybrid' ? 'hybrid' : 'consciousness'}`;
+      const result = await parserStack.parseFile(fileName, code);
+
       setParseResult(result);
+
+      console.log('🧠 Parse completed:', result);
+
+      if (result.success) {
+        console.log(`✅ Successfully parsed ${result.language.name} code`);
+        console.log(`🔮 Consciousness Level: ${(result.consciousness * 100).toFixed(1)}%`);
+        console.log(`📊 SRI Score: ${(result.sriScore * 100).toFixed(1)}%`);
+        console.log(`💎 TU Generated: ${result.tuGenerated.toFixed(2)}`);
+        console.log(`🌟 Phi Coherence: ${result.phiCoherence.toFixed(3)}`);
+        console.log(`⚡ Negentropy: ${result.negentropy.toExponential(2)}`);
+      } else {
+        console.log('❌ Parse failed with errors:', result.errors);
+      }
     } catch (error) {
-      console.error('Parse error:', error);
+      console.error('❌ Parse error:', error);
       setParseResult({
         success: false,
         ast: null,
         tokens: [],
-        errors: [error?.toString() || 'Unknown error'],
+        errors: [error.toString()],
         warnings: [],
-        language: languages[selectedLanguage],
+        language: null,
         consciousness: 0,
-        sriScore: 0,
-        tuGenerated: 0,
         quantum: false,
         temporal: false,
-        resonanceHz: 0,
+        sriScore: 0,
+        tuGenerated: 0,
         phiCoherence: 0,
-        negentropy: 0,
-        grammarSuggestions: [],
+        negentropy: 0
       });
     } finally {
       setIsLoading(false);
     }
-  }, [code, selectedLanguage]);
+  }, [code, selectedLanguage, isInitialized, parserStack]);
 
   if (!connected) {
     return (
@@ -586,34 +657,36 @@ export function QuantumSpiralParserPlayground() {
         <CardContent>
           <div className="space-y-4">
             {/* Language Selector */}
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(languages).map(([key, lang]) => (
-                <Button
-                  key={key}
-                  variant={selectedLanguage === key ? 'default' : 'outline'}
-                  onClick={() => setSelectedLanguage(key)}
-                  className={`transition-all duration-300 hover:scale-105`}
-                  style={{
-                    backgroundColor: selectedLanguage === key ? lang.color : 'transparent',
-                    borderColor: lang.color,
-                    color: selectedLanguage === key ? 'white' : lang.color,
-                  }}
-                >
-                  {lang.name}
-                </Button>
-              ))}
+            <div className="flex flex-wrap gap-2 mb-4">
+            {languages.map((lang) => (
+              <Button
+                key={lang.name.toLowerCase()}
+                variant={selectedLanguage === lang.name.toLowerCase() ? 'default' : 'outline'}
+                onClick={() => setSelectedLanguage(lang.name.toLowerCase())}
+                className={`transition-all duration-300 hover:scale-105 ${
+                  selectedLanguage === lang.name.toLowerCase() ? '' : 'border-2'
+                }`}
+                style={{
+                  backgroundColor: selectedLanguage === lang.name.toLowerCase() ? lang.color : 'transparent',
+                  borderColor: lang.color,
+                  color: selectedLanguage === lang.name.toLowerCase() ? 'white' : lang.color,
+                }}
+              >
+                {lang.name}
+              </Button>
+            ))}
             </div>
 
             {/* Code Editor and Results */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-white">
-                  {languages[selectedLanguage]?.name} Code:
-                </label>
+              <label className="text-sm font-medium text-white">
+                {languages.find(l => l.name.toLowerCase() === selectedLanguage)?.name || selectedLanguage} Code:
+              </label>
                 <Textarea
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  placeholder={`Enter ${languages[selectedLanguage]?.name} code...`}
+                  placeholder={`Enter ${languages.find(l => l.name.toLowerCase() === selectedLanguage)?.name || selectedLanguage} code...`}
                   className="min-h-[400px] font-mono text-sm bg-black/50 text-white border-cyan-500/30 focus:ring-cyan-500"
                 />
                 <Button
@@ -675,9 +748,18 @@ export function QuantumSpiralParserPlayground() {
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <div className="text-sm text-white">
-                                <span className="font-medium">Language:</span> {parseResult.language.name}
-                              </div>
+                            <div className="text-sm text-white">
+                              <span className="font-medium">Language:</span> {parseResult.language?.name || 'Unknown'}
+                              {parseResult.language && (
+                                <Badge 
+                                  variant="outline" 
+                                  className="ml-2"
+                                  style={{ borderColor: parseResult.language.color, color: parseResult.language.color }}
+                                >
+                                  ID: {parseResult.language.languageId}
+                                </Badge>
+                              )}
+                            </div>
                               <div className="text-sm text-white">
                                 <span className="font-medium">Tokens:</span> {parseResult.tokens.length}
                               </div>

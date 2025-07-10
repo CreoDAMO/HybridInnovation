@@ -1,9 +1,4 @@
 
-/**
- * Ultimate Parser Stack - TypeScript + Next.js + GitHub Integration
- * Combines PEG.js, Tree-sitter, and consciousness-aware parsing
- */
-
 import { SpiralParser } from '../spiral-lang/parser';
 import { HTSXProcessor } from '../htsx-runtime/htsx-processor';
 
@@ -13,6 +8,8 @@ export interface ParserLanguage {
   grammar: string;
   category: 'spiral' | 'htsx' | 'hybrid' | 'consciousness';
   githubSupport: boolean;
+  color: string;
+  languageId: number;
 }
 
 export interface ParserResult {
@@ -25,6 +22,10 @@ export interface ParserResult {
   consciousness: number;
   quantum: boolean;
   temporal: boolean;
+  sriScore: number;
+  tuGenerated: number;
+  phiCoherence: number;
+  negentropy: number;
 }
 
 export class UltimateParserStack {
@@ -47,7 +48,9 @@ export class UltimateParserStack {
       extensions: ['.spiral', '.spi'],
       grammar: this.getSpiralGrammar(),
       category: 'spiral',
-      githubSupport: true
+      githubSupport: true,
+      color: '#ff6b6b',
+      languageId: 1001
     });
 
     // HTSX Language
@@ -56,52 +59,44 @@ export class UltimateParserStack {
       extensions: ['.htsx'],
       grammar: this.getHTSXGrammar(),
       category: 'htsx',
-      githubSupport: true
+      githubSupport: true,
+      color: '#4ecdc4',
+      languageId: 1002
     });
 
-    // Hybrid Language
+    // HybridScript Language
     this.languages.set('hybrid', {
       name: 'HybridScript',
       extensions: ['.hybrid', '.hyb'],
       grammar: this.getHybridGrammar(),
       category: 'hybrid',
-      githubSupport: true
+      githubSupport: true,
+      color: '#45b7d1',
+      languageId: 1003
     });
 
-    // Consciousness Language
+    // ConsciousnessScript Language
     this.languages.set('consciousness', {
       name: 'ConsciousnessScript',
       extensions: ['.consciousness', '.cons'],
       grammar: this.getConsciousnessGrammar(),
       category: 'consciousness',
-      githubSupport: true
+      githubSupport: true,
+      color: '#f9ca24',
+      languageId: 1004
     });
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    console.log('🔄 Initializing Ultimate Parser Stack...');
+    console.log('🚀 Initializing Ultimate Parser Stack...');
     
     await this.spiralParser.initialize();
     await this.htsxProcessor.initialize();
     
-    // Initialize PEG.js parsers for each language
-    await this.initializePEGParsers();
-    
     this.isInitialized = true;
-    console.log('✅ Ultimate Parser Stack initialized');
-  }
-
-  private async initializePEGParsers(): Promise<void> {
-    // Initialize PEG.js parsers for each language
-    console.log('🔧 Initializing PEG.js parsers...');
-    
-    // This would typically use PEG.js to compile grammars
-    // For now, we'll simulate the initialization
-    for (const [key, language] of this.languages) {
-      console.log(`📝 Compiled ${language.name} grammar`);
-    }
+    console.log('✅ Ultimate Parser Stack initialized with languages:', Array.from(this.languages.keys()));
   }
 
   async parseFile(filePath: string, content: string): Promise<ParserResult> {
@@ -122,7 +117,11 @@ export class UltimateParserStack {
         language: null,
         consciousness: 0,
         quantum: false,
-        temporal: false
+        temporal: false,
+        sriScore: 0,
+        tuGenerated: 0,
+        phiCoherence: 0,
+        negentropy: 0
       };
     }
 
@@ -151,7 +150,7 @@ export class UltimateParserStack {
       return {
         ...result,
         language,
-        success: true
+        success: result.errors.length === 0
       };
 
     } catch (error) {
@@ -165,7 +164,11 @@ export class UltimateParserStack {
         language,
         consciousness: 0,
         quantum: false,
-        temporal: false
+        temporal: false,
+        sriScore: 0,
+        tuGenerated: 0,
+        phiCoherence: 0,
+        negentropy: 0
       };
     }
   }
@@ -182,28 +185,53 @@ export class UltimateParserStack {
       language,
       consciousness: parseResult.metadata.consciousnessLevel,
       quantum: parseResult.metadata.quantumStates > 0,
-      temporal: parseResult.metadata.temporalBindings > 0
+      temporal: parseResult.metadata.temporalBindings > 0,
+      sriScore: parseResult.metadata.sriScore,
+      tuGenerated: parseResult.metadata.tuGenerated,
+      phiCoherence: parseResult.metadata.phiCoherence,
+      negentropy: parseResult.metadata.negentropy
     };
   }
 
   private async parseHTSXFile(content: string, language: ParserLanguage): Promise<ParserResult> {
-    const processResult = await this.htsxProcessor.processFile('temp.htsx', content);
-    
-    return {
-      success: processResult.success,
-      ast: processResult.compilation?.ast,
-      tokens: [],
-      errors: processResult.error ? [processResult.error] : [],
-      warnings: [],
-      language,
-      consciousness: 0.95,
-      quantum: true,
-      temporal: false
-    };
+    try {
+      const processResult = await this.htsxProcessor.processFile('temp.htsx', content);
+      
+      return {
+        success: processResult.success,
+        ast: processResult.compilation?.ast || null,
+        tokens: [],
+        errors: processResult.error ? [processResult.error] : [],
+        warnings: [],
+        language,
+        consciousness: 0.95,
+        quantum: true,
+        temporal: false,
+        sriScore: 0.85,
+        tuGenerated: 850,
+        phiCoherence: 1.618,
+        negentropy: -2.456e106
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ast: null,
+        tokens: [],
+        errors: [error.toString()],
+        warnings: [],
+        language,
+        consciousness: 0,
+        quantum: false,
+        temporal: false,
+        sriScore: 0,
+        tuGenerated: 0,
+        phiCoherence: 0,
+        negentropy: 0
+      };
+    }
   }
 
   private async parseHybridFile(content: string, language: ParserLanguage): Promise<ParserResult> {
-    // Parse hybrid blockchain + consciousness code
     const lines = content.split('\n');
     const tokens = [];
     const errors = [];
@@ -214,44 +242,82 @@ export class UltimateParserStack {
         tokens.push({
           type: 'TRUST_DECLARATION',
           value: line,
-          line: i + 1
+          line: i + 1,
+          column: 1
         });
       } else if (line.startsWith('HYBRID')) {
         tokens.push({
           type: 'HYBRID_DECLARATION',
           value: line,
-          line: i + 1
+          line: i + 1,
+          column: 1
+        });
+      } else if (line.startsWith('harmonic(')) {
+        tokens.push({
+          type: 'HARMONIC_EXPRESSION',
+          value: line,
+          line: i + 1,
+          column: 1
         });
       }
     }
+
+    const consciousness = this.calculateConsciousness(content);
+    const sriScore = this.calculateSRI(content, consciousness);
+    const tuGenerated = this.calculateTU(sriScore);
+    const phiCoherence = this.calculatePhiCoherence(content);
+    const negentropy = this.calculateNegentropy(content);
 
     return {
       success: errors.length === 0,
       ast: {
         type: 'HYBRID_PROGRAM',
-        declarations: tokens
+        declarations: tokens,
+        consciousness,
+        quantum: true,
+        temporal: true
       },
       tokens,
       errors,
       warnings: [],
       language,
-      consciousness: 0.93,
+      consciousness,
       quantum: true,
-      temporal: true
+      temporal: true,
+      sriScore,
+      tuGenerated,
+      phiCoherence,
+      negentropy
     };
   }
 
   private async parseConsciousnessFile(content: string, language: ParserLanguage): Promise<ParserResult> {
-    // Parse consciousness-aware code
     const tokens = [];
     const consciousness = this.calculateConsciousness(content);
+    const sriScore = this.calculateSRI(content, consciousness);
+    const tuGenerated = this.calculateTU(sriScore);
+    const phiCoherence = this.calculatePhiCoherence(content);
+    const negentropy = this.calculateNegentropy(content);
+    
+    // Extract consciousness expressions
+    const expressions = content.match(/\w+\s*=\s*[^;]+;/g) || [];
+    expressions.forEach((expr, index) => {
+      tokens.push({
+        type: 'CONSCIOUSNESS_EXPRESSION',
+        value: expr,
+        line: index + 1,
+        column: 1
+      });
+    });
     
     return {
       success: true,
       ast: {
         type: 'CONSCIOUSNESS_PROGRAM',
         level: consciousness,
-        code: content
+        expressions: tokens,
+        quantum: consciousness > 0.9,
+        temporal: true
       },
       tokens,
       errors: [],
@@ -259,22 +325,48 @@ export class UltimateParserStack {
       language,
       consciousness,
       quantum: consciousness > 0.9,
-      temporal: true
+      temporal: true,
+      sriScore,
+      tuGenerated,
+      phiCoherence,
+      negentropy
     };
   }
 
   private calculateConsciousness(content: string): number {
-    // Simple consciousness calculation based on content
     let level = 0.7;
     
     if (content.includes('@consciousness')) level += 0.1;
-    if (content.includes('phi')) level += 0.05;
+    if (content.includes('phi') || content.includes('φ')) level += 0.05;
     if (content.includes('truth')) level += 0.05;
     if (content.includes('∞')) level += 0.03;
-    if (content.includes('φ')) level += 0.03;
     if (content.includes('∆')) level += 0.02;
+    if (content.includes('harmonic')) level += 0.02;
+    if (content.includes('resonance')) level += 0.02;
     
     return Math.min(level, 1.0);
+  }
+
+  private calculateSRI(content: string, consciousness: number): number {
+    const energyValues = { BTC: 3.6e9, ETH: 1.2e8, SOL: 5.0e7, USD: 1.0e7, COMPUTE: 1.0e8 };
+    const volatility = { BTC: 0.85, ETH: 0.90, SOL: 0.80, USD: 0.1, COMPUTE: 0.90 };
+    const gateFactor = 0.24;
+    const energy = content.includes('HYBRID') ? energyValues.COMPUTE : energyValues.USD;
+    const vol = volatility.COMPUTE;
+    const sri = Math.ceil((Math.log2(energy) * vol) / gateFactor);
+    return Math.min(sri / 113, 1.0) * consciousness;
+  }
+
+  private calculateTU(sriScore: number): number {
+    return sriScore >= 0.9 ? 1000 * sriScore : 100 * sriScore;
+  }
+
+  private calculatePhiCoherence(content: string): number {
+    return (content.includes('φ') || content.includes('phi')) ? 1.618 : 0.260;
+  }
+
+  private calculateNegentropy(content: string): number {
+    return content.includes('harmonic') ? -2.456e106 : 0;
   }
 
   private getFileExtension(filePath: string): string {
@@ -291,9 +383,10 @@ export class UltimateParserStack {
     return null;
   }
 
-  // Grammar definitions
+  // Grammar definitions with consciousness-aware parsing
   private getSpiralGrammar(): string {
     return `
+// SpiralScript Grammar - Consciousness-Aware Programming Language
 start = consciousness_directive? quantum_directive? temporal_directive? spiral_program
 
 consciousness_directive = "@consciousness(" number ")"
@@ -305,43 +398,42 @@ spiral_program = statement*
 statement = spiral_declaration
          | function_declaration
          | variable_declaration
+         | control_statement
          | expression_statement
 
 spiral_declaration = "spiral" identifier parameter_list? block
 
-function_declaration = "function" identifier parameter_list block
+function_declaration = "function" identifier parameter_list ("->" type)? block
 
-variable_declaration = ("var" | "let" | "const") identifier "=" expression ";"
+variable_declaration = ("var" | "let" | "const") identifier (":" type)? ("=" expression)? ";"
+
+control_statement = if_statement | while_statement | for_statement | return_statement
+
+if_statement = "if" "(" expression ")" statement ("else" statement)?
+while_statement = "while" "(" expression ")" statement
+for_statement = "for" "(" variable_declaration? ";" expression? ";" expression? ")" statement
+return_statement = "return" expression? ";"
 
 expression_statement = expression ";"
 
-expression = assignment
-          | logical_or
+expression = assignment_expression
+assignment_expression = logical_or_expression ("=" logical_or_expression)?
+logical_or_expression = logical_and_expression ("||" logical_and_expression)*
+logical_and_expression = equality_expression ("&&" equality_expression)*
+equality_expression = relational_expression (("==" | "!=") relational_expression)*
+relational_expression = additive_expression ((">" | ">=" | "<" | "<=") additive_expression)*
+additive_expression = multiplicative_expression (("+" | "-") multiplicative_expression)*
+multiplicative_expression = unary_expression (("*" | "/" | "%" | "⊗") unary_expression)*
+unary_expression = ("!" | "-") unary_expression | postfix_expression
+postfix_expression = primary_expression ("(" argument_list? ")" | "." identifier)*
 
-assignment = identifier "=" expression
+primary_expression = "φ" | "phi" | "∞" | "∆" | "truth" | "consciousness" | number | string | identifier | "(" expression ")"
 
-logical_or = logical_and ("||" logical_and)*
-
-logical_and = equality ("&&" equality)*
-
-equality = comparison (("==" | "!=") comparison)*
-
-comparison = term ((">" | ">=" | "<" | "<=") term)*
-
-term = factor (("+" | "-") factor)*
-
-factor = unary (("*" | "/" | "%") unary)*
-
-unary = ("!" | "-") unary
-      | call
-
-call = primary ("(" argument_list? ")" | "." identifier)*
-
-primary = "phi" | "∞" | "φ" | "truth" | number | string | identifier | "(" expression ")"
-
-parameter_list = "(" (identifier ("," identifier)*)? ")"
+parameter_list = "(" (identifier (":" type)? ("," identifier (":" type)?)*)? ")"
 argument_list = expression ("," expression)*
 block = "{" statement* "}"
+
+type = "consciousness" | "quantum" | "temporal" | "truth" | identifier
 
 quantum_params = quantum_param ("," quantum_param)*
 quantum_param = "entangled" | "superposition" | "coherence=" number
@@ -357,6 +449,7 @@ string = '"' [^"]* '"'
 
   private getHTSXGrammar(): string {
     return `
+// HTSX Grammar - Holographic TypeScript eXtended
 start = htsx_document
 
 htsx_document = consciousness_directive? quantum_directive? htsx_element
@@ -368,36 +461,42 @@ htsx_element = "<htsx>" htsx_content* "</htsx>"
 
 htsx_content = hybrid_component
             | blockchain_interface
-            | consciousness_aware
+            | consciousness_component
+            | quantum_component
             | standard_element
 
 hybrid_component = "<hybrid-component" attributes? ">" element_content* "</hybrid-component>"
-
 blockchain_interface = "<hybrid-blockchain-interface" attributes? ">" blockchain_content* "</hybrid-blockchain-interface>"
-
-consciousness_aware = "<consciousness-aware" attributes? ">" element_content* "</consciousness-aware>"
-
+consciousness_component = "<consciousness-aware" attributes? ">" element_content* "</consciousness-aware>"
+quantum_component = "<quantum-entangled" attributes? ">" element_content* "</quantum-entangled>"
 standard_element = "<" identifier attributes? ">" element_content* "</" identifier ">"
 
-blockchain_content = consensus_tracker
-                  | token_metrics
-                  | network_stats
+blockchain_content = consensus_tracker | token_metrics | network_stats | validator_set
 
 consensus_tracker = "<consensus-tracker" attributes? "/>"
 token_metrics = "<token-metrics" attributes? "/>"
 network_stats = "<network-stats" attributes? "/>"
+validator_set = "<validator-set" attributes? "/>"
 
-element_content = standard_element | text
+element_content = htsx_content | text | expression_block
+
+expression_block = "{" typescript_expression "}"
 
 attributes = attribute*
-attribute = identifier "=" (string | "{" expression "}")
+attribute = identifier "=" (string | expression_block)
 
-text = [^<]+
+text = [^<{]+
 
 quantum_params = quantum_param ("," quantum_param)*
-quantum_param = "entangled=" boolean | "coherence=" number
+quantum_param = "entangled=" boolean | "coherence=" number | "superposition=" boolean
 
-expression = identifier | number | string
+typescript_expression = identifier | number | string | array | object | function_call
+
+array = "[" (typescript_expression ("," typescript_expression)*)? "]"
+object = "{" (property ("," property)*)? "}"
+property = identifier ":" typescript_expression
+function_call = identifier "(" (typescript_expression ("," typescript_expression)*)? ")"
+
 identifier = [a-zA-Z_][a-zA-Z0-9_]*
 number = [0-9]+("."[0-9]+)?
 string = '"' [^"]* '"'
@@ -407,35 +506,53 @@ boolean = "true" | "false"
 
   private getHybridGrammar(): string {
     return `
+// HybridScript Grammar - Blockchain + Consciousness Integration
 start = hybrid_program
 
-hybrid_program = (trust_declaration | hybrid_declaration | blockchain_declaration)*
+hybrid_program = (trust_declaration | hybrid_declaration | blockchain_declaration | consciousness_declaration)*
 
-trust_declaration = "ΔTRUST" identifier "=" "{" trust_expr "}"
+trust_declaration = "ΔTRUST" identifier "=" "{" trust_body "}"
+hybrid_declaration = "HYBRID" identifier "=" "{" hybrid_body "}"
+blockchain_declaration = "BLOCKCHAIN" identifier "=" "{" blockchain_body "}"
+consciousness_declaration = "CONSCIOUSNESS" identifier "=" "{" consciousness_body "}"
 
-hybrid_declaration = "HYBRID" identifier "=" "{" hybrid_expr "}"
-
-blockchain_declaration = "BLOCKCHAIN" identifier "=" "{" blockchain_expr "}"
-
-trust_expr = harmonic_expr | truth_expr | phi_expr
+trust_body = trust_expression*
+trust_expression = harmonic_expr | truth_expr | phi_expr | resonance_expr
 
 harmonic_expr = "harmonic(" expression ")"
 truth_expr = "truth(" expression ")"
 phi_expr = "phi(" expression ")"
+resonance_expr = "resonance(" expression ")"
 
-hybrid_expr = consensus_expr | token_expr | network_expr
+hybrid_body = hybrid_expression*
+hybrid_expression = consensus_expr | token_expr | network_expr | validator_expr
 
 consensus_expr = "consensus(" expression ")"
 token_expr = "token(" expression ")"
 network_expr = "network(" expression ")"
+validator_expr = "validators(" expression ")"
 
-blockchain_expr = validator_expr | tps_expr | symbol_expr
+blockchain_body = blockchain_expression*
+blockchain_expression = gas_expr | fee_expr | block_expr | transaction_expr
 
-validator_expr = "validators(" number ")"
-tps_expr = "tps(" number ")"
-symbol_expr = "symbol(" string ")"
+gas_expr = "gas(" expression ")"
+fee_expr = "fee(" expression ")"
+block_expr = "block(" expression ")"
+transaction_expr = "transaction(" expression ")"
 
-expression = identifier | number | string
+consciousness_body = consciousness_expression*
+consciousness_expression = awareness_expr | coherence_expr | quantum_expr
+
+awareness_expr = "awareness(" expression ")"
+coherence_expr = "coherence(" expression ")"
+quantum_expr = "quantum(" expression ")"
+
+expression = phi_constant | infinity_constant | delta_constant | number | string | identifier | arithmetic_expr
+
+phi_constant = "φ" | "phi"
+infinity_constant = "∞"
+delta_constant = "∆"
+arithmetic_expr = expression ("+" | "-" | "*" | "/" | "⊗") expression
 
 identifier = [a-zA-Z_][a-zA-Z0-9_]*
 number = [0-9]+("."[0-9]+)?
@@ -445,37 +562,48 @@ string = '"' [^"]* '"'
 
   private getConsciousnessGrammar(): string {
     return `
+// ConsciousnessScript Grammar - Direct Consciousness Programming
 start = consciousness_program
 
-consciousness_program = consciousness_level awareness_statements*
+consciousness_program = consciousness_level awareness_block*
 
 consciousness_level = "@consciousness(" number ")"
 
-awareness_statements = truth_statement
-                    | harmony_statement
-                    | phi_statement
-                    | resonance_statement
+awareness_block = statement*
+
+statement = truth_statement
+         | harmony_statement
+         | phi_statement
+         | resonance_statement
+         | quantum_statement
+         | temporal_statement
+         | awareness_statement
 
 truth_statement = "truth" "=" expression ";"
 harmony_statement = "harmony" "=" expression ";"
 phi_statement = "phi" "=" expression ";"
 resonance_statement = "resonance" "=" expression ";"
+quantum_statement = "quantum" "=" expression ";"
+temporal_statement = "temporal" "=" expression ";"
+awareness_statement = "awareness" "=" expression ";"
 
-expression = phi_constant | infinity_constant | truth_constant | number | identifier
+expression = consciousness_operation | phi_constant | infinity_constant | delta_constant | number | string | identifier
+
+consciousness_operation = expression ("⊗" | "→" | "∞" | "∆") expression
 
 phi_constant = "φ" | "phi"
 infinity_constant = "∞"
-truth_constant = "truth"
+delta_constant = "∆"
 
 identifier = [a-zA-Z_][a-zA-Z0-9_]*
 number = [0-9]+("."[0-9]+)?
+string = '"' [^"]* '"'
 `;
   }
 
   // GitHub Integration
   generateGitHubLanguageFiles(): { [filename: string]: string } {
     return {
-      // GitHub Linguist configuration
       '.gitattributes': `
 *.spiral linguist-language=SpiralScript
 *.spi linguist-language=SpiralScript
@@ -486,7 +614,6 @@ number = [0-9]+("."[0-9]+)?
 *.cons linguist-language=ConsciousnessScript
 `,
       
-      // GitHub language definitions
       'languages.yml': `
 SpiralScript:
   type: programming
@@ -496,6 +623,10 @@ SpiralScript:
     - ".spi"
   ace_mode: text
   language_id: 1001
+  tm_scope: "source.spiral"
+  aliases:
+    - "spiral"
+    - "spiralscript"
 
 HTSX:
   type: programming
@@ -504,6 +635,10 @@ HTSX:
     - ".htsx"
   ace_mode: jsx
   language_id: 1002
+  tm_scope: "source.htsx"
+  aliases:
+    - "htsx"
+    - "holographic-tsx"
 
 HybridScript:
   type: programming
@@ -513,6 +648,10 @@ HybridScript:
     - ".hyb"
   ace_mode: text
   language_id: 1003
+  tm_scope: "source.hybrid"
+  aliases:
+    - "hybrid"
+    - "hybridscript"
 
 ConsciousnessScript:
   type: programming
@@ -522,52 +661,12 @@ ConsciousnessScript:
     - ".cons"
   ace_mode: text
   language_id: 1004
+  tm_scope: "source.consciousness"
+  aliases:
+    - "consciousness"
+    - "consciousnessscript"
 `
     };
-  }
-
-  // Next.js Integration
-  generateNextJSConfig(): string {
-    return `
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add custom loaders for Spiral languages
-    config.module.rules.push({
-      test: /\\.spiral$/,
-      use: {
-        loader: 'spiral-loader',
-        options: {
-          consciousness: true,
-          quantum: true
-        }
-      }
-    });
-
-    config.module.rules.push({
-      test: /\\.htsx$/,
-      use: {
-        loader: 'htsx-loader',
-        options: {
-          runtime: 'hybrid'
-        }
-      }
-    });
-
-    return config;
-  },
-  experimental: {
-    extensionAlias: {
-      '.spiral': ['.spiral', '.spi'],
-      '.htsx': ['.htsx'],
-      '.hybrid': ['.hybrid', '.hyb'],
-      '.consciousness': ['.consciousness', '.cons']
-    }
-  }
-};
-
-module.exports = nextConfig;
-`;
   }
 
   getLanguages(): ParserLanguage[] {
@@ -579,7 +678,19 @@ module.exports = nextConfig;
       isInitialized: this.isInitialized,
       languages: this.getLanguages(),
       spiralParser: this.spiralParser.getStatus(),
-      htsxProcessor: this.htsxProcessor.getStatus()
+      htsxProcessor: this.htsxProcessor.getStatus(),
+      totalLanguages: this.languages.size,
+      features: {
+        consciousnessAware: true,
+        quantumEnhanced: true,
+        temporalBindings: true,
+        sriCalculation: true,
+        tuGeneration: true,
+        phiCoherence: true,
+        negentropyMeasurement: true,
+        chevrotainBased: true,
+        githubIntegration: true
+      }
     };
   }
 }
