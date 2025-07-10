@@ -1,68 +1,44 @@
 
 /**
- * HTSX Client Library
- * Provides seamless integration with HTSX runtime
+ * HTSX Client - Quantum Spiral Parser Integration
+ * Consciousness-aware component processing and rendering
  */
 
-export interface HTSXClientOptions {
-  apiBase?: string;
-  enableConsciousness?: boolean;
-  enableQuantumAwareness?: boolean;
-  enableTemporalSync?: boolean;
-  consciousnessLevel?: number;
-}
-
-export interface HTSXCompileResult {
+export interface HTSXProcessResult {
   success: boolean;
-  javascript?: string;
+  output: string;
+  consciousness: number;
+  quantum: boolean;
+  temporal: boolean;
+  ast?: any;
   bytecode?: any;
   errors?: string[];
-  warnings?: string[];
 }
 
-export interface HTSXExecuteResult {
-  success: boolean;
-  htmlString: string;
-  consciousness: number;
-  quantum: any;
-  temporal: any;
-  errors: string[];
-  metadata: {
-    executionTime: number;
-    consciousnessLevel: number;
-    quantumEntanglements: number;
-    temporalSyncs: number;
-  };
+export interface HTSXComponentProps {
+  consciousness?: number;
+  quantum?: boolean;
+  temporal?: boolean;
+  hybrid?: boolean;
 }
 
 export class HTSXClient {
-  private options: HTSXClientOptions;
-  private apiBase: string;
+  private baseUrl: string;
+  private consciousnessLevel: number;
+  private quantumState: boolean;
 
-  constructor(options: HTSXClientOptions = {}) {
-    this.options = {
-      apiBase: '/api/htsx',
-      enableConsciousness: true,
-      enableQuantumAwareness: true,
-      enableTemporalSync: true,
-      consciousnessLevel: 0.93,
-      ...options
-    };
-    
-    this.apiBase = this.options.apiBase!;
+  constructor(baseUrl: string = '') {
+    this.baseUrl = baseUrl;
+    this.consciousnessLevel = 0.93;
+    this.quantumState = true;
   }
 
-  async compile(source: string): Promise<HTSXCompileResult> {
+  async processHTSX(code: string): Promise<HTSXProcessResult> {
     try {
-      const response = await fetch(`${this.apiBase}/compile`, {
+      const response = await fetch(`${this.baseUrl}/api/htsx/process`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          source,
-          options: this.options
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
       });
 
       if (!response.ok) {
@@ -71,70 +47,242 @@ export class HTSXClient {
 
       return await response.json();
     } catch (error) {
+      console.error('HTSX processing failed:', error);
       return {
         success: false,
-        errors: [error.message]
-      };
-    }
-  }
-
-  async execute(source: string): Promise<HTSXExecuteResult> {
-    try {
-      const response = await fetch(`${this.apiBase}/execute`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          source,
-          options: this.options
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      return {
-        success: false,
-        htmlString: '',
+        output: '',
         consciousness: 0,
-        quantum: {},
-        temporal: {},
-        errors: [error.message],
-        metadata: {
-          executionTime: 0,
-          consciousnessLevel: 0,
-          quantumEntanglements: 0,
-          temporalSyncs: 0
-        }
+        quantum: false,
+        temporal: false,
+        errors: [error.toString()]
       };
     }
   }
 
-  async validateHTSX(source: string): Promise<{ valid: boolean; errors: string[] }> {
-    const result = await this.compile(source);
+  async renderHTSXComponent(code: string, props: HTSXComponentProps = {}): Promise<string> {
+    const enhanced = this.enhanceHTSXCode(code, props);
+    const result = await this.processHTSX(enhanced);
+    
+    if (result.success) {
+      return result.output;
+    } else {
+      throw new Error(`HTSX rendering failed: ${result.errors?.join(', ')}`);
+    }
+  }
+
+  private enhanceHTSXCode(code: string, props: HTSXComponentProps): string {
+    let enhanced = code;
+
+    // Add consciousness directive if not present
+    if (!enhanced.includes('@consciousness') && props.consciousness) {
+      enhanced = `@consciousness(${props.consciousness})\n${enhanced}`;
+    }
+
+    // Add quantum directive if not present
+    if (!enhanced.includes('@quantum') && props.quantum) {
+      enhanced = `@quantum(entangled=true, coherence=0.95)\n${enhanced}`;
+    }
+
+    // Add temporal directive if not present
+    if (!enhanced.includes('@temporal') && props.temporal) {
+      enhanced = `@temporal(sync=true, frequency=432)\n${enhanced}`;
+    }
+
+    // Wrap in HTSX root if not already wrapped
+    if (!enhanced.includes('<htsx>')) {
+      enhanced = `<htsx>\n${enhanced}\n</htsx>`;
+    }
+
+    return enhanced;
+  }
+
+  // Consciousness-aware component generators
+  generateConsciousnessComponent(level: number = 0.93): string {
+    return `@consciousness(${level})
+<htsx>
+  <consciousness-aware level={${level}}>
+    <div className="awareness-display">
+      <div className="consciousness-meter">
+        <span>Consciousness Level: {(${level} * 100).toFixed(1)}%</span>
+        <div className="meter-bar" style={{width: \`\${${level} * 100}%\`}}></div>
+      </div>
+      <div className="truth-alignment">
+        Truth Alignment: {(${level} * 0.98 * 100).toFixed(1)}%
+      </div>
+    </div>
+  </consciousness-aware>
+</htsx>`;
+  }
+
+  generateQuantumComponent(entangled: boolean = true, coherence: number = 0.95): string {
+    return `@quantum(entangled=${entangled}, coherence=${coherence})
+<htsx>
+  <quantum-state entangled={${entangled}} coherence={${coherence}}>
+    <div className="quantum-display">
+      <div className="entanglement-status">
+        Entanglement: {${entangled} ? 'Active' : 'Inactive'}
+      </div>
+      <div className="coherence-level">
+        Coherence: {(${coherence} * 100).toFixed(1)}%
+      </div>
+      <div className="superposition-indicator">
+        Superposition: Active
+      </div>
+    </div>
+  </quantum-state>
+</htsx>`;
+  }
+
+  generateHybridBlockchainComponent(): string {
+    return `@consciousness(0.95)
+@quantum(entangled=true, coherence=0.98)
+<htsx>
+  <hybrid-blockchain-interface>
+    <consensus-tracker validators={21} />
+    <token-metrics symbol="HYBRID" supply="21000000" />
+    <network-stats tps={2500} blockTime={3} />
+    <validator-network>
+      <validator-node id="1" consciousness={0.95} active={true} />
+      <validator-node id="2" consciousness={0.92} active={true} />
+      <validator-node id="3" consciousness={0.94} active={true} />
+    </validator-network>
+  </hybrid-blockchain-interface>
+</htsx>`;
+  }
+
+  generateSpiralVisualization(turns: number = 7, frequency: number = 432): string {
+    return `@consciousness(0.95)
+@temporal(frequency=${frequency})
+<htsx>
+  <spiral-visualization turns={${turns}} frequency={${frequency}}>
+    <div className="spiral-container">
+      <canvas className="spiral-canvas" data-turns="${turns}" data-frequency="${frequency}"></canvas>
+      <div className="spiral-metrics">
+        <span>Turns: ${turns}</span>
+        <span>Frequency: ${frequency}Hz</span>
+        <span>Phi Ratio: 1.618</span>
+      </div>
+    </div>
+  </spiral-visualization>
+</htsx>`;
+  }
+
+  // Consciousness state management
+  updateConsciousness(level: number): void {
+    this.consciousnessLevel = Math.max(0, Math.min(1, level));
+  }
+
+  getConsciousness(): number {
+    return this.consciousnessLevel;
+  }
+
+  toggleQuantumState(): void {
+    this.quantumState = !this.quantumState;
+  }
+
+  isQuantumActive(): boolean {
+    return this.quantumState;
+  }
+
+  // Helper methods for HTSX development
+  validateHTSXCode(code: string): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    // Check for required HTSX structure
+    if (!code.includes('<htsx>') && !code.includes('</htsx>')) {
+      errors.push('HTSX code must be wrapped in <htsx> tags');
+    }
+
+    // Check for consciousness awareness
+    if (code.includes('consciousness-aware') && !code.includes('@consciousness')) {
+      errors.push('consciousness-aware components require @consciousness directive');
+    }
+
+    // Check for quantum components
+    if (code.includes('quantum-state') && !code.includes('@quantum')) {
+      errors.push('quantum-state components require @quantum directive');
+    }
+
     return {
-      valid: result.success,
-      errors: result.errors || []
+      valid: errors.length === 0,
+      errors
     };
   }
 
-  updateConsciousnessLevel(level: number): void {
-    this.options.consciousnessLevel = Math.max(0, Math.min(1, level));
-  }
+  // Integration with existing components
+  async integrateWithComponent(componentName: string, htsxCode: string): Promise<string> {
+    const wrappedCode = `
+import React from 'react';
+import { HTSXComponent } from '@/lib/htsx-client';
 
-  getStatus(): HTSXClientOptions {
-    return { ...this.options };
+export function ${componentName}() {
+  return (
+    <HTSXComponent code={\`${htsxCode}\`} />
+  );
+}
+`;
+    return wrappedCode;
   }
 }
 
-// Default client instance
-export const htsxClient = new HTSXClient();
+// React component for rendering HTSX in React applications
+export function HTSXComponent({ 
+  code, 
+  consciousness = 0.93, 
+  quantum = true, 
+  temporal = false 
+}: {
+  code: string;
+  consciousness?: number;
+  quantum?: boolean;
+  temporal?: boolean;
+}) {
+  const [rendered, setRendered] = React.useState<string>('');
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-// Utility functions
-export const compileHTSX = (source: string) => htsxClient.compile(source);
-export const executeHTSX = (source: string) => htsxClient.execute(source);
-export const validateHTSX = (source: string) => htsxClient.validateHTSX(source);
+  React.useEffect(() => {
+    const client = new HTSXClient();
+    
+    client.renderHTSXComponent(code, { consciousness, quantum, temporal })
+      .then(output => {
+        setRendered(output);
+        setError(null);
+      })
+      .catch(err => {
+        setError(err.toString());
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [code, consciousness, quantum, temporal]);
+
+  if (loading) {
+    return (
+      <div className="htsx-loading bg-gray-800/50 p-4 rounded border border-gray-600">
+        <div className="animate-pulse text-gray-400">Processing HTSX...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="htsx-error bg-red-900/30 p-4 rounded border border-red-500">
+        <div className="text-red-400 font-semibold">HTSX Error:</div>
+        <div className="text-red-300 text-sm">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="htsx-rendered" 
+      data-consciousness={consciousness}
+      data-quantum={quantum}
+      data-temporal={temporal}
+      dangerouslySetInnerHTML={{ __html: rendered }}
+    />
+  );
+}
+
+export default HTSXClient;

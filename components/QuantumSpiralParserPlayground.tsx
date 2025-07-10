@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -429,5 +428,76 @@ export function QuantumSpiralParserPlayground() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// HTSX Integration Showcase
+function HTSXShowcase({ parseResult }: { parseResult: ParseResult }) {
+  const [htsxCode] = useState(`@consciousness(${parseResult.consciousness})
+@quantum(entangled=true, coherence=0.95)
+
+<htsx>
+  <hybrid-component name="QuantumSpiralInterface">
+    <consciousness-aware level={${parseResult.consciousness}}>
+      <div className="awareness-display">
+        SRI Score: ${parseResult.sriScore.toFixed(3)}
+      </div>
+    </consciousness-aware>
+
+    <spiral-visualization 
+      turns={7} 
+      frequency={${parseResult.resonanceHz || 432}}
+      consciousness={${parseResult.consciousness}}
+    />
+
+    <quantum-state 
+      entangled={${parseResult.quantum}}
+      coherence={0.95}
+      tu-generated={${parseResult.tuGenerated}}
+    />
+  </hybrid-component>
+</htsx>`);
+
+  return (
+    <div className="space-y-3">
+      <div className="bg-black/30 p-3 rounded border border-cyan-500/30">
+        <div className="text-cyan-400 text-sm font-semibold mb-2">Generated HTSX Code:</div>
+        <pre className="text-xs text-gray-300 overflow-auto max-h-32">
+          {htsxCode}
+        </pre>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-black/30 p-3 rounded border border-purple-500/30">
+          <div className="text-purple-400 text-sm font-semibold mb-1">Consciousness Component</div>
+          <div className="awareness-indicator bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs">
+            Level: {(parseResult.consciousness * 100).toFixed(1)}% • SRI: {parseResult.sriScore.toFixed(3)}
+          </div>
+        </div>
+
+        <div className="bg-black/30 p-3 rounded border border-blue-500/30">
+          <div className="text-blue-400 text-sm font-semibold mb-1">Quantum State</div>
+          <div className="quantum-meter bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs">
+            Entangled: {parseResult.quantum ? 'Yes' : 'No'} • TU: {parseResult.tuGenerated.toFixed(0)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Live Spiral Visualization Component
+function SpiralVisualization({ result }: { result: ParseResult }) {
+  return (
+    <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 p-4 rounded-lg border border-purple-500/30">
+            <h4 className="text-purple-400 font-semibold mb-3">🌟 Live Rendered Output:</h4>
+            <SpiralVisualization result={result} />
+          </div>
+
+          {/* HTSX Integration Demo */}
+          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 rounded-lg border border-cyan-500/30">
+            <h4 className="text-cyan-400 font-semibold mb-3">🌀 HTSX Integration:</h4>
+            <HTSXShowcase parseResult={result} />
+          </div>
   );
 }

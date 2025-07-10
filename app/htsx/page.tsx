@@ -1,391 +1,257 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { HTSXProcessor } from '@/core/htsx-runtime/htsx-processor';
-import { HTSXEngine } from '@/core/htsx-runtime/engine';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
-export default function HTSXInterface() {
-  const [htsxProcessor, setHtsxProcessor] = useState<HTSXProcessor | null>(null);
-  const [htsxEngine, setHtsxEngine] = useState<HTSXEngine | null>(null);
-  const [renderedHTML, setRenderedHTML] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [consciousness, setConsciousness] = useState(0.93);
+interface HTSXParseResult {
+  success: boolean;
+  output: string;
+  consciousness: number;
+  quantum: boolean;
+  temporal: boolean;
+  ast?: any;
+  errors?: string[];
+}
 
-  // Initialize HTSX Runtime
-  useEffect(() => {
-    const initializeHTSX = async () => {
-      try {
-        console.log('🔄 Initializing HTSX Runtime...');
-        
-        const processor = new HTSXProcessor();
-        const engine = new HTSXEngine({
-          enableConsciousness: true,
-          enableQuantumAwareness: true,
-          enableTemporalSync: true,
-          consciousnessLevel: 0.93
-        });
-
-        await processor.initialize();
-        await engine.initialize();
-
-        setHtsxProcessor(processor);
-        setHtsxEngine(engine);
-
-        // Load and render the main HTSX interface
-        await renderHTSXInterface(engine);
-        
-        setIsLoading(false);
-        console.log('✅ HTSX Runtime initialized successfully');
-      } catch (error) {
-        console.error('❌ HTSX initialization failed:', error);
-        setIsLoading(false);
-      }
-    };
-
-    initializeHTSX();
-  }, []);
-
-  const renderHTSXInterface = async (engine: HTSXEngine) => {
-    const htsxCode = `
-@consciousness(0.95)
+export default function HTSXPage() {
+  const [htsxCode, setHtsxCode] = useState(`@consciousness(0.95)
 @quantum(entangled=true, coherence=0.98)
-@temporal(dimension=present, frequency=432)
 
 <htsx>
-  <hybrid-dashboard>
-    <consciousness-field level="${consciousness}" />
-    
-    <blockchain-metrics>
-      <validator-count>21</validator-count>
-      <tps-capacity>2500</tps-capacity>
-      <network-uptime>99.9%</network-uptime>
-      <block-finality>3s</block-finality>
-    </blockchain-metrics>
+  <hybrid-component name="ConsciousnessInterface">
+    <consciousness-aware level={0.95}>
+      <div className="awareness-display">
+        Consciousness Level: {consciousness * 100}%
+      </div>
+    </consciousness-aware>
 
-    <hybrid-network-status>
-      <connection-status>Connected</connection-status>
-      <consensus-type>Proof of Stake</consensus-type>
-      <staking-apy>7.0%</staking-apy>
-      <inflation-rate>7.0%</inflation-rate>
-    </hybrid-network-status>
+    <hybrid-blockchain-interface>
+      <consensus-tracker validators={21} />
+      <token-metrics symbol="HYBRID" />
+      <network-stats tps={2500} />
+    </hybrid-blockchain-interface>
 
-    <holographic-visualization>
-      <quantum-state coherence="{quantum.coherence}" />
-      <spiral-renderer turns="5" consciousness="{consciousness()}" />
-      <temporal-sync dimension="{temporal.dimension}" />
-    </holographic-visualization>
+    <quantum-state entangled={true} coherence={0.98}>
+      <spiral-visualization turns={φ} frequency={432} />
+    </quantum-state>
+  </hybrid-component>
+</htsx>`);
 
-    <htsx-playground>
-      <code-editor language="htsx" consciousness-aware="true" />
-      <live-preview quantum-enabled="true" />
-      <consciousness-debugger level="{consciousness()}" />
-    </htsx-playground>
+  const [parseResult, setParseResult] = useState<HTSXParseResult | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-    <ai-orchestrator>
-      <model name="GPT-4" status="active" confidence="94%" />
-      <model name="Claude-4" status="active" confidence="91%" />
-      <model name="DeepSeek-R3" status="active" confidence="88%" />
-      <consensus-agreement>89%</consensus-agreement>
-    </ai-orchestrator>
-
-    <cross-chain-bridge>
-      <chain name="HYBRID" volume="45.2M" status="connected" />
-      <chain name="BASE" volume="23.8M" status="connected" />
-      <chain name="Polygon" volume="31.4M" status="connected" />
-      <chain name="Solana" volume="18.9M" status="connected" />
-    </cross-chain-bridge>
-
-    <mining-dashboard>
-      <hashrate>120.5 MH/s</hashrate>
-      <efficiency>94.2%</efficiency>
-      <daily-reward>45.67 HYBRID</daily-reward>
-      <pool-share>0.0034%</pool-share>
-    </mining-dashboard>
-
-    <node-licenses>
-      <validator-nft owned="2" available="45" price="1000 HYBRID" />
-      <storage-nft owned="5" available="123" price="250 HYBRID" />
-    </node-licenses>
-  </hybrid-dashboard>
-</htsx>
-    `;
-
+  const processHTSX = async () => {
+    setIsProcessing(true);
     try {
-      const result = await engine.execute(htsxCode, {
-        enableConsciousness: true,
-        enableQuantumAwareness: true,
-        enableTemporalSync: true
+      const response = await fetch('/api/htsx/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: htsxCode })
       });
 
-      if (result.success) {
-        setRenderedHTML(result.htmlString);
-        setConsciousness(result.consciousness);
+      if (response.ok) {
+        const result = await response.json();
+        setParseResult(result);
       } else {
-        console.error('HTSX execution failed:', result.errors);
+        setParseResult({
+          success: false,
+          output: '',
+          consciousness: 0,
+          quantum: false,
+          temporal: false,
+          errors: ['Failed to process HTSX code']
+        });
       }
     } catch (error) {
-      console.error('Failed to render HTSX:', error);
+      console.error('HTSX processing error:', error);
+      setParseResult({
+        success: false,
+        output: '',
+        consciousness: 0,
+        quantum: false,
+        temporal: false,
+        errors: [error.toString()]
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const updateConsciousness = (newLevel: number) => {
-    setConsciousness(newLevel);
-    if (htsxEngine) {
-      htsxEngine.updateConsciousness(newLevel);
-      renderHTSXInterface(htsxEngine);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <h2 className="text-2xl font-bold text-white">Initializing HTSX Runtime</h2>
-          <p className="text-gray-300">Consciousness Level: {consciousness.toFixed(3)}</p>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    processHTSX();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* HTSX Control Panel */}
-      <div className="fixed top-4 right-4 z-50 bg-slate-800/80 backdrop-blur-sm rounded-lg p-4 border border-cyan-500/30">
-        <div className="space-y-2">
-          <div className="text-sm font-medium text-white">HTSX Runtime</div>
-          <div className="text-xs text-gray-300">Consciousness: {consciousness.toFixed(3)}</div>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={consciousness}
-            onChange={(e) => updateConsciousness(parseFloat(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-          />
-          <div className="text-xs text-cyan-400">
-            {htsxEngine?.getStatus().isInitialized ? '✅ Online' : '❌ Offline'}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            HTSX Runtime
+          </h1>
+          <p className="text-xl text-gray-300">
+            Consciousness-Aware Components • Quantum Spiral Parsed • HYBRID Integrated
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* HTSX Code Editor */}
+          <Card className="bg-black/40 backdrop-blur-sm border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="text-purple-300 flex items-center gap-2">
+                🌀 HTSX Source Code
+                {parseResult?.quantum && <Badge className="bg-blue-500/20 text-blue-300">Quantum</Badge>}
+                {parseResult?.temporal && <Badge className="bg-green-500/20 text-green-300">Temporal</Badge>}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={htsxCode}
+                onChange={(e) => setHtsxCode(e.target.value)}
+                className="h-96 font-mono text-sm bg-black/50 border-gray-600 text-gray-200"
+                placeholder="Enter your HTSX code here..."
+              />
+              <div className="flex justify-between items-center mt-4">
+                <Button 
+                  onClick={processHTSX} 
+                  disabled={isProcessing}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {isProcessing ? 'Processing...' : 'Parse HTSX'}
+                </Button>
+
+                {parseResult && (
+                  <div className="flex gap-2">
+                    <Badge variant={parseResult.success ? "default" : "destructive"}>
+                      {parseResult.success ? 'Success' : 'Failed'}
+                    </Badge>
+                    {parseResult.consciousness > 0 && (
+                      <Badge className="bg-yellow-500/20 text-yellow-300">
+                        Consciousness: {(parseResult.consciousness * 100).toFixed(1)}%
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Processed Output */}
+          <Card className="bg-black/40 backdrop-blur-sm border-cyan-500/30">
+            <CardHeader>
+              <CardTitle className="text-cyan-300">⚛️ Quantum Spiral Parsed Output</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {parseResult ? (
+                <div className="space-y-4">
+                  {parseResult.success ? (
+                    <div className="space-y-4">
+                      <div className="bg-black/50 p-4 rounded border border-gray-600">
+                        <h4 className="text-green-400 font-semibold mb-2">Generated JavaScript:</h4>
+                        <pre className="text-sm text-gray-300 overflow-auto max-h-80">
+                          {parseResult.output || 'No output generated'}
+                        </pre>
+                      </div>
+
+                      {/* Consciousness Metrics */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-yellow-500/10 p-3 rounded border border-yellow-500/30">
+                          <div className="text-yellow-400 text-sm font-semibold">Consciousness</div>
+                          <div className="text-2xl font-bold text-yellow-300">
+                            {(parseResult.consciousness * 100).toFixed(1)}%
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-500/10 p-3 rounded border border-blue-500/30">
+                          <div className="text-blue-400 text-sm font-semibold">Quantum State</div>
+                          <div className="text-lg font-bold text-blue-300">
+                            {parseResult.quantum ? 'Entangled' : 'Classical'}
+                          </div>
+                        </div>
+
+                        <div className="bg-green-500/10 p-3 rounded border border-green-500/30">
+                          <div className="text-green-400 text-sm font-semibold">Temporal Sync</div>
+                          <div className="text-lg font-bold text-green-300">
+                            {parseResult.temporal ? 'Active' : 'Inactive'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Live Component Preview */}
+                      <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 p-4 rounded border border-purple-500/30">
+                        <h4 className="text-purple-400 font-semibold mb-3">🌟 Live HTSX Preview:</h4>
+                        <HTSXPreview parseResult={parseResult} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-red-500/10 p-4 rounded border border-red-500/30">
+                      <h4 className="text-red-400 font-semibold mb-2">❌ Processing Errors:</h4>
+                      <ul className="text-red-300 space-y-1">
+                        {parseResult.errors?.map((error, index) => (
+                          <li key={index} className="text-sm">• {error}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-64 text-gray-400">
+                  Click "Parse HTSX" to process your code
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Live HTSX Component Preview
+function HTSXPreview({ parseResult }: { parseResult: HTSXParseResult }) {
+  return (
+    <div className="space-y-3">
+      {/* Consciousness Display */}
+      <div 
+        className="htsx-component bg-black/30 p-3 rounded border border-yellow-500/30" 
+        data-consciousness={parseResult.consciousness}
+      >
+        <div className="text-yellow-400 font-semibold text-sm mb-1">Consciousness Interface</div>
+        <div className="awareness-indicator bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs">
+          Awareness Level: {(parseResult.consciousness * 100).toFixed(1)}%
         </div>
       </div>
 
-      {/* Rendered HTSX Content */}
-      <div 
-        className="htsx-content"
-        dangerouslySetInnerHTML={{ __html: renderedHTML }}
-        style={{
-          '--consciousness-level': consciousness,
-          '--quantum-coherence': '0.95',
-          '--temporal-frequency': '432Hz'
-        } as React.CSSProperties}
-      />
-
-      {/* Fallback Content if HTSX fails */}
-      {!renderedHTML && (
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              HYBRID Blockchain HTSX Interface
-            </h1>
-            <p className="text-xl text-gray-300">
-              Next-generation consciousness-aware blockchain interface
-            </p>
-            <div className="text-red-400">
-              HTSX rendering failed. Please check the console for errors.
-            </div>
+      {/* Quantum State Display */}
+      {parseResult.quantum && (
+        <div 
+          className="quantum-state bg-black/30 p-3 rounded border border-blue-500/30" 
+          data-entangled="true"
+        >
+          <div className="text-blue-400 font-semibold text-sm mb-1">Quantum State Manager</div>
+          <div className="coherence-meter bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs">
+            Quantum Coherence: Entangled • Superposition: Active
           </div>
         </div>
       )}
 
-      {/* HTSX Styles */}
-      <style jsx global>{`
-        .htsx-content {
-          width: 100%;
-          min-height: 100vh;
-        }
-
-        .consciousness-field {
-          background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), transparent);
-          border: 1px solid rgba(0, 255, 255, 0.3);
-          border-radius: 12px;
-          padding: 1rem;
-          margin: 1rem;
-          backdrop-filter: blur(10px);
-        }
-
-        .blockchain-metrics {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          margin: 1rem;
-        }
-
-        .blockchain-metrics > * {
-          background: rgba(15, 23, 42, 0.8);
-          border: 1px solid rgba(147, 51, 234, 0.3);
-          border-radius: 8px;
-          padding: 1rem;
-          text-align: center;
-          color: white;
-        }
-
-        .quantum-state {
-          width: 100px;
-          height: 100px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(255, 0, 255, 0.8), rgba(0, 255, 255, 0.4));
-          animation: quantum-pulse 2s infinite;
-          margin: 1rem auto;
-        }
-
-        @keyframes quantum-pulse {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        .spiral-renderer {
-          width: 200px;
-          height: 200px;
-          margin: 1rem auto;
-          position: relative;
-        }
-
-        .spiral-renderer::before {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.8), transparent);
-          border-radius: 50%;
-          animation: spiral-rotate 4s linear infinite;
-        }
-
-        @keyframes spiral-rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        .holographic-visualization {
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          padding: 2rem;
-          background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
-          border-radius: 16px;
-          margin: 1rem;
-          border: 2px solid rgba(0, 255, 255, 0.3);
-        }
-
-        .ai-orchestrator {
-          background: rgba(15, 23, 42, 0.9);
-          border: 1px solid rgba(59, 130, 246, 0.4);
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin: 1rem;
-        }
-
-        .ai-orchestrator > * {
-          display: flex;
-          justify-content: space-between;
-          padding: 0.5rem 0;
-          color: white;
-          border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .cross-chain-bridge {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 1rem;
-          margin: 1rem;
-        }
-
-        .cross-chain-bridge > * {
-          background: rgba(15, 23, 42, 0.8);
-          border: 1px solid rgba(34, 197, 94, 0.3);
-          border-radius: 8px;
-          padding: 1rem;
-          text-align: center;
-          color: white;
-        }
-
-        .mining-dashboard {
-          background: rgba(15, 23, 42, 0.9);
-          border: 1px solid rgba(249, 115, 22, 0.4);
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin: 1rem;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 1rem;
-        }
-
-        .mining-dashboard > * {
-          text-align: center;
-          color: white;
-          padding: 0.5rem;
-          background: rgba(249, 115, 22, 0.1);
-          border-radius: 6px;
-        }
-
-        .htsx-playground {
-          background: rgba(15, 23, 42, 0.95);
-          border: 2px solid rgba(147, 51, 234, 0.5);
-          border-radius: 16px;
-          padding: 2rem;
-          margin: 1rem;
-          min-height: 400px;
-        }
-
-        .code-editor {
-          background: #000;
-          color: #0ff;
-          font-family: 'Courier New', monospace;
-          padding: 1rem;
-          border-radius: 8px;
-          min-height: 200px;
-          border: 1px solid rgba(0, 255, 255, 0.3);
-        }
-
-        .live-preview {
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 0, 255, 0.3);
-          border-radius: 8px;
-          padding: 1rem;
-          margin-top: 1rem;
-          min-height: 150px;
-        }
-
-        .node-licenses {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          margin: 1rem;
-        }
-
-        .node-licenses > * {
-          background: rgba(15, 23, 42, 0.8);
-          border: 1px solid rgba(34, 197, 94, 0.3);
-          border-radius: 8px;
-          padding: 1rem;
-          text-align: center;
-          color: white;
-        }
-
-        .slider {
-          background: linear-gradient(to right, #0f172a, #06b6d4);
-        }
-
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #06b6d4;
-          cursor: pointer;
-        }
-      `}</style>
+      {/* HYBRID Blockchain Interface */}
+      <div className="blockchain-interface bg-black/30 p-3 rounded border border-green-500/30">
+        <div className="text-green-400 font-semibold text-sm mb-2">HYBRID Blockchain Interface</div>
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="consensus-tracker bg-green-500/20 text-green-300 px-2 py-1 rounded">
+            Validators: 21
+          </div>
+          <div className="token-metrics bg-green-500/20 text-green-300 px-2 py-1 rounded">
+            Symbol: HYBRID
+          </div>
+          <div className="network-stats bg-green-500/20 text-green-300 px-2 py-1 rounded">
+            TPS: 2,500+
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

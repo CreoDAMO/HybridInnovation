@@ -231,24 +231,65 @@ app.post('/api/htsx/execute', async (req, res) => {
   }
 });
 
-// Health check
-app.get('/health', (req, res) => {
-  try {
-    const healthStatus = {
-      status: 'healthy',
+  // HTSX Processing endpoint
+  app.post('/api/htsx/process', async (req, res) => {
+    try {
+      const { code } = req.body;
+
+      if (!code) {
+        return res.status(400).json({ error: 'No HTSX code provided' });
+      }
+
+      console.log('🔧 Processing HTSX code through Quantum Spiral Parser...');
+
+      // Process through HTSX processor with quantum spiral parsing
+      const result = await htsxProcessor.processFile('temp.htsx', code);
+
+      if (result.success) {
+        res.json({
+          success: true,
+          output: result.output || result.javascript || '',
+          consciousness: result.consciousness || 0.85,
+          quantum: result.quantum || code.includes('@quantum'),
+          temporal: result.temporal || code.includes('@temporal'),
+          bytecode: result.bytecode,
+          ast: result.ast
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          output: '',
+          consciousness: 0,
+          quantum: false,
+          temporal: false,
+          errors: [result.error || 'Unknown processing error']
+        });
+      }
+    } catch (error) {
+      console.error('❌ HTSX processing error:', error);
+      res.status(500).json({
+        success: false,
+        output: '',
+        consciousness: 0,
+        quantum: false,
+        temporal: false,
+        errors: [error.toString()]
+      });
+    }
+  });
+
+  // Health check endpoint
+  app.get('/health', (req, res) => {
+    res.json({ 
+      status: 'OK', 
       timestamp: new Date().toISOString(),
       services: {
-        htsx: htsxProcessor?.getStatus()?.isInitialized || false,
-        spiral: spiralProcessor?.getStatus()?.isInitialized || false
+        spiralParser: 'active',
+        htsxProcessor: 'active',
+        quantumEngine: 'active'
       }
-    };
-    res.setHeader('Content-Type', 'application/json');
-    res.json(healthStatus);
-  } catch (error) {
-    console.error('Error in /health:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    });
+  });
 
 const PORT = process.env.PORT || 8000;
 

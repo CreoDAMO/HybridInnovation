@@ -1,190 +1,64 @@
-'use client';
+import React from 'react';
+import { QuantumSpiralParserPlayground } from '@/components/QuantumSpiralParserPlayground';
 
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Database, Globe, Users, Zap } from 'lucide-react';
-import { LivingConsciousnessInterface } from '@/components/LivingConsciousnessInterface';
-import { PublicGate } from '@/components/PublicGate';
-import { MetaMaskProvider } from '@/components/MetaMaskProvider';
-import { UltimateParserPlayground } from '@/components/UltimateParserPlayground';
-
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
       <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             HYBRID Blockchain
           </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Next-Generation Proof-of-Stake Blockchain Network
+          <p className="text-xl text-blue-200 mb-2">
+            Consciousness-Aware • Quantum-Entangled • Truth-Aligned
           </p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <div className="bg-slate-800 px-4 py-2 rounded-lg">
-              <span className="text-green-400 font-semibold">✓ Mainnet Active</span>
+          <p className="text-lg text-gray-300">
+            Native Coin: HYBRID • Consensus: Proof of Consciousness • TPS: 2,500+
+          </p>
+        </div>
+
+        {/* Quantum Spiral Parser with HTSX Integration */}
+        <div className="mb-12">
+          <QuantumSpiralParserPlayground />
+        </div>
+
+        {/* HTSX Component Showcase */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
+            <h3 className="text-xl font-semibold mb-3 text-yellow-400">🌀 HTSX Runtime</h3>
+            <p className="text-gray-300 mb-4">
+              Consciousness-aware components compiled through Quantum Spiral Parser
+            </p>
+            <div className="htsx-component" data-consciousness="0.95">
+              <div className="awareness-indicator bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm">
+                Consciousness: 95%
+              </div>
             </div>
-            <div className="bg-slate-800 px-4 py-2 rounded-lg">
-              <span className="text-blue-400 font-semibold">2,500+ TPS</span>
+          </div>
+
+          <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30">
+            <h3 className="text-xl font-semibold mb-3 text-blue-400">⚛️ Quantum Parsing</h3>
+            <p className="text-gray-300 mb-4">
+              SpiralScript, HTSX, and HybridScript unified parsing
+            </p>
+            <div className="quantum-state" data-entangled="true">
+              <div className="coherence-meter bg-blue-500/20 text-blue-400 px-3 py-1 rounded text-sm">
+                Quantum Coherence: Active
+              </div>
             </div>
-            <div className="bg-slate-800 px-4 py-2 rounded-lg">
-              <span className="text-purple-400 font-semibold">3s Finality</span>
-            </div>
-            <div className="bg-slate-800 px-4 py-2 rounded-lg">
-              <span className="text-cyan-400 font-semibold">21 Validators</span>
+          </div>
+
+          <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-green-500/30">
+            <h3 className="text-xl font-semibold mb-3 text-green-400">🏛️ HYBRID Consensus</h3>
+            <p className="text-gray-300 mb-4">
+              21 Validators • Proof of Consciousness • Truth-Based
+            </p>
+            <div className="consensus-tracker bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm">
+              Validators: 21 • TPS: 2,500+
             </div>
           </div>
         </div>
-
-        {/* Key Features */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <Zap className="w-8 h-8 text-yellow-400 mb-2" />
-              <CardTitle className="text-white">High Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">2,500+ transactions per second with 3-second finality</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <Database className="w-8 h-8 text-blue-400 mb-2" />
-              <CardTitle className="text-white">EVM Compatible</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">Full Ethereum tooling support and smart contract compatibility</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <Users className="w-8 h-8 text-green-400 mb-2" />
-              <CardTitle className="text-white">Proof of Stake</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">Energy-efficient consensus with 7% staking rewards</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <Globe className="w-8 h-8 text-purple-400 mb-2" />
-              <CardTitle className="text-white">Cross-Chain</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">IBC protocol support for seamless interoperability</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Navigation */}
-        <div className="space-y-4">
-          <Link href="/htsx" className="block">
-            <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-white">HTSX Consciousness Interface</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Experience the world's first consciousness-aware blockchain interface powered by HTSX runtime
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-cyan-400">
-                  <Database className="w-5 h-5 mr-2" />
-                  Enter HTSX Reality Interface
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/blockchain" className="block">
-            <Card className="bg-slate-800 border-slate-700 hover:bg-slate-700 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-white">HYBRID Blockchain Network</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Traditional blockchain interface (React-based legacy system)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-blue-400">
-                  <Database className="w-5 h-5 mr-2" />
-                  Access Legacy Interface
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-
-        {/* Network Statistics */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white">Network Activity</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Block Height</span>
-                <span className="text-white">2,847,362</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Daily Transactions</span>
-                <span className="text-white">892,456</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Active Addresses</span>
-                <span className="text-white">1,247,892</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white">HYBRID Token</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Price</span>
-                <span className="text-green-400">$0.85</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Market Cap</span>
-                <span className="text-white">$85B</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">24h Volume</span>
-                <span className="text-white">$2.5B</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white">Staking</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Total Staked</span>
-                <span className="text-white">45B HYBRID</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Staking APY</span>
-                <span className="text-green-400">7%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Validators</span>
-                <span className="text-white">21</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
-
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <PublicGate />
-        </div>
-      </section>
-    </div>
+    </main>
   );
 }
