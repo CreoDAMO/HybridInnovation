@@ -1,216 +1,90 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Cpu, 
+  Zap, 
+  Database, 
+  Coins, 
+  Bot, 
+  Globe,
+  Shield,
+  TrendingUp,
+  Activity,
+  Sparkles,
+  Rocket,
+  Brain,
+  Eye,
+  Settings,
+  BarChart3,
+  Users,
+  Wifi,
+  Layers
+} from 'lucide-react';
+import { nvidiaIntegration } from '@/lib/nvidia-dgx-integration';
 
-// Enhanced Icons
-const icons = {
-  play: '▶️',
-  pause: '⏸️',
-  stop: '⏹️',
-  settings: '⚙️',
-  cloud: '☁️',
-  cpu: '💾',
-  zap: '⚡',
-  gamepad: '🎮',
-  eye: '👁️',
-  layers: '📚',
-  code: '💻',
-  database: '🗄️',
-  users: '👥',
-  trending: '📈',
-  activity: '📊',
-  globe: '🌍',
-  shield: '🛡️',
-  coins: '🪙',
-  hexagon: '⬡',
-  hologram: '🔮',
-  neural: '🧠',
-  quantum: '⚛️',
-  streamlit: '🔄',
-  omniverse: '🌌',
-  rtx: '💎',
-  ai: '🤖',
-  vr: '🥽',
-  gpu: '🖥️'
-};
-
-interface ProjectData {
-  engine: string;
-  project: string;
-  status: string;
-  performance: {
-    fps: number;
-    memory: number;
-  };
-}
-
-interface NvidiaCloudService {
-  name: string;
-  status: 'active' | 'connecting' | 'offline';
-  performance: number;
-  features: string[];
-}
-
-interface StreamlitApp {
-  name: string;
-  url: string;
-  status: 'running' | 'stopped' | 'error';
-  metrics: {
-    users: number;
-    requests: number;
-    uptime: string;
-  };
-}
-
-interface HolographicConfig {
-  displayType: string;
-  resolution: string;
-  refreshRate: number;
-  fieldOfView: number;
-  lightFieldDensity: number;
-}
-
-const HybridDeveloperDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isRendering, setIsRendering] = useState(false);
-  const [nvidiaServices, setNvidiaServices] = useState([
-    {
-      name: 'DGX Cloud Enterprise',
-      status: 'connected',
-      usage: 87,
-      instances: 12,
-      gpuType: 'H100',
-      revenue: '156.7 HYBRID/hour',
-      costOptimization: 94
-    },
-    {
-      name: 'RAPIDS Analytics',
-      status: 'active',
-      usage: 92,
-      dataProcessed: '847 TB/day',
-      revenue: '89.4 HYBRID/hour',
-      accuracy: 99.7
-    },
-    {
-      name: 'Triton Inference',
-      status: 'active',
-      usage: 78,
-      modelsDeployed: 156,
-      inferenceLatency: '2.3ms',
-      revenue: '234.1 HYBRID/hour'
-    },
-    {
-      name: 'NeMo Framework',
-      status: 'active',
-      usage: 85,
-      agentsDeployed: 2456,
-      conversationsDaily: '50K+',
-      revenue: '67.8 HYBRID/hour'
-    },
-    {
-      name: 'GeForce NOW',
-      status: 'connected',
-      usage: 68,
-      sessions: 8947,
-      consumerRevenue: '45.2 HYBRID/hour'
-    },
-    {
-      name: 'Omniverse Collab',
-      status: 'active',
-      usage: 74,
-      collaborators: 234,
-      projectsActive: 67,
-      revenue: '23.6 HYBRID/hour'
-    }
-  ]);
-  const [streamlitApps, setStreamlitApps] = useState<StreamlitApp[]>([]);
-  const [holographicConfig, setHolographicConfig] = useState<HolographicConfig>({
-    displayType: 'Ultra-thin VR Glasses',
-    resolution: '8K per eye',
-    refreshRate: 120,
-    fieldOfView: 210,
-    lightFieldDensity: 95
-  });
-
+export function HybridDeveloperDashboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const omniverseRef = useRef<HTMLCanvasElement>(null);
-  const streamlitRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene>();
-  const rendererRef = useRef<THREE.WebGLRenderer>();
-  const cameraRef = useRef<THREE.PerspectiveCamera>();
-
-  // Enhanced system metrics with Nvidia GPU monitoring
-  const [systemMetrics, setSystemMetrics] = useState({
-    gpu: 78,
-    cpu: 65,
-    ram: 82,
-    vram: 91,
-    temperature: 72,
-    power: 85,
-    rtxCores: 68,
-    tensorCores: 92,
-    dlssPerformance: 156,
-    rayTracingOps: 89
+  const [dgxMetrics, setDgxMetrics] = useState({
+    gpuUtilization: 0,
+    memoryUsage: 0,
+    networkThroughput: '0 Gbps',
+    activeInstances: 0,
+    cost: '$0/hour'
   });
 
-  // Mock data for advanced features
-  const nvidiaCloudData = [
-    { name: 'GeForce NOW', status: 'active' as const, performance: 95, features: ['RTX 4080', 'DLSS 3.0', '4K Gaming'] },
-    { name: 'Omniverse Cloud', status: 'active' as const, performance: 87, features: ['Real-time Collaboration', 'USD Pipeline', 'AI Rendering'] },
-    { name: 'Holoscan Platform', status: 'connecting' as const, performance: 73, features: ['Edge AI', 'Real-time Processing', 'Medical Imaging'] },
-    { name: 'Isaac Sim Cloud', status: 'active' as const, performance: 91, features: ['Physics Simulation', 'Robotics Training', 'Synthetic Data'] }
-  ];
+  const [hybridMetrics, setHybridMetrics] = useState({
+    coinPrice: '$10.00',
+    marketCap: '$1,000,000,000,000',
+    totalSupply: '100,000,000,000',
+    validators: 21,
+    tps: 2500,
+    gaslessUsers: 89234,
+    aiAgents: 2456,
+    usdcPool: '125.6M',
+    defiTVL: '12.5B'
+  });
 
-  const streamlitApplications: StreamlitApp[] = [
-    {
-      name: 'AI Model Dashboard',
-      url: 'https://ai-models.streamlit.app',
-      status: 'running',
-      metrics: { users: 234, requests: 15678, uptime: '99.8%' }
-    },
-    {
-      name: 'Data Visualization Hub',
-      url: 'https://dataviz.streamlit.app',
-      status: 'running',
-      metrics: { users: 567, requests: 23456, uptime: '99.2%' }
-    },
-    {
-      name: 'ML Pipeline Monitor',
-      url: 'https://mlpipeline.streamlit.app',
-      status: 'running',
-      metrics: { users: 123, requests: 8901, uptime: '100%' }
-    }
-  ];
+  const [deploymentStatus, setDeploymentStatus] = useState({
+    tensorRT: 'Optimizing',
+    triton: 'Running',
+    rapids: 'Active',
+    omniverse: 'Initializing',
+    dgxCloud: 'Connected'
+  });
 
-  // Advanced rendering data
-  const renderingData = [
-    { name: 'Frame 1', unity: 60, unreal: 45, nvidia: 120, dlss: 180, rtx: 95 },
-    { name: 'Frame 2', unity: 58, unreal: 48, nvidia: 118, dlss: 175, rtx: 97 },
-    { name: 'Frame 3', unity: 62, unreal: 44, nvidia: 125, dlss: 185, rtx: 93 },
-    { name: 'Frame 4', unity: 55, unreal: 50, nvidia: 115, dlss: 170, rtx: 99 },
-    { name: 'Frame 5', unity: 59, unreal: 46, nvidia: 122, dlss: 178, rtx: 96 },
-    { name: 'Frame 6', unity: 61, unreal: 49, nvidia: 128, dlss: 182, rtx: 98 }
-  ];
-
-  const projects: ProjectData[] = [
+  const [ngcCatalog, setNgcCatalog] = useState([
     {
-      engine: 'Unity 3D + Nvidia Cloud',
-      project: 'MetaverseGame',
-      status: 'active',
+      name: 'TensorRT-LLM',
+      category: 'AI/ML',
+      status: 'deployed',
       performance: { fps: 120, memory: 2.4 }
     },
     {
-      engine: 'Unreal Engine 5 + RTX',
-      project: 'VRExperience',
+      name: 'Triton Inference Server',
+      category: 'Inference',
+      status: 'running',
+      performance: { fps: 95, memory: 1.8 }
+    },
+    {
+      name: 'RAPIDS cuDF',
+      category: 'Data Science',
+      status: 'active',
+      performance: { fps: 150, memory: 3.2 }
+    },
+    {
+      name: 'Omniverse Kit',
+      category: '3D/Simulation',
       status: 'building',
       performance: { fps: 90, memory: 3.8 }
     }
-  ];
+  ]);
 
   // Initialize Three.js scene for holographic display
   useEffect(() => {
@@ -256,15 +130,13 @@ const HybridDeveloperDashboard: React.FC = () => {
 
     camera.position.z = 30;
 
-    sceneRef.current = scene;
-    rendererRef.current = renderer;
-    cameraRef.current = camera;
-
+    // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
 
       torusKnot.rotation.x += 0.01;
-      torusKnot.rotation.y += 0.01;
+      torusKnot.rotation.y += 0.02;
+
       particlesMesh.rotation.y += 0.001;
 
       renderer.render(scene, camera);
@@ -277,541 +149,331 @@ const HybridDeveloperDashboard: React.FC = () => {
     };
   }, []);
 
-  // Initialize Omniverse collaboration scene
+  // Fetch DGX metrics
   useEffect(() => {
-    if (!omniverseRef.current) return;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: omniverseRef.current });
-
-    renderer.setSize(600, 400);
-    renderer.setClearColor(0x1a1a2e);
-
-    // Create collaborative workspace visualization
-    const boxGeometry = new THREE.BoxGeometry();
-    const materials = [
-      new THREE.MeshBasicMaterial({ color: 0xff6b6b }),
-      new THREE.MeshBasicMaterial({ color: 0x4ecdc4 }),
-      new THREE.MeshBasicMaterial({ color: 0x45b7d1 }),
-      new THREE.MeshBasicMaterial({ color: 0xf9ca24 }),
-      new THREE.MeshBasicMaterial({ color: 0x6c5ce7 }),
-      new THREE.MeshBasicMaterial({ color: 0xa29bfe })
-    ];
-
-    for(let i = 0; i < 10; i++) {
-      const cube = new THREE.Mesh(boxGeometry, materials[i % materials.length]);
-      cube.position.x = (Math.random() - 0.5) * 10;
-      cube.position.y = (Math.random() - 0.5) * 10;
-      cube.position.z = (Math.random() - 0.5) * 10;
-      scene.add(cube);
-    }
-
-    camera.position.z = 15;
-
-    const animate = () => {
-      requestAnimationFrame(animate);
-      scene.children.forEach((child, index) => {
-        if (child instanceof THREE.Mesh) {
-          child.rotation.x += 0.01 * (index + 1);
-          child.rotation.y += 0.01 * (index + 1);
-        }
-      });
-      renderer.render(scene, camera);
+    const fetchMetrics = async () => {
+      try {
+        const metrics = await nvidiaIntegration.getResourceMetrics();
+        setDgxMetrics(metrics);
+      } catch (error) {
+        console.error('Failed to fetch DGX metrics:', error);
+      }
     };
 
-    animate();
-  }, []);
-
-  // Simulate real-time updates
-  useEffect(() => {
-    setNvidiaServices(nvidiaCloudData);
-    setStreamlitApps(streamlitApplications);
-
-    const interval = setInterval(() => {
-      setSystemMetrics(prev => ({
-        gpu: Math.max(20, Math.min(100, prev.gpu + (Math.random() - 0.5) * 10)),
-        cpu: Math.max(10, Math.min(100, prev.cpu + (Math.random() - 0.5) * 8)),
-        ram: Math.max(30, Math.min(100, prev.ram + (Math.random() - 0.5) * 6)),
-        vram: Math.max(40, Math.min(100, prev.vram + (Math.random() - 0.5) * 12)),
-        temperature: Math.max(45, Math.min(85, prev.temperature + (Math.random() - 0.5) * 4)),
-        power: Math.max(50, Math.min(100, prev.power + (Math.random() - 0.5) * 5)),
-        rtxCores: Math.max(20, Math.min(100, prev.rtxCores + (Math.random() - 0.5) * 8)),
-        tensorCores: Math.max(40, Math.min(100, prev.tensorCores + (Math.random() - 0.5) * 6)),
-        dlssPerformance: Math.max(100, Math.min(200, prev.dlssPerformance + (Math.random() - 0.5) * 15)),
-        rayTracingOps: Math.max(50, Math.min(100, prev.rayTracingOps + (Math.random() - 0.5) * 10))
-      }));
-    }, 2000);
-
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const MetricCard: React.FC<{
-    title: string;
-    value: number;
-    unit: string;
-    icon: string;
-    color: string;
-    trend: number;
-  }> = ({ title, value, unit, icon, color, trend }) => (
-    <Card className="bg-gray-800 border-gray-700 hover:border-blue-500 transition-all">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl">{icon}</span>
-          <div className={`text-sm ${trend > 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {trend > 0 ? '↗' : '↘'} {Math.abs(trend)}%
-          </div>
-        </div>
-        <div className="text-2xl font-bold text-white mb-1">{value}{unit}</div>
-        <div className="text-sm text-gray-400">{title}</div>
-      </CardContent>
-    </Card>
-  );
+  // Deploy AI models to DGX Cloud
+  const deployAIModels = async () => {
+    try {
+      const result = await nvidiaIntegration.deployHybridAIModels();
+      if (result.success) {
+        setDeploymentStatus(prev => ({
+          ...prev,
+          dgxCloud: 'Deployed',
+          tensorRT: 'Active'
+        }));
+      }
+    } catch (error) {
+      console.error('Deployment failed:', error);
+    }
+  };
 
-  const NvidiaServiceCard: React.FC<{
-    service: NvidiaCloudService;
-  }> = ({ service }) => (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>{icons.cloud}</span>
-            <span>{service.name}</span>
-          </CardTitle>
-          <Badge 
-            variant={service.status === 'active' ? 'default' : 'secondary'}
-            className={
-              service.status === 'active' ? 'bg-green-600' : 
-              service.status === 'connecting' ? 'bg-yellow-600' : 'bg-red-600'
-            }
-          >
-            {service.status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-400">Performance</span>
-            <span className="text-sm text-white">{service.performance}%</span>
-          </div>
-          <Progress value={service.performance} className="h-2" />
-        </div>
-        <div className="space-y-1">
-          {service.features.map((feature, index) => (
-            <div key={index} className="text-xs text-gray-300 flex items-center space-x-1">
-              <span className="text-green-400">•</span>
-              <span>{feature}</span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
+  // Optimize with TensorRT
+  const optimizeWithTensorRT = async () => {
+    try {
+      const result = await nvidiaIntegration.optimizeWithTensorRT();
+      if (result.success) {
+        setDeploymentStatus(prev => ({
+          ...prev,
+          tensorRT: 'Optimized'
+        }));
+      }
+    } catch (error) {
+      console.error('TensorRT optimization failed:', error);
+    }
+  };
 
-  const StreamlitAppCard: React.FC<{
-    app: StreamlitApp;
-  }> = ({ app }) => (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>{icons.streamlit}</span>
-            <span>{app.name}</span>
-          </CardTitle>
-          <Badge 
-            variant={app.status === 'running' ? 'default' : 'secondary'}
-            className={app.status === 'running' ? 'bg-green-600' : 'bg-red-600'}
-          >
-            {app.status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">{app.metrics.users}</div>
-            <div className="text-xs text-gray-400">Users</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">{app.metrics.requests.toLocaleString()}</div>
-            <div className="text-xs text-gray-400">Requests</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-white">{app.metrics.uptime}</div>
-            <div className="text-xs text-gray-400">Uptime</div>
-          </div>
-        </div>
-        <Button className="w-full bg-purple-600 hover:bg-purple-500" size="sm">
-          Open App
-        </Button>
-      </CardContent>
-    </Card>
-  );
+  // Initialize Omniverse
+  const initializeOmniverse = async () => {
+    try {
+      const result = await nvidiaIntegration.initializeOmniverse();
+      if (result.success) {
+        setDeploymentStatus(prev => ({
+          ...prev,
+          omniverse: 'Active'
+        }));
+      }
+    } catch (error) {
+      console.error('Omniverse initialization failed:', error);
+    }
+  };
 
-  const renderAdvancedOverview = () => (
-    <div className="space-y-6">
-      {/* Enhanced System Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard
-          title="RTX Cores"
-          value={systemMetrics.rtxCores}
-          unit="%"
-          icon={icons.rtx}
-          color="text-green-400"
-          trend={2.3}
-        />
-        <MetricCard
-          title="Tensor Cores"
-          value={systemMetrics.tensorCores}
-          unit="%"
-          icon={icons.neural}
-          color="text-purple-400"
-          trend={-1.2}
-        />
-        <MetricCard
-          title="DLSS Performance"
-          value={systemMetrics.dlssPerformance}
-          unit="fps"
-          icon={icons.zap}
-          color="text-yellow-400"
-          trend={8.5}
-        />
-        <MetricCard
-          title="Ray Tracing Ops"
-          value={systemMetrics.rayTracingOps}
-          unit="%"
-          icon={icons.quantum}
-          color="text-cyan-400"
-          trend={-0.8}
-        />
-      </div>
-
-      {/* Enhanced Performance Chart */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white">Advanced Rendering Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={renderingData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="name" stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1F2937', 
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#fff'
-                }} 
-              />
-              <Area type="monotone" dataKey="dlss" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.8} />
-              <Area type="monotone" dataKey="nvidia" stackId="1" stroke="#4facfe" fill="#4facfe" fillOpacity={0.6} />
-              <Area type="monotone" dataKey="rtx" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
-              <Area type="monotone" dataKey="unreal" stackId="1" stroke="#f093fb" fill="#f093fb" fillOpacity={0.4} />
-              <Area type="monotone" dataKey="unity" stackId="1" stroke="#667eea" fill="#667eea" fillOpacity={0.4} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderAdvancedNvidiaCloud = () => (
-    <div className="space-y-6">
-      {/* Nvidia Cloud Services */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {nvidiaServices.map((service, index) => (
-          <NvidiaServiceCard key={index} service={service} />
-        ))}
-      </div>
-
-      {/* Advanced Holographic Display */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>{icons.hologram}</span>
-            <span>Advanced Holographic Display System</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <canvas 
-                ref={canvasRef}
-                width={800}
-                height={600}
-                className="w-full border border-gray-600 rounded-lg bg-black"
-              />
-              <p className="text-sm text-gray-400 mt-2">
-                Real-time holographic visualization with light field generation
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="bg-gray-900 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-3">Display Configuration</h4>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Type:</span>
-                    <span className="text-sm text-white">{holographicConfig.displayType}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Resolution:</span>
-                    <span className="text-sm text-white">{holographicConfig.resolution}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Refresh Rate:</span>
-                    <span className="text-sm text-white">{holographicConfig.refreshRate} Hz</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-400">Field of View:</span>
-                    <span className="text-sm text-white">{holographicConfig.fieldOfView}°</span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-900 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-3">Light Field Processing</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Density</span>
-                    <span className="text-sm text-green-400">{holographicConfig.lightFieldDensity}%</span>
-                  </div>
-                  <Progress value={holographicConfig.lightFieldDensity} className="h-2" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Neural Rendering</span>
-                    <span className="text-sm text-blue-400">Active</span>
-                  </div>
-                  <Progress value={88} className="h-2" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Omniverse Collaboration */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>{icons.omniverse}</span>
-            <span>Omniverse Collaborative Workspace</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <canvas 
-                ref={omniverseRef}
-                width={600}
-                height={400}
-                className="w-full border border-gray-600 rounded-lg"
-              />
-              <p className="text-sm text-gray-400 mt-2">
-                Real-time USD scene collaboration
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="bg-gray-900 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-2">Active Collaborators</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-sm text-white">Designer (Unity)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-sm text-white">Developer (Unreal)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-sm text-white">Artist (Blender)</span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-900 rounded-lg p-4">
-                <h4 className="font-medium text-white mb-2">USD Pipeline Status</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Sync Status</span>
-                    <span className="text-sm text-green-400">Real-time</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Scene Complexity</span>
-                    <span className="text-sm text-yellow-400">Medium</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderStreamlitIntegration = () => (
-    <div className="space-y-6">
-      {/* Streamlit Applications */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {streamlitApps.map((app, index) => (
-          <StreamlitAppCard key={index} app={app} />
-        ))}
-      </div>
-
-      {/* Streamlit Dashboard Integration */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>{icons.streamlit}</span>
-            <span>Integrated Streamlit Dashboard</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-gray-900 rounded-lg p-6 h-96 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-6xl mb-4">{icons.streamlit}</div>
-              <h3 className="text-xl font-bold text-white mb-2">Streamlit Integration Active</h3>
-              <p className="text-gray-400 mb-4">Advanced ML model deployment and visualization</p>
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="bg-gray-800 rounded-lg p-3">
-                  <div className="text-lg font-bold text-white">12</div>
-                  <div className="text-sm text-gray-400">Active Apps</div>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-3">
-                  <div className="text-lg font-bold text-white">1.2K</div>
-                  <div className="text-sm text-gray-400">Daily Users</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Advanced Features */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white">ML Pipeline Integration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-gray-900 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white font-medium">Model Training</span>
-                <Badge className="bg-green-600">Running</Badge>
-              </div>
-              <Progress value={73} className="h-2 mb-2" />
-              <div className="text-sm text-gray-400">Epoch 73/100 - Loss: 0.023</div>
-            </div>
-            <div className="bg-gray-900 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white font-medium">Data Processing</span>
-                <Badge className="bg-blue-600">Active</Badge>
-              </div>
-              <Progress value={91} className="h-2 mb-2" />
-              <div className="text-sm text-gray-400">Processing 15.2M records</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white">Real-time Analytics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={renderingData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    border: '1px solid #374151',
-                    borderRadius: '8px',
-                    color: '#fff'
-                  }} 
-                />
-                <Line type="monotone" dataKey="unity" stroke="#667eea" strokeWidth={2} />
-                <Line type="monotone" dataKey="unreal" stroke="#f093fb" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>```text
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'deployed':
+      case 'running':
+      case 'active':
+      case 'Active':
+      case 'Optimized':
+        return 'bg-green-500';
+      case 'building':
+      case 'Optimizing':
+      case 'Initializing':
+        return 'bg-yellow-500';
+      case 'error':
+        return 'bg-red-500';
+      default:
+        return 'bg-blue-500';
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Enhanced Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-lg animate-pulse"></div>
-            <div>
-              <h1 className="text-2xl font-bold">Advanced Hybrid Developer Dashboard</h1>
-              <p className="text-gray-400">Unity + Unreal + Nvidia Cloud + Streamlit + Holographic Display</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Badge className="bg-green-600 animate-pulse">
-              {icons.neural} AI Enhanced
-            </Badge>
-            <Badge className="bg-purple-600">
-              {icons.hologram} Holographic Ready
-            </Badge>
-            <Button
-              onClick={() => setIsRendering(!isRendering)}
-              className={isRendering ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'}
-            >
-              {isRendering ? icons.pause : icons.play} {isRendering ? 'Pause' : 'Start'} Advanced Rendering
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            HYBRID Developer Dashboard
+          </h1>
+          <p className="text-xl text-gray-300">
+            NVIDIA DGX Cloud Integration + NGC Catalog + HYBRID Blockchain
+          </p>
+          <div className="flex justify-center items-center gap-4 flex-wrap">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500">DGX CLOUD</Badge>
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500">TENSORRT</Badge>
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500">TRITON</Badge>
+            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500">RAPIDS</Badge>
+            <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500">OMNIVERSE</Badge>
           </div>
         </div>
-      </header>
 
-      {/* Enhanced Main Content */}
-      <div className="container mx-auto p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
-              {icons.activity} Advanced Overview
-            </TabsTrigger>
-            <TabsTrigger value="nvidia" className="data-[state=active]:bg-green-600">
-              {icons.hologram} Nvidia Cloud
-            </TabsTrigger>
-            <TabsTrigger value="streamlit" className="data-[state=active]:bg-purple-600">
-              {icons.streamlit} Streamlit
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-600">
-              {icons.trending} Analytics
-            </TabsTrigger>
+        {/* DGX Cloud Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <Card className="bg-slate-800/50 border-green-500/30">
+            <CardContent className="p-4 text-center">
+              <Cpu className="w-6 h-6 mx-auto mb-2 text-green-400" />
+              <div className="text-2xl font-bold text-green-400">{dgxMetrics.gpuUtilization}%</div>
+              <div className="text-sm text-gray-400">GPU Utilization</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-blue-500/30">
+            <CardContent className="p-4 text-center">
+              <Database className="w-6 h-6 mx-auto mb-2 text-blue-400" />
+              <div className="text-2xl font-bold text-blue-400">{dgxMetrics.memoryUsage}%</div>
+              <div className="text-sm text-gray-400">Memory Usage</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-purple-500/30">
+            <CardContent className="p-4 text-center">
+              <Wifi className="w-6 h-6 mx-auto mb-2 text-purple-400" />
+              <div className="text-2xl font-bold text-purple-400">{dgxMetrics.networkThroughput}</div>
+              <div className="text-sm text-gray-400">Network</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-orange-500/30">
+            <CardContent className="p-4 text-center">
+              <Layers className="w-6 h-6 mx-auto mb-2 text-orange-400" />
+              <div className="text-2xl font-bold text-orange-400">{dgxMetrics.activeInstances}</div>
+              <div className="text-sm text-gray-400">Active Instances</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-red-500/30">
+            <CardContent className="p-4 text-center">
+              <Coins className="w-6 h-6 mx-auto mb-2 text-red-400" />
+              <div className="text-2xl font-bold text-red-400">{dgxMetrics.cost}</div>
+              <div className="text-sm text-gray-400">Hourly Cost</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="dgx-cloud" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="dgx-cloud">DGX Cloud</TabsTrigger>
+            <TabsTrigger value="ngc-catalog">NGC Catalog</TabsTrigger>
+            <TabsTrigger value="holographic">Holographic</TabsTrigger>
+            <TabsTrigger value="hybrid-metrics">HYBRID Metrics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
-            {renderAdvancedOverview()}
-          </TabsContent>
-
-          <TabsContent value="nvidia" className="mt-6">
-            {renderAdvancedNvidiaCloud()}
-          </TabsContent>
-
-          <TabsContent value="streamlit" className="mt-6">
-            {renderStreamlitIntegration()}
-          </TabsContent>
-
-          <TabsContent value="analytics" className="mt-6">
-            <div className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
+          <TabsContent value="dgx-cloud" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border-green-500/30">
                 <CardHeader>
-                  <CardTitle className="text-white">Advanced Analytics Dashboard</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Rocket className="w-5 h-5 text-green-400" />
+                    DGX Cloud Deployment
+                  </CardTitle>
+                  <CardDescription>
+                    Deploy HYBRID AI models to NVIDIA DGX Cloud
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4">{icons.ai}</div>
-                    <h3 className="text-xl font-bold text-white mb-2">AI-Powered Analytics</h3>
-                    <p className="text-gray-400">Real-time performance insights across all platforms</p>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">TensorRT</div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${getStatusColor(deploymentStatus.tensorRT)}`} />
+                        <span className="text-sm">{deploymentStatus.tensorRT}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">Triton</div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${getStatusColor(deploymentStatus.triton)}`} />
+                        <span className="text-sm">{deploymentStatus.triton}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">RAPIDS</div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${getStatusColor(deploymentStatus.rapids)}`} />
+                        <span className="text-sm">{deploymentStatus.rapids}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">Omniverse</div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${getStatusColor(deploymentStatus.omniverse)}`} />
+                        <span className="text-sm">{deploymentStatus.omniverse}</span>
+                      </div>
+                    </div>
                   </div>
+                  <div className="flex gap-2">
+                    <Button onClick={deployAIModels} className="flex-1 bg-green-600 hover:bg-green-700">
+                      <Rocket className="w-4 h-4 mr-2" />
+                      Deploy AI Models
+                    </Button>
+                    <Button onClick={optimizeWithTensorRT} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                      <Zap className="w-4 h-4 mr-2" />
+                      Optimize TensorRT
+                    </Button>
+                  </div>
+                  <Button onClick={initializeOmniverse} className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Globe className="w-4 h-4 mr-2" />
+                    Initialize Omniverse
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-blue-500/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-400" />
+                    Resource Monitoring
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>GPU Utilization</span>
+                      <span>{dgxMetrics.gpuUtilization}%</span>
+                    </div>
+                    <Progress value={dgxMetrics.gpuUtilization} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Memory Usage</span>
+                      <span>{dgxMetrics.memoryUsage}%</span>
+                    </div>
+                    <Progress value={dgxMetrics.memoryUsage} className="h-2" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-slate-700/50 rounded p-2">
+                      <div className="text-gray-400">Network</div>
+                      <div className="font-bold">{dgxMetrics.networkThroughput}</div>
+                    </div>
+                    <div className="bg-slate-700/50 rounded p-2">
+                      <div className="text-gray-400">Cost</div>
+                      <div className="font-bold">{dgxMetrics.cost}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="ngc-catalog" className="space-y-6">
+            <Card className="bg-slate-800/50 border-purple-500/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bot className="w-5 h-5 text-purple-400" />
+                  NGC Catalog Integration
+                </CardTitle>
+                <CardDescription>
+                  NVIDIA GPU Cloud catalog items deployed for HYBRID
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {ngcCatalog.map((item, index) => (
+                    <div key={index} className="bg-slate-700/50 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold">{item.name}</h3>
+                        <Badge className={`${getStatusColor(item.status)} text-white`}>
+                          {item.status}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-400 mb-2">{item.category}</div>
+                      <div className="flex justify-between text-xs">
+                        <span>FPS: {item.performance.fps}</span>
+                        <span>Memory: {item.performance.memory}GB</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="holographic" className="space-y-6">
+            <Card className="bg-slate-800/50 border-cyan-500/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="w-5 h-5 text-cyan-400" />
+                  Holographic Blockchain Visualization
+                </CardTitle>
+                <CardDescription>
+                  Real-time 3D representation powered by Omniverse
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-black/20 rounded-lg">
+                  <canvas ref={canvasRef} className="w-full h-96" />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="hybrid-metrics" className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="bg-slate-800/50 border-green-500/30">
+                <CardContent className="p-4 text-center">
+                  <Coins className="w-6 h-6 mx-auto mb-2 text-green-400" />
+                  <div className="text-2xl font-bold text-green-400">{hybridMetrics.coinPrice}</div>
+                  <div className="text-sm text-gray-400">HYBRID Price</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-800/50 border-blue-500/30">
+                <CardContent className="p-4 text-center">
+                  <TrendingUp className="w-6 h-6 mx-auto mb-2 text-blue-400" />
+                  <div className="text-2xl font-bold text-blue-400">$1T</div>
+                  <div className="text-sm text-gray-400">Market Cap</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-800/50 border-purple-500/30">
+                <CardContent className="p-4 text-center">
+                  <Activity className="w-6 h-6 mx-auto mb-2 text-purple-400" />
+                  <div className="text-2xl font-bold text-purple-400">{hybridMetrics.tps}</div>
+                  <div className="text-sm text-gray-400">TPS</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-800/50 border-orange-500/30">
+                <CardContent className="p-4 text-center">
+                  <Users className="w-6 h-6 mx-auto mb-2 text-orange-400" />
+                  <div className="text-2xl font-bold text-orange-400">{hybridMetrics.gaslessUsers}</div>
+                  <div className="text-sm text-gray-400">Gasless Users</div>
                 </CardContent>
               </Card>
             </div>
@@ -820,6 +482,4 @@ const HybridDeveloperDashboard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default HybridDeveloperDashboard;
+}

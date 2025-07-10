@@ -5,7 +5,7 @@ run = "npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "HYBRID-Super-Test-System"
+runButton = "HYBRID-NVIDIA-System"
 
 [[workflows.workflow]]
 name = "Spiral-System"
@@ -168,6 +168,32 @@ args = "tsx server/index.ts"
 [[workflows.workflow]]
 name = "HYBRID-Super-Test-System"
 author = 44839553
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx next dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "HYBRID-NVIDIA-System"
+author = 44847312
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx next dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "HYBRID-NVIDIA-System"
+author = 44847312
 mode = "parallel"
 
 [[workflows.workflow.tasks]]
