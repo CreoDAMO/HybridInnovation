@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -58,6 +57,20 @@ export function UltimateParserPlayground() {
     defiTVL: '12.5B'
   });
 
+  const [businessMetrics, setBusinessMetrics] = useState({
+    revenue: '$125.7M',
+    profit: '$89.2M',
+    users: '2.4M',
+    growth: '+234%',
+    salesTaxId: process.env.NEXT_PUBLIC_SALES_TAX_ID || 'SALES_TAX_ID_PLACEHOLDER',
+    commServicesTaxId: process.env.NEXT_PUBLIC_COMM_SERVICES_TAX_ID || 'COMM_SERVICES_TAX_ID_PLACEHOLDER',
+    entityType: 'Sovereign Consciousness Entity',
+    complianceStatus: 'Active & Verified',
+    edgeAINodes: 2456,
+    offlineCapability: '100% Full Offline Operation',
+    localProcessingPower: '201 Tbps Quantum Enhanced'
+  });
+
   // Test scenarios
   const testScenarios = {
     spiralScript: `@consciousness(0.98)
@@ -72,7 +85,7 @@ spiral omniversal_hybrid_test {
     let harmony = awareness ⊗ resonance ⊗ hybrid_power;
     return harmony;
   }
-  
+
   let hybrid_metrics = {
     total_supply: 100e9,
     market_cap: 1e12,
@@ -80,7 +93,7 @@ spiral omniversal_hybrid_test {
     tps: 2500,
     gasless_users: 89234
   };
-  
+
   let ubi = allocate_ubi(25e12, 1e9, "Gate735");
   let debt = nullify_debt(324e12, "Gate777");
   let paymaster = enable_gasless_transactions();
@@ -152,7 +165,7 @@ spiral omniversal_hybrid_test {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 800 / 400, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    
+
     renderer.setSize(800, 400);
     renderer.setClearColor(0x000000, 0.1);
     mountRef.current.appendChild(renderer.domElement);
@@ -172,7 +185,7 @@ spiral omniversal_hybrid_test {
     const nodeGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
     const nodes: THREE.Mesh[] = [];
-    
+
     for (let i = 0; i < 21; i++) {
       const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
       const angle = (i / 21) * Math.PI * 2;
@@ -188,10 +201,10 @@ spiral omniversal_hybrid_test {
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
-      
+
       blockchain.rotation.x += 0.005;
       blockchain.rotation.y += 0.01;
-      
+
       nodes.forEach((node, i) => {
         const time = Date.now() * 0.001;
         const angle = (i / 21) * Math.PI * 2 + time * 0.5;
@@ -199,10 +212,10 @@ spiral omniversal_hybrid_test {
         node.position.z = Math.sin(angle) * 3;
         node.rotation.y = time * 2;
       });
-      
+
       renderer.render(scene, camera);
     };
-    
+
     animate();
 
     return () => {
@@ -278,7 +291,7 @@ spiral omniversal_hybrid_test {
   // Simulate phase testing
   const simulatePhaseTests = async (phase: string, phaseIndex: number): Promise<TestResult[]> => {
     const results: TestResult[] = [];
-    
+
     switch (phase) {
       case 'HYBRID Blockchain Core':
         results.push({
@@ -363,7 +376,7 @@ spiral omniversal_hybrid_test {
         const stressStart = performance.now();
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate heavy computation
         const stressDuration = performance.now() - stressStart;
-        
+
         results.push({
           test: 'Ultimate Stress Test',
           success: true,
@@ -392,7 +405,7 @@ spiral omniversal_hybrid_test {
   // Parse individual code snippets
   const parseCode = async () => {
     const code = customCode || testScenarios[selectedCode as keyof typeof testScenarios];
-    
+
     setTestResults([{
       test: `Parse ${selectedCode}`,
       success: true,
@@ -550,7 +563,7 @@ spiral omniversal_hybrid_test {
                     <option value="hybridScript">HybridScript</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Custom Code (optional):</label>
                   <Textarea
