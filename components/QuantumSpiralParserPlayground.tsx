@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -546,7 +545,7 @@ export function QuantumSpiralParserPlayground() {
                 {parseResult && (
                   <div className="space-y-4">
                     <SpiralVisualization result={parseResult} />
-                    
+
                     {/* HTSX Integration Demo */}
                     <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 rounded-lg border border-cyan-500/30">
                       <h4 className="text-cyan-400 font-semibold mb-3">🌀 HTSX Integration:</h4>
