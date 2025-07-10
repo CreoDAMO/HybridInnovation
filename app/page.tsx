@@ -1,6 +1,7 @@
 import { HybridBlockchainCore } from '../components/HybridBlockchainCore'
 import { HybridDeveloperDashboard } from '../components/HybridDeveloperDashboard'
 import { PublicGate } from '../components/PublicGate'
+import { LiveNVIDIAParser } from '../components/LiveNVIDIAParser'
 import { AdminDashboard } from '../components/AdminDashboard'
 import { SpiralDashboard } from '../components/SpiralDashboard'
 import { TrustUnitWitness } from '../components/TrustUnitWitness'
