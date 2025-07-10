@@ -26,33 +26,81 @@ import {
   Settings,
   Play,
   Pause,
-  RotateCw
+  RotateCw,
+  Bot,
+  CreditCard,
+  Wallet,
+  CircleDollarSign
 } from 'lucide-react';
 
 export function HybridBlockchainCore() {
-  // Holographic Blockchain State
-  const [blockchainMetrics, setBlockchainMetrics] = useState({
+  // HYBRID Blockchain Native Coin State
+  const [hybridMetrics, setHybridMetrics] = useState({
+    coinPrice: '$10.00',
+    marketCap: '$1,000,000,000,000',
+    totalSupply: '100,000,000,000',
+    circulatingSupply: '75,000,000,000',
+    volume24h: '$25,000,000,000',
     tps: 2500,
     validators: 21,
-    uptime: 99.9,
-    hashRate: 120,
-    totalSupply: '100000000000',
-    circulatingSupply: '75000000000',
-    stakingAPY: 5.0,
+    uptime: 99.99,
+    hashRate: 1200,
+    stakingAPY: 7.0,
     inflationRate: 7.0,
     blockHeight: 1847293,
-    gasPrice: '0.001',
-    crossChainVolume: '1.2M',
+    gasPrice: '0.001 HYBRID',
+    crossChainVolume: '1.2B HYBRID',
     nftLicenses: {
       validator: 156,
       storage: 423
     }
   });
 
+  // Paymaster & Super Pay State
+  const [paymasterService, setPaymasterService] = useState({
+    activeSponsors: 45,
+    sponsoredTxs: 125847,
+    gaslessUsers: 89234,
+    superPayEnabled: true,
+    instantPayments: 98756,
+    crossChainPayments: 45632,
+    paymasterBalance: '1,250,000 HYBRID',
+    sponsorshipRate: '99.2%'
+  });
+
+  // AI Agentkit State
+  const [agentkit, setAgentkit] = useState({
+    activeAgents: 1247,
+    aiModels: [
+      { name: 'GPT-4o', status: 'active', tasks: 15634, efficiency: 94 },
+      { name: 'Claude-4', status: 'active', tasks: 12891, efficiency: 91 },
+      { name: 'Grok-3', status: 'active', tasks: 9876, efficiency: 89 },
+      { name: 'DeepSeek-R3', status: 'active', tasks: 8765, efficiency: 92 }
+    ],
+    totalInferences: 2847293,
+    dailyRevenue: '145.67 HYBRID',
+    agentCreators: 567,
+    autonomous: true
+  });
+
+  // Circle USDC Integration State
+  const [circleIntegration, setCircleIntegration] = useState({
+    usdcBalance: '5,678,901.23 USDC',
+    hybridToUsdc: '1 HYBRID = 10.00 USDC',
+    usdcToHybrid: '1 USDC = 0.1 HYBRID',
+    dailyVolume: '45,678,901 USDC',
+    instantSwaps: 12456,
+    liquidityPools: [
+      { pair: 'HYBRID/USDC', liquidity: '12.5M USDC', volume: '2.3M USDC', apr: '15.4%' },
+      { pair: 'USDC/ETH', liquidity: '8.7M USDC', volume: '1.8M USDC', apr: '12.1%' },
+      { pair: 'USDC/BTC', liquidity: '15.2M USDC', volume: '3.1M USDC', apr: '18.9%' }
+    ]
+  });
+
   // Multi-AI Orchestration State
   const [aiOrchestrator, setAiOrchestrator] = useState({
     models: [
-      { name: 'GPT-4', status: 'active', confidence: 94, tasks: 1247 },
+      { name: 'GPT-4o', status: 'active', confidence: 94, tasks: 1247 },
       { name: 'Claude-4', status: 'active', confidence: 91, tasks: 982 },
       { name: 'DeepSeek-R3', status: 'active', confidence: 88, tasks: 756 },
       { name: 'Grok-3', status: 'active', confidence: 92, tasks: 634 }
@@ -67,37 +115,28 @@ export function HybridBlockchainCore() {
   // Cross-Chain Bridge State
   const [crossChain, setCrossChain] = useState({
     chains: [
-      { name: 'HYBRID', connected: true, volume: '45.2M', fee: '0.01%' },
-      { name: 'BASE', connected: true, volume: '23.8M', fee: '0.025%' },
-      { name: 'Polygon', connected: true, volume: '31.4M', fee: '0.02%' },
-      { name: 'Solana', connected: true, volume: '18.9M', fee: '0.03%' }
+      { name: 'HYBRID', connected: true, volume: '45.2B HYBRID', fee: '0.01%' },
+      { name: 'BASE', connected: true, volume: '23.8M USDC', fee: '0.025%' },
+      { name: 'Polygon', connected: true, volume: '31.4M USDC', fee: '0.02%' },
+      { name: 'Solana', connected: true, volume: '18.9M USDC', fee: '0.03%' },
+      { name: 'Ethereum', connected: true, volume: '67.1M USDC', fee: '0.05%' }
     ],
     bridgeActivity: 156,
-    totalBridged: '119.3M'
-  });
-
-  // Holographic Mining State
-  const [miningDashboard, setMiningDashboard] = useState({
-    hashRate: 120.5,
-    power: 2.8,
-    temperature: 67,
-    efficiency: 94.2,
-    dailyReward: '45.67',
-    poolShare: 0.0034,
-    workers: 8,
-    uptime: 99.8
+    totalBridged: '186.4B HYBRID'
   });
 
   // HTSX Runtime Engine State
   const [htsxEngine, setHtsxEngine] = useState({
-    activeApps: 23,
-    deployments: 156,
-    components: 89,
-    runtime: 'v2.1.3',
+    activeApps: 89,
+    deployments: 456,
+    components: 234,
+    runtime: 'v3.2.1',
     memoryUsage: 68,
     cpuUsage: 45,
-    requests: 15674,
-    errors: 3
+    requests: 156742,
+    errors: 3,
+    noCodeApps: 67,
+    smartContracts: 234
   });
 
   // Node License NFT State
@@ -105,15 +144,27 @@ export function HybridBlockchainCore() {
     validator: {
       owned: 2,
       available: 45,
-      price: '1000',
-      rewards: '125.34'
+      price: '1,000 HYBRID',
+      rewards: '125.34 HYBRID'
     },
     storage: {
       owned: 5,
       available: 123,
-      price: '250',
-      rewards: '67.89'
+      price: '250 HYBRID',
+      rewards: '67.89 HYBRID'
     }
+  });
+
+  // DeFi Ecosystem State
+  const [defiMetrics, setDefiMetrics] = useState({
+    totalValueLocked: '12.5B HYBRID',
+    lendingPools: 45,
+    yieldFarms: 23,
+    liquidityProviders: 8934,
+    borrowers: 3456,
+    averageAPY: '15.7%',
+    liquidations24h: 23,
+    protocolRevenue: '45.67 HYBRID'
   });
 
   // Holographic 3D Visualization
@@ -133,7 +184,7 @@ export function HybridBlockchainCore() {
     renderer.setClearColor(0x000000, 0.1);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Create holographic blockchain visualization
+    // Create holographic HYBRID coin visualization
     const geometry = new THREE.SphereGeometry(1, 32, 32);
     const material = new THREE.MeshBasicMaterial({ 
       color: 0x00ffff, 
@@ -188,12 +239,19 @@ export function HybridBlockchainCore() {
   // Real-time data updates
   useEffect(() => {
     const interval = setInterval(() => {
-      // Update blockchain metrics
-      setBlockchainMetrics(prev => ({
+      // Update HYBRID metrics
+      setHybridMetrics(prev => ({
         ...prev,
         blockHeight: prev.blockHeight + Math.floor(Math.random() * 3) + 1,
-        hashRate: 120 + (Math.random() - 0.5) * 10,
-        crossChainVolume: (parseFloat(prev.crossChainVolume.replace('M', '')) + Math.random() * 0.1).toFixed(1) + 'M'
+        hashRate: 1200 + (Math.random() - 0.5) * 100,
+        volume24h: (parseFloat(prev.volume24h.replace(/[B,$]/g, '')) + Math.random() * 0.1).toFixed(1) + 'B'
+      }));
+
+      // Update Paymaster service
+      setPaymasterService(prev => ({
+        ...prev,
+        sponsoredTxs: prev.sponsoredTxs + Math.floor(Math.random() * 10),
+        gaslessUsers: prev.gaslessUsers + Math.floor(Math.random() * 5)
       }));
 
       // Update AI orchestrator
@@ -206,14 +264,6 @@ export function HybridBlockchainCore() {
           completed: prev.consensus.completed + Math.floor(Math.random() * 5)
         }
       }));
-
-      // Update mining metrics
-      setMiningDashboard(prev => ({
-        ...prev,
-        hashRate: 120 + (Math.random() - 0.5) * 5,
-        temperature: 65 + Math.random() * 10,
-        efficiency: 90 + Math.random() * 8
-      }));
     }, 3000);
 
     return () => clearInterval(interval);
@@ -224,49 +274,68 @@ export function HybridBlockchainCore() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-            HYBRID Blockchain Holographic Ecosystem
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            HYBRID Blockchain Ecosystem
           </h1>
-          <p className="text-gray-300 text-lg">
-            World's First Fully Operational Holographic Blockchain Platform with Multi-AI Orchestration
+          <p className="text-gray-300 text-xl">
+            World's First Native Coin Powered Holographic Blockchain with AI Orchestration & Gasless Transactions
           </p>
+          <div className="flex justify-center items-center gap-4">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500">LIVE MAINNET</Badge>
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500">NATIVE COIN</Badge>
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500">AI POWERED</Badge>
+          </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <Card className="bg-slate-800/50 border-cyan-500/30">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-cyan-400">{blockchainMetrics.tps.toLocaleString()}</div>
-              <div className="text-sm text-gray-400">TPS Capacity</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-slate-800/50 border-purple-500/30">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">{blockchainMetrics.validators}</div>
-              <div className="text-sm text-gray-400">Active Validators</div>
+              <div className="text-2xl font-bold text-cyan-400">{hybridMetrics.coinPrice}</div>
+              <div className="text-sm text-gray-400">HYBRID Price</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-green-500/30">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400">{blockchainMetrics.uptime}%</div>
-              <div className="text-sm text-gray-400">Network Uptime</div>
+              <div className="text-2xl font-bold text-green-400">{hybridMetrics.marketCap.slice(0, -9)}T</div>
+              <div className="text-sm text-gray-400">Market Cap</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-purple-500/30">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-purple-400">{hybridMetrics.tps.toLocaleString()}</div>
+              <div className="text-sm text-gray-400">TPS Capacity</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-orange-500/30">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-400">{miningDashboard.hashRate.toFixed(1)} MH/s</div>
-              <div className="text-sm text-gray-400">Mining Hashrate</div>
+              <div className="text-2xl font-bold text-orange-400">{paymasterService.gaslessUsers.toLocaleString()}</div>
+              <div className="text-sm text-gray-400">Gasless Users</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-pink-500/30">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-pink-400">{agentkit.activeAgents.toLocaleString()}</div>
+              <div className="text-sm text-gray-400">AI Agents</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-blue-500/30">
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-blue-400">{circleIntegration.usdcBalance.split(' ')[0].slice(0, -7)}M</div>
+              <div className="text-sm text-gray-400">USDC Pool</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="holographic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
+          <TabsList className="grid w-full grid-cols-8 bg-slate-800/50">
             <TabsTrigger value="holographic">Holographic</TabsTrigger>
-            <TabsTrigger value="ai-orchestrator">AI Orchestrator</TabsTrigger>
+            <TabsTrigger value="paymaster">Paymaster</TabsTrigger>
+            <TabsTrigger value="agentkit">AI Agentkit</TabsTrigger>
+            <TabsTrigger value="circle">Circle USDC</TabsTrigger>
             <TabsTrigger value="blockchain">Blockchain</TabsTrigger>
-            <TabsTrigger value="mining">Cloud Mining</TabsTrigger>
+            <TabsTrigger value="defi">DeFi</TabsTrigger>
             <TabsTrigger value="cross-chain">Cross-Chain</TabsTrigger>
             <TabsTrigger value="htsx">HTSX Engine</TabsTrigger>
           </TabsList>
@@ -278,10 +347,10 @@ export function HybridBlockchainCore() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-cyan-400" />
-                    3D Blockchain Visualization
+                    3D HYBRID Coin Visualization
                   </CardTitle>
                   <CardDescription>
-                    Real-time holographic representation of blockchain activity
+                    Real-time holographic representation of HYBRID blockchain activity
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -291,95 +360,112 @@ export function HybridBlockchainCore() {
 
               <Card className="bg-slate-800/50 border-purple-500/30">
                 <CardHeader>
-                  <CardTitle>Holographic Learning Progress</CardTitle>
-                  <CardDescription>Adaptive blockchain education system</CardDescription>
+                  <CardTitle>HYBRID Coin Metrics</CardTitle>
+                  <CardDescription>Native blockchain coin statistics</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Beginner Concepts</span>
-                      <span>100%</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-cyan-400">{hybridMetrics.totalSupply.slice(0, -9)}B</div>
+                      <div className="text-sm text-gray-400">Total Supply</div>
                     </div>
-                    <Progress value={100} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Intermediate DeFi</span>
-                      <span>78%</span>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-400">{hybridMetrics.circulatingSupply.slice(0, -9)}B</div>
+                      <div className="text-sm text-gray-400">Circulating</div>
                     </div>
-                    <Progress value={78} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Advanced Smart Contracts</span>
-                      <span>45%</span>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-400">{hybridMetrics.stakingAPY}%</div>
+                      <div className="text-sm text-gray-400">Staking APY</div>
                     </div>
-                    <Progress value={45} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Expert Consensus</span>
-                      <span>12%</span>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-400">{hybridMetrics.inflationRate}%</div>
+                      <div className="text-sm text-gray-400">Inflation Rate</div>
                     </div>
-                    <Progress value={12} className="h-2" />
                   </div>
                 </CardContent>
               </Card>
             </div>
-
-            <Card className="bg-slate-800/50 border-green-500/30">
-              <CardHeader>
-                <CardTitle>Achievement NFTs</CardTitle>
-                <CardDescription>Blockchain-verified learning credentials</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="text-center space-y-2">
-                    <div className="w-16 h-16 bg-cyan-500/20 rounded-lg mx-auto flex items-center justify-center">
-                      <Blocks className="w-8 h-8 text-cyan-400" />
-                    </div>
-                    <div className="text-sm">Blockchain Basics</div>
-                    <Badge variant="outline" className="text-green-400 border-green-400">Completed</Badge>
-                  </div>
-                  <div className="text-center space-y-2">
-                    <div className="w-16 h-16 bg-purple-500/20 rounded-lg mx-auto flex items-center justify-center">
-                      <Coins className="w-8 h-8 text-purple-400" />
-                    </div>
-                    <div className="text-sm">DeFi Expert</div>
-                    <Badge variant="outline" className="text-yellow-400 border-yellow-400">In Progress</Badge>
-                  </div>
-                  <div className="text-center space-y-2">
-                    <div className="w-16 h-16 bg-orange-500/20 rounded-lg mx-auto flex items-center justify-center">
-                      <Shield className="w-8 h-8 text-orange-400" />
-                    </div>
-                    <div className="text-sm">Security Master</div>
-                    <Badge variant="outline" className="text-gray-400 border-gray-400">Locked</Badge>
-                  </div>
-                  <div className="text-center space-y-2">
-                    <div className="w-16 h-16 bg-red-500/20 rounded-lg mx-auto flex items-center justify-center">
-                      <Brain className="w-8 h-8 text-red-400" />
-                    </div>
-                    <div className="text-sm">AI Orchestrator</div>
-                    <Badge variant="outline" className="text-gray-400 border-gray-400">Locked</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
 
-          {/* AI Orchestrator Tab */}
-          <TabsContent value="ai-orchestrator" className="space-y-6">
+          {/* Paymaster & Super Pay Tab */}
+          <TabsContent value="paymaster" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border-green-500/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-green-400" />
+                    Paymaster Service
+                  </CardTitle>
+                  <CardDescription>Gasless transactions powered by HYBRID sponsors</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-400">{paymasterService.activeSponsors}</div>
+                      <div className="text-sm text-gray-400">Active Sponsors</div>
+                    </div>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-400">{paymasterService.sponsoredTxs.toLocaleString()}</div>
+                      <div className="text-sm text-gray-400">Sponsored Txs</div>
+                    </div>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-400">{paymasterService.gaslessUsers.toLocaleString()}</div>
+                      <div className="text-sm text-gray-400">Gasless Users</div>
+                    </div>
+                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-400">{paymasterService.sponsorshipRate}</div>
+                      <div className="text-sm text-gray-400">Success Rate</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card className="bg-slate-800/50 border-blue-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-blue-400" />
-                    Multi-AI Models Status
+                    <Zap className="w-5 h-5 text-blue-400" />
+                    Super Pay System
                   </CardTitle>
+                  <CardDescription>Instant cross-chain payments with HYBRID</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {aiOrchestrator.models.map((model, index) => (
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Super Pay Status</span>
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500">ACTIVE</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Instant Payments</span>
+                      <span className="font-mono">{paymasterService.instantPayments.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Cross-Chain Payments</span>
+                      <span className="font-mono">{paymasterService.crossChainPayments.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Paymaster Balance</span>
+                      <span className="text-green-400">{paymasterService.paymasterBalance}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* AI Agentkit Tab */}
+          <TabsContent value="agentkit" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border-pink-500/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bot className="w-5 h-5 text-pink-400" />
+                    AI Agent Ecosystem
+                  </CardTitle>
+                  <CardDescription>Autonomous AI agents powered by HYBRID</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    {agentkit.aiModels.map((model, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-3 h-3 bg-green-400 rounded-full"></div>
@@ -389,8 +475,8 @@ export function HybridBlockchainCore() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold">{model.confidence}%</div>
-                          <div className="text-sm text-gray-400">Confidence</div>
+                          <div className="text-lg font-bold">{model.efficiency}%</div>
+                          <div className="text-sm text-gray-400">Efficiency</div>
                         </div>
                       </div>
                     ))}
@@ -398,28 +484,99 @@ export function HybridBlockchainCore() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-800/50 border-green-500/30">
+              <Card className="bg-slate-800/50 border-purple-500/30">
                 <CardHeader>
-                  <CardTitle>Consensus Engine</CardTitle>
-                  <CardDescription>Multi-AI agreement system</CardDescription>
+                  <CardTitle>Agentkit Revenue</CardTitle>
+                  <CardDescription>AI agent marketplace earnings in HYBRID</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+                    <div className="text-3xl font-bold text-green-400">{agentkit.dailyRevenue}</div>
+                    <div className="text-sm text-gray-400">Daily Revenue</div>
+                  </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>Agreement Rate</span>
-                      <span>{aiOrchestrator.consensus.agreement.toFixed(1)}%</span>
+                      <span>Total Inferences</span>
+                      <span className="font-mono">{agentkit.totalInferences.toLocaleString()}</span>
                     </div>
-                    <Progress value={aiOrchestrator.consensus.agreement} className="h-3" />
+                    <div className="flex justify-between">
+                      <span>Agent Creators</span>
+                      <span className="font-mono">{agentkit.agentCreators.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Autonomous Mode</span>
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500">ENABLED</Badge>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-400">{aiOrchestrator.consensus.processing}</div>
-                      <div className="text-sm text-gray-400">Processing</div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Circle USDC Integration Tab */}
+          <TabsContent value="circle" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border-blue-500/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CircleDollarSign className="w-5 h-5 text-blue-400" />
+                    Circle USDC Integration
+                  </CardTitle>
+                  <CardDescription>Native USDC support on HYBRID blockchain</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                    <div className="text-3xl font-bold text-blue-400">{circleIntegration.usdcBalance}</div>
+                    <div className="text-sm text-gray-400">Total USDC Balance</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>HYBRID → USDC</span>
+                      <span className="text-green-400">{circleIntegration.hybridToUsdc}</span>
                     </div>
-                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-400">{aiOrchestrator.consensus.completed.toLocaleString()}</div>
-                      <div className="text-sm text-gray-400">Completed</div>
+                    <div className="flex justify-between">
+                      <span>USDC → HYBRID</span>
+                      <span className="text-green-400">{circleIntegration.usdcToHybrid}</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span>Daily Volume</span>
+                      <span className="font-mono">{circleIntegration.dailyVolume}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Instant Swaps</span>
+                      <span className="font-mono">{circleIntegration.instantSwaps.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-green-500/30">
+                <CardHeader>
+                  <CardTitle>Liquidity Pools</CardTitle>
+                  <CardDescription>USDC liquidity provision on HYBRID</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {circleIntegration.liquidityPools.map((pool, index) => (
+                      <div key={index} className="p-3 bg-slate-700/50 rounded-lg">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium">{pool.pair}</span>
+                          <Badge variant="outline" className="text-green-400 border-green-400">
+                            {pool.apr} APR
+                          </Badge>
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Liquidity</span>
+                            <span>{pool.liquidity}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">24h Volume</span>
+                            <span>{pool.volume}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -436,35 +593,39 @@ export function HybridBlockchainCore() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span>Block Height</span>
-                    <span className="font-mono">{blockchainMetrics.blockHeight.toLocaleString()}</span>
+                    <span className="font-mono">{hybridMetrics.blockHeight.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Gas Price</span>
-                    <span>{blockchainMetrics.gasPrice} HYBRID</span>
+                    <span>{hybridMetrics.gasPrice}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Staking APY</span>
-                    <span className="text-green-400">{blockchainMetrics.stakingAPY}%</span>
+                    <span>Validators</span>
+                    <span className="text-green-400">{hybridMetrics.validators}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Inflation Rate</span>
-                    <span className="text-orange-400">{blockchainMetrics.inflationRate}%</span>
+                    <span>Network Uptime</span>
+                    <span className="text-green-400">{hybridMetrics.uptime}%</span>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-slate-800/50 border-purple-500/30">
                 <CardHeader>
-                  <CardTitle>Token Economics</CardTitle>
+                  <CardTitle>HYBRID Coin Economics</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
-                    <span>Total Supply</span>
-                    <span className="font-mono">{(parseInt(blockchainMetrics.totalSupply) / 1e9).toFixed(1)}B</span>
+                    <span>Coin Price</span>
+                    <span className="font-mono text-green-400">{hybridMetrics.coinPrice}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Circulating</span>
-                    <span className="font-mono">{(parseInt(blockchainMetrics.circulatingSupply) / 1e9).toFixed(1)}B</span>
+                    <span>Market Cap</span>
+                    <span className="font-mono">{hybridMetrics.marketCap.slice(0, -9)}T USD</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>24h Volume</span>
+                    <span className="font-mono">{hybridMetrics.volume24h}</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -484,49 +645,46 @@ export function HybridBlockchainCore() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Validator NFTs</span>
-                      <span>{nodeLicenses.validator.owned}/{blockchainMetrics.nftLicenses.validator}</span>
+                      <span>{nodeLicenses.validator.owned}/{hybridMetrics.nftLicenses.validator}</span>
                     </div>
-                    <div className="text-sm text-gray-400">Price: {nodeLicenses.validator.price} HYBRID</div>
+                    <div className="text-sm text-gray-400">Price: {nodeLicenses.validator.price}</div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Storage NFTs</span>
-                      <span>{nodeLicenses.storage.owned}/{blockchainMetrics.nftLicenses.storage}</span>
+                      <span>{nodeLicenses.storage.owned}/{hybridMetrics.nftLicenses.storage}</span>
                     </div>
-                    <div className="text-sm text-gray-400">Price: {nodeLicenses.storage.price} HYBRID</div>
+                    <div className="text-sm text-gray-400">Price: {nodeLicenses.storage.price}</div>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Cloud Mining Tab */}
-          <TabsContent value="mining" className="space-y-6">
+          {/* DeFi Tab */}
+          <TabsContent value="defi" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-slate-800/50 border-orange-500/30">
+              <Card className="bg-slate-800/50 border-yellow-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-orange-400" />
-                    Mining Performance
+                    <Coins className="w-5 h-5 text-yellow-400" />
+                    DeFi Ecosystem
                   </CardTitle>
+                  <CardDescription>Decentralized finance built on HYBRID</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
+                    <div className="text-3xl font-bold text-yellow-400">{defiMetrics.totalValueLocked}</div>
+                    <div className="text-sm text-gray-400">Total Value Locked</div>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-400">{miningDashboard.hashRate.toFixed(1)}</div>
-                      <div className="text-sm text-gray-400">MH/s</div>
+                      <div className="text-2xl font-bold text-blue-400">{defiMetrics.lendingPools}</div>
+                      <div className="text-sm text-gray-400">Lending Pools</div>
                     </div>
                     <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-400">{miningDashboard.efficiency.toFixed(1)}%</div>
-                      <div className="text-sm text-gray-400">Efficiency</div>
-                    </div>
-                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-400">{miningDashboard.temperature}°C</div>
-                      <div className="text-sm text-gray-400">Temperature</div>
-                    </div>
-                    <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-400">{miningDashboard.workers}</div>
-                      <div className="text-sm text-gray-400">Workers</div>
+                      <div className="text-2xl font-bold text-green-400">{defiMetrics.yieldFarms}</div>
+                      <div className="text-sm text-gray-400">Yield Farms</div>
                     </div>
                   </div>
                 </CardContent>
@@ -534,25 +692,26 @@ export function HybridBlockchainCore() {
 
               <Card className="bg-slate-800/50 border-green-500/30">
                 <CardHeader>
-                  <CardTitle>Mining Rewards</CardTitle>
+                  <CardTitle>DeFi Performance</CardTitle>
+                  <CardDescription>Protocol metrics and yields</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/30">
-                    <div className="text-3xl font-bold text-green-400">{miningDashboard.dailyReward}</div>
-                    <div className="text-sm text-gray-400">HYBRID / Day</div>
-                  </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>Pool Share</span>
-                      <span>{(miningDashboard.poolShare * 100).toFixed(3)}%</span>
+                      <span>Average APY</span>
+                      <span className="text-green-400">{defiMetrics.averageAPY}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Uptime</span>
-                      <span className="text-green-400">{miningDashboard.uptime}%</span>
+                      <span>Liquidity Providers</span>
+                      <span className="font-mono">{defiMetrics.liquidityProviders.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Power Consumption</span>
-                      <span>{miningDashboard.power} kW</span>
+                      <span>Active Borrowers</span>
+                      <span className="font-mono">{defiMetrics.borrowers.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Protocol Revenue</span>
+                      <span className="text-green-400">{defiMetrics.protocolRevenue}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -566,10 +725,10 @@ export function HybridBlockchainCore() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5 text-blue-400" />
-                  Cross-Chain Bridge Status
+                  Cross-Chain Bridge Network
                 </CardTitle>
                 <CardDescription>
-                  Multi-blockchain interoperability via Axelar Protocol
+                  Multi-blockchain interoperability with HYBRID native coin
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -600,7 +759,7 @@ export function HybridBlockchainCore() {
                 </div>
                 <div className="mt-6 text-center">
                   <div className="text-2xl font-bold text-blue-400">{crossChain.totalBridged}</div>
-                  <div className="text-sm text-gray-400">Total Volume Bridged</div>
+                  <div className="text-sm text-gray-400">Total HYBRID Bridged</div>
                 </div>
               </CardContent>
             </Card>
@@ -615,7 +774,7 @@ export function HybridBlockchainCore() {
                     <Settings className="w-5 h-5 text-purple-400" />
                     HTSX Runtime Engine
                   </CardTitle>
-                  <CardDescription>No-code blockchain application builder</CardDescription>
+                  <CardDescription>No-code HYBRID blockchain application builder</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -628,12 +787,12 @@ export function HybridBlockchainCore() {
                       <div className="text-sm text-gray-400">Deployments</div>
                     </div>
                     <div className="text-center p-3 bg-slate-700/50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-400">{htsxEngine.components}</div>
-                      <div className="text-sm text-gray-400">Components</div>
+                      <div className="text-2xl font-bold text-green-400">{htsxEngine.smartContracts}</div>
+                      <div className="text-sm text-gray-400">Smart Contracts</div>
                     </div>
                     <div className="text-center p-3 bg-slate-700/50 rounded-lg">
                       <div className="text-2xl font-bold text-orange-400">{htsxEngine.requests.toLocaleString()}</div>
-                      <div className="text-sm text-gray-400">Requests</div>
+                      <div className="text-sm text-gray-400">API Requests</div>
                     </div>
                   </div>
                 </CardContent>
@@ -642,19 +801,18 @@ export function HybridBlockchainCore() {
               <Card className="bg-slate-800/50 border-cyan-500/30">
                 <CardHeader>
                   <CardTitle>HTSX Code Example</CardTitle>
-                  <CardDescription>Revolutionary no-code blockchain development</CardDescription>
+                  <CardDescription>Revolutionary no-code HYBRID development</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="bg-black/30 p-4 rounded-lg font-mono text-sm">
                     <div className="text-cyan-400">&lt;htsx&gt;</div>
-                    <div className="ml-2 text-purple-400">&lt;dapp-builder&gt;</div>
-                    <div className="ml-4 text-green-400">&lt;frontend type="holographic" /&gt;</div>
-                    <div className="ml-4 text-blue-400">&lt;smart-contracts&gt;</div>
-                    <div className="ml-6 text-yellow-400">&lt;contract name="GameToken" type="ERC20" /&gt;</div>
-                    <div className="ml-4 text-blue-400">&lt;/smart-contracts&gt;</div>
-                    <div className="ml-4 text-orange-400">&lt;ai-integration models="gpt4,claude" /&gt;</div>
-                    <div className="ml-4 text-red-400">&lt;deployment target="hybrid,polygon" /&gt;</div>
-                    <div className="ml-2 text-purple-400">&lt;/dapp-builder&gt;</div>
+                    <div className="ml-2 text-purple-400">&lt;hybrid-dapp&gt;</div>
+                    <div className="ml-4 text-green-400">&lt;paymaster enabled="true" /&gt;</div>
+                    <div className="ml-4 text-blue-400">&lt;native-coin symbol="HYBRID" /&gt;</div>
+                    <div className="ml-4 text-yellow-400">&lt;usdc-integration circle="native" /&gt;</div>
+                    <div className="ml-4 text-pink-400">&lt;ai-agentkit models="gpt4,claude" /&gt;</div>
+                    <div className="ml-4 text-orange-400">&lt;deployment target="hybrid-mainnet" /&gt;</div>
+                    <div className="ml-2 text-purple-400">&lt;/hybrid-dapp&gt;</div>
                     <div className="text-cyan-400">&lt;/htsx&gt;</div>
                   </div>
                 </CardContent>
