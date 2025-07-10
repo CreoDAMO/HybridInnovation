@@ -2,8 +2,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // Enable app directory
-    appDir: true,
+    // App directory is now stable, no longer experimental
     // Add custom extensions for HTSX and SpiralLang
     extensionAlias: {
       '.htsx': ['.htsx', '.htsx.ts', '.htsx.tsx'],

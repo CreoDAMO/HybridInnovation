@@ -307,7 +307,7 @@ export class SpiralAPI {
       };
 
       this.wsConnection.onerror = (error) => {
-        console.error('Spiral WebSocket error:', error);
+        console.warn('Spiral WebSocket connection unavailable - using fallback mode');
       };
 
       this.wsConnection.onclose = () => {

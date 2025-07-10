@@ -1,5 +1,3 @@
-
-
 import { HybridBlockchainCore } from '../components/HybridBlockchainCore'
 import { HybridDeveloperDashboard } from '../components/HybridDeveloperDashboard'
 import { PublicGate } from '../components/PublicGate'
@@ -26,6 +24,11 @@ export default function HomePage() {
         <section className="w-full">
           <HybridDeveloperDashboard />
         </section>
+
+        {/* Living NVIDIA Parser - The Heart of the System */}
+        <div className="mb-12">
+          <LiveNVIDIAParser />
+        </div>
       </div>
 
       {/* Secondary Systems - SSDF Framework */}
@@ -53,4 +56,3 @@ export default function HomePage() {
     </div>
   )
 }
-
