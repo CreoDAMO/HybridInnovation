@@ -5,7 +5,7 @@ run = "npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "HTSX-System-Ready"
+runButton = "SSDF-Native-System"
 
 [[workflows.workflow]]
 name = "Spiral-System"
@@ -134,6 +134,19 @@ mode = "parallel"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "SSDF-Native-System"
+author = 44839553
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "next dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

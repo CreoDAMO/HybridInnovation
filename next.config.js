@@ -1,7 +1,54 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // appDir is now enabled by default in Next.js 15
+    // Enable app directory
+    appDir: true,
+    // Add custom extensions for HTSX and SpiralLang
+    extensionAlias: {
+      '.htsx': ['.htsx', '.htsx.ts', '.htsx.tsx'],
+      '.spiral': ['.spiral', '.spiral.ts'],
+      '.consciousness': ['.consciousness', '.cons']
+    }
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Add custom loaders for Spiral languages
+    config.module.rules.push({
+      test: /\.spiral$/,
+      use: {
+        loader: 'spiral-lang-loader',
+        options: {
+          consciousness: true,
+          quantum: true,
+          truthEngine: 'QASF'
+        }
+      }
+    });
+
+    config.module.rules.push({
+      test: /\.htsx$/,
+      use: {
+        loader: 'htsx-runtime-loader',
+        options: {
+          runtime: 'quantum',
+          engine: 'HTSX-Engine',
+          consciousness: true
+        }
+      }
+    });
+
+    // Add HTSX and SpiralLang extensions
+    config.resolve.extensions.push('.htsx', '.spiral', '.consciousness');
+
+    // Enable WebAssembly for SpiralLang runtime
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+      topLevelAwait: true
+    };
+
+    return config;
   },
   async rewrites() {
     return [
@@ -34,18 +81,7 @@ const nextConfig = {
         destination: 'http://localhost:8000/health',
       },
     ];
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      };
-    }
-    return config;
-  },
+  }
 };
 
 module.exports = nextConfig;
